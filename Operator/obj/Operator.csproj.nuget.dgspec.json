@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\Operator.csproj": {}
+    "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Operator\\Operator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\Models.csproj": {
+    "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\Models.csproj",
+        "projectUniqueName": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj",
         "projectName": "Models",
-        "projectPath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\Models.csproj",
-        "packagesPath": "C:\\Users\\a.baghi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\obj\\",
+        "projectPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj",
+        "packagesPath": "C:\\Users\\aqbag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\a.baghi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\aqbag\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -35,11 +34,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -71,21 +65,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\Operator.csproj": {
+    "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Operator\\Operator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\Operator.csproj",
+        "projectUniqueName": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Operator\\Operator.csproj",
         "projectName": "Operator",
-        "projectPath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\Operator.csproj",
-        "packagesPath": "C:\\Users\\a.baghi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\obj\\",
+        "projectPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Operator\\Operator.csproj",
+        "packagesPath": "C:\\Users\\aqbag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Operator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\a.baghi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\aqbag\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -93,15 +87,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\Models.csproj": {
-                "projectPath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Models\\Models.csproj"
+              "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj": {
+                "projectPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj"
               }
             }
           }
@@ -110,11 +103,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -153,7 +141,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
