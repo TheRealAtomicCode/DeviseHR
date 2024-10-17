@@ -1,29 +1,38 @@
-﻿using HR.DTO;
-using HR.DTO.Inbound;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using OP.DTO;
+using OP.DTO.Inbound;
+using OP.Services.OperatorService;
+using OP.Services.OperatorService.Interfaces;
 
-namespace HR.Controllers
+namespace OP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
 
+        private readonly ICredentialService _credentialService;
+        public AuthController(ICredentialService credentialService) 
+        {
+            _credentialService = credentialService;
+        }
+
+
+
         [HttpPost("login")]
-        public async Task<ActionResult<ServiceResponse<Employee>>> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             try
             {
-                var db = new DeviseHrContext();
 
-                Employee? employee = await db.Employees.Where(e => e.Email == loginRequest.Email).FirstOrDefaultAsync();
+                var op = await _credentialService.FindByCredentialts(loginRequest);
 
-                if (employee == null) throw new Exception("Employee not found");
 
-                var sr = new ServiceResponse<Employee>(employee);
+                var sr = new ServiceResponse<Operator>(op);
 
                 return Ok(sr);
             }

@@ -1,7 +1,15 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Models;
+using OP.Repository;
+using OP.Repository.Interfaces;
+using OP.Services;
+using OP.Services.OperatorService;
+using OP.Services.OperatorService.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json.Serialization;
 
@@ -10,8 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // example for extraction
-// string hrServerPort = configuration["HR_SERVER_PORT"];
-
+string hrServerPort = configuration["HR_SERVER_PORT"];
 var secretKey = configuration["JwtSettings:SecretKey"];
 
 // Add services to the container.
@@ -31,6 +38,11 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+// Configure DbContext
+builder.Services.AddDbContext<DeviseHrContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DeviseDB")));
+
+// configure auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -79,6 +91,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true;
 });
+
+
+// Scope and Dependancy Injection
+builder.Services.AddScoped<IOperatorRepo, OperatorRepo>();
+builder.Services.AddScoped<ICredentialService, CredentialService>();
+
 
 var app = builder.Build();
 

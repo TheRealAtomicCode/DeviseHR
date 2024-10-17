@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="DTO\Outbound\" />
+    <Folder Include="Services\CompanySercice\" />
   </ItemGroup>
 
   <ItemGroup>

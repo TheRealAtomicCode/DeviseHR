@@ -1,4 +1,4 @@
-﻿namespace HR.DTO
+﻿namespace OP.DTO
 {
     public class ServiceResponse<T>
     {

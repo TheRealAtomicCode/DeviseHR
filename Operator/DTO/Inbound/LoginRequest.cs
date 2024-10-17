@@ -1,4 +1,4 @@
-﻿namespace HR.DTO.Inbound
+﻿namespace OP.DTO.Inbound
 {
     public class LoginRequest
     {
