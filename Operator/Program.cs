@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models;
+using OP.DTO.Mapper;
 using OP.Repository;
 using OP.Repository.Interfaces;
 using OP.Services;
@@ -22,7 +23,7 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 //string hrServerPort = configuration["HR_SERVER_PORT"];
-//var secretKey = configuration["JwtSettings:SecretKey"];
+var secretKey = configuration["JwtSettings:SecretKey"];
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -99,6 +100,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Scope and Dependancy Injection
 builder.Services.AddScoped<IOperatorRepo, OperatorRepo>();
 builder.Services.AddScoped<ICredentialService, CredentialService>();
+
+// Register mappings
+MapConfig.RegisterMappings();
 
 
 var app = builder.Build();

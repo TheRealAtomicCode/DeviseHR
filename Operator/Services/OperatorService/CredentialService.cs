@@ -1,10 +1,12 @@
 ﻿
 
 
+using Mapster;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using OP.DTO.Inbound;
+using OP.DTO.Outbound;
 using OP.Repository.Interfaces;
 using OP.Services.OperatorService.Interfaces;
 using OP.Subroutines;
@@ -25,7 +27,7 @@ namespace OP.Services.OperatorService
             _configuration = configuration;
         }
 
-        public async Task<Operator> FindByCredentialts(LoginRequest loginRequest)
+        public async Task<LoginResponse> FindByCredentialts(LoginRequest loginRequest)
         {
             loginRequest.Email.Trim().ToLower();
 
@@ -46,14 +48,17 @@ namespace OP.Services.OperatorService
 
             string secret = _configuration["JwtSettings:SecretKey"]!;
             string expTime = _configuration["JwtSettings:ExpTime"]!;
-            await Token.GenerateOperatorJWT(op, secret, expTime);
 
             // generate auth token
+            string refreshToken = await Token.GenerateOperatorJWT(op, secret, expTime);
             string jwt = await Token.GenerateOperatorJWT(op, secret, expTime);
 
-            // Generate DTO
+            var opDto = op.Adapt<LoginResponse>();
 
-            return op;
+            opDto.Jwt = jwt;
+            opDto.RefreshToken = refreshToken;
+
+            return opDto;
         }
 
 

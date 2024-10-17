@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using OP.DTO;
 using OP.DTO.Inbound;
+using OP.DTO.Outbound;
 using OP.Services.OperatorService;
 using OP.Services.OperatorService.Interfaces;
+using OP.Subroutines;
 
 namespace OP.Controllers
 {
@@ -16,22 +19,24 @@ namespace OP.Controllers
     {
 
         private readonly ICredentialService _credentialService;
-        public AuthController(ICredentialService credentialService) 
+        private readonly IConfiguration _configuration;
+
+        public AuthController(ICredentialService credentialService, IConfiguration configuration) 
         {
             _credentialService = credentialService;
+            _configuration = configuration;
         }
 
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<ActionResult<ServiceResponse<LoginResponse>>> Login([FromBody] LoginRequest loginRequest)
         {
             try
             { 
-                var op = await _credentialService.FindByCredentialts(loginRequest);
+                var opDto = await _credentialService.FindByCredentialts(loginRequest);
 
-
-                var sr = new ServiceResponse<Operator>(op);
+                var sr = new ServiceResponse<LoginResponse>(opDto, true, "", 0);
 
                 return Ok(sr);
             }

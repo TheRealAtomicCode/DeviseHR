@@ -90,3 +90,6 @@ C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\obj\Debug\net8.0\refint\HR.
 C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\obj\Debug\net8.0\HR.pdb
 C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\obj\Debug\net8.0\HR.genruntimeconfig.cache
 C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\obj\Debug\net8.0\ref\HR.dll
+C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\bin\Debug\net8.0\Mapster.dll
+C:\Users\aqbag\OneDrive\Desktop\Projects\DeviseHR\HR\bin\Debug\net8.0\Mapster.Core.dll
