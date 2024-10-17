@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "DCbcZ7bTWno=",
+  "dgSpecHash": "t8cgA4P4UwM=",
   "success": true,
   "projectFilePath": "C:\\Users\\a.baghi\\Desktop\\DeviseHR\\Operator\\OP.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\a.baghi\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\a.baghi\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.10\\microsoft.aspnetcore.authentication.jwtbearer.8.0.10.nupkg.sha512",
     "C:\\Users\\a.baghi\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.10\\microsoft.entityframeworkcore.8.0.10.nupkg.sha512",
     "C:\\Users\\a.baghi\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.10\\microsoft.entityframeworkcore.abstractions.8.0.10.nupkg.sha512",

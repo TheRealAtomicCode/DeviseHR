@@ -9,6 +9,7 @@ namespace OP.Repository.Interfaces
         Task<List<Operator>> GetAllOperators(string email);
         Task<Operator> AddOperator(Operator op);
         Task<Operator> UpdateOperator(Operator op);
+        void IncrementLoginAttemt(Operator op);
 
     }
 }

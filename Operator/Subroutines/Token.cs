@@ -1,40 +1,40 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace OP.Subroutines
 {
     public static class Token
     {
 
-        
+        public static async Task<string> GenerateOperatorJWT(Operator op, string secret, string jwtExpTime)
+        {
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
 
-        //public static async Task<string> GenerateUserAuthJWT(Operator operator)
-        //{
-        //    string? jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-        //    if (string.IsNullOrWhiteSpace(jwtSecret)) throw new Exception("Environment Error");
+            var claims = new List<Claim>();
 
-        //    var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSecret));
+            claims = new List<Claim>
+                {
+                    new Claim("id", op.Id.ToString()),
+                    new Claim("userRole", op.UserRole.ToString()),
+                };
 
-        //    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var token = new JwtSecurityToken(
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)),
+                signingCredentials: credentials,
+                claims: claims // Add the claims to the token
+            );
 
-        //    var claims = GenerateUserJwtClaims(user);
+            var jwt = await Task.Run(() => new JwtSecurityTokenHandler().WriteToken(token));
 
-        //    string? jwtExpTime = Environment.GetEnvironmentVariable("EXPTIME");
+            return jwt;
+        }
 
-        //    if (string.IsNullOrWhiteSpace(jwtExpTime)) throw new Exception("Environment Error");
 
-        //    var token = new JwtSecurityToken(
-        //        expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)),
-        //        signingCredentials: credentials,
-        //        claims: claims // Add the claims to the token
-        //    );
 
-        //    var jwt = await Task.Run(() => new JwtSecurityTokenHandler().WriteToken(token));
-
-        //    return jwt;
-        //}
 
     }
 }

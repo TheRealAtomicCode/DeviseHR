@@ -18,8 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // example for extraction
-string hrServerPort = configuration["HR_SERVER_PORT"];
-var secretKey = configuration["JwtSettings:SecretKey"];
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+//string hrServerPort = configuration["HR_SERVER_PORT"];
+//var secretKey = configuration["JwtSettings:SecretKey"];
 
 // Add services to the container.
 builder.Services.AddControllers();

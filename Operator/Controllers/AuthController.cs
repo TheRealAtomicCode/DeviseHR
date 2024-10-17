@@ -27,8 +27,7 @@ namespace OP.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             try
-            {
-
+            { 
                 var op = await _credentialService.FindByCredentialts(loginRequest);
 
 
