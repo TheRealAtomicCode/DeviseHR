@@ -11,7 +11,7 @@ using OP.Services.OperatorService;
 using OP.Services.OperatorService.Interfaces;
 using OP.Subroutines;
 
-namespace OP.Controllers
+namespace OP.Controllers.OperatorControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,7 +21,7 @@ namespace OP.Controllers
         private readonly ICredentialService _credentialService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(ICredentialService credentialService, IConfiguration configuration) 
+        public AuthController(ICredentialService credentialService, IConfiguration configuration)
         {
             _credentialService = credentialService;
             _configuration = configuration;
@@ -33,7 +33,7 @@ namespace OP.Controllers
         public async Task<ActionResult<ServiceResponse<LoginResponse>>> Login([FromBody] LoginRequest loginRequest)
         {
             try
-            { 
+            {
                 var opDto = await _credentialService.FindByCredentialts(loginRequest);
 
                 var sr = new ServiceResponse<LoginResponse>(opDto, true, "", 0);
@@ -46,7 +46,7 @@ namespace OP.Controllers
                 return BadRequest(serviceResponse);
             }
         }
-    
-    
+
+
     }
 }
