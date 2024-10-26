@@ -1,0 +1,46 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio files
+.vscode/
+.idea/
+*.sln.ide
+*.suo
+*.user
+*.userprefs
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Dotnet specific files
+project.lock.json
+project.json
+*.db
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+**/packages/*
+
+# Entity Framework Core migrations
+Migrations/
+
+# User-specific files
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pdb
+*.mdb
+
+# Visual Studio Code settings
+.vscode/
+.history/
+
+# Other
+*.tmp
+*.log
+*.cache
+*.vs/
