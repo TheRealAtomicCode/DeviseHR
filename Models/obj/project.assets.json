@@ -716,19 +716,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Muhammed\\.nuget\\packages\\": {}
+    "C:\\Users\\aqbag\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Muhammed\\source\\repos\\DeviseHR\\Models\\Models.csproj",
+      "projectUniqueName": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj",
       "projectName": "Models",
-      "projectPath": "C:\\Users\\Muhammed\\source\\repos\\DeviseHR\\Models\\Models.csproj",
-      "packagesPath": "C:\\Users\\Muhammed\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Muhammed\\source\\repos\\DeviseHR\\Models\\obj\\",
+      "projectPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\Models.csproj",
+      "packagesPath": "C:\\Users\\aqbag\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\aqbag\\OneDrive\\Desktop\\Projects\\DeviseHR\\Models\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Muhammed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\aqbag\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -736,7 +736,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -749,11 +748,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -785,7 +779,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
