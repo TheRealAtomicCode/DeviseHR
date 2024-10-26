@@ -1,6 +1,9 @@
 # Build results
-bin/
-obj/
+bin
+obj
+
+./obj
+./bin
 
 # Visual Studio files
 .vscode/
