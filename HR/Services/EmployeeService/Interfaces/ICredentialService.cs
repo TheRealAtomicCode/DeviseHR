@@ -9,5 +9,6 @@ namespace HR.Services.EmployeeService.Interfaces
         Task<LoginResponse> FindByCredentials(LoginRequest loginRequest);
         Task<Employee> FindAndRefreshEmployeeById(int id);
         Task<LoginResponse> RefreshUserToken(int employeeId, string refreshToken);
+        Task LogoutService(int employeeId, string refreshToken);
     }
 }

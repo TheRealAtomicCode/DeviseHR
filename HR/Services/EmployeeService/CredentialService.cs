@@ -95,6 +95,25 @@ namespace HR.Services.EmployeeService
         }
 
 
+        public async Task LogoutService(int employeeId, string refreshToken)
+        {
+            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId);
+
+            if (emp == null) throw new Exception("User not found");
+
+            if (refreshToken == string.Empty)
+            {
+                await _employeeRepo.ClearRefreshTokens(emp);
+            }
+            else
+            {
+                await _employeeRepo.RemoveSingleRefreshToken(emp, refreshToken);
+            }
+            
+        }
+
+  
+
         public Task<Employee> FindAndRefreshEmployeeById(int id)
         {
             throw new NotImplementedException();

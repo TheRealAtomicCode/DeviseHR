@@ -43,6 +43,20 @@ namespace HR.Repository
             await _Context.SaveChangesAsync();
         }
 
+        public async Task RemoveSingleRefreshToken(Employee employee, string oldToken)
+        {
+            employee.RefreshTokens.Remove(oldToken);
+
+            await _Context.SaveChangesAsync();
+        }
+
+        public async Task ClearRefreshTokens(Employee employee)
+        {
+            employee.RefreshTokens.Clear();
+
+            await _Context.SaveChangesAsync();
+        }
+
 
         public async Task AddRefreshToken(Employee employee, string newToken)
         {
