@@ -138,6 +138,59 @@ async function insertUser(client: Client, user: any) {
 
 		await client.queryObject(userQuery, user4Values);
 		console.log('User inserted successfully 4 company 3.');
+
+		// permissions
+		// permissions
+		// permissions
+		// permissions
+		// permissions
+
+		const permissionQuery = `
+			INSERT INTO public.permission (
+				permission_name, 
+				enable_add_employees, 
+				enable_terminate_employees, 
+				enable_delete_employee, 
+				enable_create_pattern, 
+				enable_approve_absence, 
+				enable_add_manditory_leave, 
+				enable_add_lateness, 
+				enable_create_rotas, 
+				enable_view_employee_notifications, 
+				enable_view_employee_payroll, 
+				enable_view_employee_sensitive_information, 
+				created_at, 
+				updated_at, 
+				added_by, 
+				updated_by, 
+				company_id
+			) 
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17);
+		`;
+
+		const permissionValues = [
+			'super-manager',
+			true, // enable_add_employees
+			true, // enable_terminate_employees
+			true, // enable_delete_employee
+			true, // enable_create_pattern
+			true, // enable_approve_absence
+			true, // enable_add_manditory_leave
+			true, // enable_add_lateness
+			true, // enable_create_rotas
+			true, // enable_view_employee_notifications
+			true, // enable_view_employee_payroll
+			true, // enable_view_employee_sensitive_information
+			new Date(), // created_at (current date)
+			new Date(), // updated_at (current date)
+			1, // added_by (example user)
+			null, // updated_by (example user)
+			1, // company_id (assuming this is defined elsewhere)
+		];
+
+		// Now execute the query
+		await client.queryObject(permissionQuery, permissionValues);
+		console.log('Permission inserted for company 1 successfully.');
 	} catch (error) {
 		console.error('Error inserting user:', error);
 	} finally {
