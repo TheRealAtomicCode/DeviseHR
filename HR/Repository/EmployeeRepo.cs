@@ -9,113 +9,61 @@ namespace HR.Repository
     {
 
 
-        private readonly DeviseHrContext _Context;
+        private readonly DeviseHrContext _context;
         private readonly IConfiguration _configuration;
 
         public EmployeeRepo(DeviseHrContext dbContext, IConfiguration configuration)
         {
-            _Context = dbContext;
+            _context = dbContext;
             _configuration = configuration;
         }
 
         public async Task<Employee?> GetEmployeeByEmail(string email)
         {
-            return await _Context.Employees.FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
+            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
         public async Task<Employee?> GetEmployeeById(int id)
         {
-            return await _Context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
+            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
         }
        
-
-        public async void IncrementLoginAttemt(Employee emp)
-        {
-            emp.LoginAttempt++;
-            await _Context.SaveChangesAsync();
-        }
-
-        public async Task UpdateRefreshToken(Employee employee, string oldToken, string newToken)
-        {
-            employee.RefreshTokens = employee.RefreshTokens
-                .Select(token => token == oldToken ? newToken : token)
-                .ToList();
-
-            await _Context.SaveChangesAsync();
-        }
-
-        public async Task RemoveSingleRefreshToken(Employee employee, string oldToken)
-        {
-            employee.RefreshTokens.Remove(oldToken);
-
-            await _Context.SaveChangesAsync();
-        }
-
-        public async Task ClearRefreshTokens(Employee employee)
-        {
-            employee.RefreshTokens.Clear();
-
-            await _Context.SaveChangesAsync();
-        }
-
-
-        public async Task AddRefreshToken(Employee employee, string newToken)
-        {
-            if (employee.RefreshTokens.Count >= 6)
-            {
-                employee.RefreshTokens.RemoveAt(employee.RefreshTokens.Count - 1);
-            }
-
-            employee.RefreshTokens.Insert(0, newToken);
-
-            await _Context.SaveChangesAsync();
-        }
-
-
-
 
 
         public async Task<List<Employee>> GetAllEmployees(string email)
         {
-            return await _Context.Employees.ToListAsync();
+            return await _context.Employees.ToListAsync();
         }
 
         
-        public async Task UpdateVerificationCode(Employee employee, string verificationCode)
-        {
-            employee.VerificationCode = verificationCode;
-            employee.LastLoginTime = DateTime.Now;
-
-            await _Context.SaveChangesAsync();
-        }
-
-        public async Task UpdateVerificationCodeAfterConfermation(Employee employee, string passwordHash, string refreshToken)
-        {
-            if(refreshToken != string.Empty)
-            {
-                employee.IsVerified = true;
-                employee.RefreshTokens.Add(refreshToken);
-                employee.PasswordHash = passwordHash;
-            }
-
-            employee.VerificationCode = null;
-            await _Context.SaveChangesAsync();
-        }
-
 
         public async Task<Employee> AddEmployee(Employee emp)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Employee> DeleteEmployee(Employee emp)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<Employee> UpdateEmployee(Employee emp)
         {
             throw new NotImplementedException();
         }
+
+
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            try
+            {
+                await _context.Employees.ToListAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
     }
 }
