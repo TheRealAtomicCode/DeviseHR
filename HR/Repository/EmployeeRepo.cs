@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
 using HR.Repository.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace HR.Repository
 {
@@ -19,7 +20,7 @@ namespace HR.Repository
 
         public async Task<Employee?> GetEmployeeByEmail(string email)
         {
-            return await _Context.Employees.FirstOrDefaultAsync(emp => emp.Email == email);
+            return await _Context.Employees.FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
         public async Task<Employee?> GetEmployeeById(int id)
@@ -78,6 +79,29 @@ namespace HR.Repository
         {
             return await _Context.Employees.ToListAsync();
         }
+
+        
+        public async Task UpdateVerificationCode(Employee employee, string verificationCode)
+        {
+            employee.VerificationCode = verificationCode;
+            employee.LastLoginTime = DateTime.Now;
+
+            await _Context.SaveChangesAsync();
+        }
+
+        public async Task UpdateVerificationCodeAfterConfermation(Employee employee, string passwordHash, string refreshToken)
+        {
+            if(refreshToken != string.Empty)
+            {
+                employee.IsVerified = true;
+                employee.RefreshTokens.Add(refreshToken);
+                employee.PasswordHash = passwordHash;
+            }
+
+            employee.VerificationCode = null;
+            await _Context.SaveChangesAsync();
+        }
+
 
         public async Task<Employee> AddEmployee(Employee emp)
         {

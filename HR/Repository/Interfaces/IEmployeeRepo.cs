@@ -14,5 +14,9 @@ namespace HR.Repository.Interfaces
         void IncrementLoginAttemt(Employee op);
         Task RemoveSingleRefreshToken(Employee employee, string oldToken);
         Task ClearRefreshTokens(Employee employee);
+        Task UpdateVerificationCode(Employee employee, string verificationCode);
+        Task UpdateVerificationCodeAfterConfermation(Employee employee, string passwordHash, string verificationCode);
+        
+
     }
 }
