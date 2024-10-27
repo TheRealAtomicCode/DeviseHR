@@ -77,5 +77,96 @@ namespace HR.Controllers
         }
 
 
+        [HttpDelete("logout")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<bool>>> Logout([FromBody] string refreshToken)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                await _credentialService.LogoutService(userId, refreshToken);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 100003);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+        [HttpDelete("logoutAllDevices")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices([FromBody] string refreshToken)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                await _credentialService.LogoutService(userId, "");
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 100003);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+
+
+        [HttpPatch("resetPassword")]
+        public async Task<ActionResult<ServiceResponse<string>>> ResetPassword([FromBody] string email)
+        {
+            try
+            {
+                await _credentialService.ResetPasswordService(email.Trim(), false);
+
+                var serviceResponse = new ServiceResponse<string>(email, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<string>("", false, ex.Message, 100004);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+        [HttpPatch("confermResetPassword")]
+        public async Task<ActionResult<ServiceResponse<LoginResponse>>> ConfermResetPassword([FromBody] ResetPasswordRequest requestBody)
+        {
+            try
+            {
+                var emp = await _credentialService.ConfirmVerificationCodeByEmail(requestBody.Email, requestBody.VerificationCode, requestBody.Password, requestBody.IsNewUser);
+
+                var serviceResponse = new ServiceResponse<LoginResponse>(emp, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<LoginResponse>(null!, false, ex.Message, 100005);
+                return BadRequest(serviceResponse);
+            }
+        }
     }
 }
