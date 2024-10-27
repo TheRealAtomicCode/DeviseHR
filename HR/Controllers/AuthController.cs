@@ -11,7 +11,7 @@ using HR.Services.EmployeeService;
 using HR.Services.EmployeeService.Interfaces;
 using HR.Subroutines;
 
-namespace HR.Controllers.OperatorControllers
+namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -34,7 +34,7 @@ namespace HR.Controllers.OperatorControllers
         {
             try
             {
-                var empDto = await _credentialService.FindByCredentialts(loginRequest);
+                var empDto = await _credentialService.FindByCredentials(loginRequest);
 
                 var sr = new ServiceResponse<LoginResponse>(empDto, true, "", 0);
 

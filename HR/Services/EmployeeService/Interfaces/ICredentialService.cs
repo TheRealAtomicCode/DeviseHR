@@ -6,7 +6,7 @@ namespace HR.Services.EmployeeService.Interfaces
 {
     public interface ICredentialService
     {
-        Task<LoginResponse> FindByCredentialts(LoginRequest loginRequest);
+        Task<LoginResponse> FindByCredentials(LoginRequest loginRequest);
         Task<Employee> FindAndRefreshEmployeeById(int id);
     }
 }
