@@ -49,10 +49,12 @@ namespace HR.Utils
         }
 
         // Extract claims 
-        public static void ExtractClaimsFromToken(string clientJwt, string jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtSecurityToken)
+        public static void ExtractClaimsFromToken(string clientJwt, IConfiguration _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtSecurityToken)
         {
             // Validate Token
             var tokenHandler = new JwtSecurityTokenHandler();
+
+            string jwtSecret = _configuration["token:SecretKey"]!;
 
             var tokenValidationParameters = new TokenValidationParameters
             {
