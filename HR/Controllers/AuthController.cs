@@ -9,7 +9,10 @@ using HR.DTO.Inbound;
 using HR.DTO.Outbound;
 using HR.Services.EmployeeService;
 using HR.Services.EmployeeService.Interfaces;
-using HR.Subroutines;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using HR.Utils;
 
 namespace HR.Controllers
 {
@@ -42,7 +45,33 @@ namespace HR.Controllers
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<Employee>(null!, false, ex.Message, 100001);
+                var serviceResponse = new ServiceResponse<LoginResponse>(null!, false, ex.Message, 100001);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+        [HttpPost("refresh")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<LoginResponse>>> Refresh([FromBody] string refreshToken)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
+
+                var empDto = await _credentialService.RefreshUserToken(myId, refreshToken);
+
+                var sr = new ServiceResponse<LoginResponse>(empDto, true, "", 0);
+
+                return Ok(sr);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<LoginResponse>(null!, false, ex.Message, 100002);
                 return BadRequest(serviceResponse);
             }
         }
