@@ -34,7 +34,7 @@ namespace OP.Controllers.OperatorControllers
         {
             try
             {
-                var opDto = await _credentialService.FindByCredentialts(loginRequest);
+                var opDto = await _credentialService.FindByCredentials(loginRequest);
 
                 var sr = new ServiceResponse<LoginResponse>(opDto, true, "", 0);
 

@@ -6,7 +6,7 @@ namespace OP.Services.OperatorService.Interfaces
 {
     public interface ICredentialService
     {
-        Task<LoginResponse> FindByCredentialts(LoginRequest loginRequest);
+        Task<LoginResponse> FindByCredentials(LoginRequest loginRequest);
         Task<Operator> FindAndRefreshOperatorById(int id);
     }
 }

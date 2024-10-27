@@ -2,9 +2,9 @@
 using Models;
 using HR.Repository.Interfaces;
 
-namespace OP.Repository
+namespace HR.Repository
 {
-    public class EmployeeRepo :IEmployeeRepo
+    public class EmployeeRepo : IEmployeeRepo
     {
 
 

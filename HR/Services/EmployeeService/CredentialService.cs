@@ -26,7 +26,7 @@ namespace HR.Services.EmployeeService
             _configuration = configuration;
         }
 
-        public async Task<LoginResponse> FindByCredentialts(LoginRequest loginRequest)
+        public async Task<LoginResponse> FindByCredentials(LoginRequest loginRequest)
         {
             loginRequest.Email.Trim().ToLower();
 
