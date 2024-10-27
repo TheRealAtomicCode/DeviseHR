@@ -57,8 +57,8 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["token:SecretKey"]!;
-                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+                
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
@@ -84,8 +84,8 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["token:SecretKey"]!;
-                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+             
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
@@ -111,8 +111,8 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["token:SecretKey"]!;
-                Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+          
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
