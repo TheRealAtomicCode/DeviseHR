@@ -6,11 +6,12 @@ using Models;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
 using HR.Repository.Interfaces;
-
-using HR.Subroutines;
 using HR.Utils;
 using System.Text.RegularExpressions;
 using HR.Services.EmployeeService.Interfaces;
+using HR.Subroutines;
+using HR.Repository;
+using System.Net.Sockets;
 
 namespace HR.Services.EmployeeService
 {
@@ -45,12 +46,16 @@ namespace HR.Services.EmployeeService
             string loginAttempLimit = _configuration["JwtSettings:LoginAttempLimit"]!;
             Verify.EmployeeAccess(emp, loginAttempLimit);
 
-            string secret = _configuration["JwtSettings:SecretKey"]!;
+            string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+            string refreshSecret = _configuration["refreshSettings:SecretKey"]!;
             string expTime = _configuration["JwtSettings:ExpTime"]!;
 
             // generate auth token
-            string refreshToken = await Token.GenerateEmployeeJWT(emp, secret, expTime);
-            string jwt = await Token.GenerateEmployeeJWT(emp, secret, expTime);
+            string jwt = await Token.GenerateEmployeeJWT(emp, jwtSecret, expTime);
+            string refreshToken = await Token.GenerateEmployeeJWT(emp, refreshSecret, expTime);
+
+            // add new refreshToken
+            await _employeeRepo.AddRefreshToken(emp, refreshToken);
 
             var empDto = emp.Adapt<LoginResponse>();
 
@@ -60,6 +65,34 @@ namespace HR.Services.EmployeeService
             return empDto;
         }
 
+
+        public async Task<LoginResponse> RefreshUserToken(int employeeId, string refreshToken)
+        {
+            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId);
+
+            if(emp == null) throw new Exception("Unable to locate Employee");
+
+            if (!emp.RefreshTokens.Contains(refreshToken)) throw new Exception("Please authenticate");
+
+            string loginAttempLimit = _configuration["JwtSettings:LoginAttempLimit"]!;
+            string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+            string refreshSecret = _configuration["refreshSettings:SecretKey"]!;
+            string expTime = _configuration["JwtSettings:ExpTime"]!;
+
+            Verify.EmployeeAccess(emp, loginAttempLimit);
+
+            string jwt = await Token.GenerateEmployeeJWT(emp, jwtSecret, expTime);
+            string newRefreshToken = await Token.GenerateEmployeeJWT(emp, refreshSecret, expTime);
+
+            await _employeeRepo.UpdateRefreshToken(emp, refreshToken, newRefreshToken);
+
+            var empDto = emp.Adapt<LoginResponse>();
+
+            empDto.Jwt = jwt;
+            empDto.RefreshToken = newRefreshToken;
+
+            return empDto;
+        }
 
 
         public Task<Employee> FindAndRefreshEmployeeById(int id)

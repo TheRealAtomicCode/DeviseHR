@@ -26,15 +26,43 @@ namespace HR.Repository
         {
             return await _Context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
         }
-        public async Task<List<Employee>> GetAllEmployees(string email)
-        {
-            return await _Context.Employees.ToListAsync();
-        }
+       
 
         public async void IncrementLoginAttemt(Employee emp)
         {
             emp.LoginAttempt++;
             await _Context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRefreshToken(Employee employee, string oldToken, string newToken)
+        {
+            employee.RefreshTokens = employee.RefreshTokens
+                .Select(token => token == oldToken ? newToken : token)
+                .ToList();
+
+            await _Context.SaveChangesAsync();
+        }
+
+
+        public async Task AddRefreshToken(Employee employee, string newToken)
+        {
+            if (employee.RefreshTokens.Count >= 6)
+            {
+                employee.RefreshTokens.RemoveAt(employee.RefreshTokens.Count - 1);
+            }
+
+            employee.RefreshTokens.Insert(0, newToken);
+
+            await _Context.SaveChangesAsync();
+        }
+
+
+
+
+
+        public async Task<List<Employee>> GetAllEmployees(string email)
+        {
+            return await _Context.Employees.ToListAsync();
         }
 
         public async Task<Employee> AddEmployee(Employee emp)
