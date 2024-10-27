@@ -13,6 +13,7 @@ using HR.Subroutines;
 using HR.Repository;
 using System.Net.Sockets;
 
+
 namespace HR.Services.EmployeeService
 {
     public class CredentialService : ICredentialService
@@ -37,8 +38,9 @@ namespace HR.Services.EmployeeService
 
             if (!isMatch)
             {
-                _employeeRepo.IncrementLoginAttemt(emp);
-                throw new Exception("Invalid Email or Password");
+                emp.LoginAttempt++;
+                await _employeeRepo.SaveChangesAsync();
+                throw new Exception("Incorrect email or password");
             }
 
             Verify.EmployeeAccess(emp, _configuration, false);
@@ -47,8 +49,14 @@ namespace HR.Services.EmployeeService
             string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, false);
             string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
-            // add new refreshToken
-            await _employeeRepo.AddRefreshToken(emp, refreshToken);
+            // add refresh token
+            if (emp.RefreshTokens.Count >= 6)
+            {  // remove token if above 6
+                emp.RefreshTokens.RemoveAt(emp.RefreshTokens.Count - 1);
+            }
+            emp.RefreshTokens.Insert(0, jwt); // insert at index 0
+
+            await _employeeRepo.SaveChangesAsync();
 
             var empDto = emp.Adapt<LoginResponse>();
 
@@ -59,20 +67,24 @@ namespace HR.Services.EmployeeService
         }
 
 
-        public async Task<LoginResponse> RefreshUserToken(int employeeId, string refreshToken)
+        public async Task<LoginResponse> RefreshUserToken(int employeeId, string oldRefreshToken)
         {
             Employee? emp = await _employeeRepo.GetEmployeeById(employeeId);
 
             if(emp == null) throw new Exception("Unable to locate Employee");
 
-            if (!emp.RefreshTokens.Contains(refreshToken)) throw new Exception("Please authenticate");
+            if (!emp.RefreshTokens.Contains(oldRefreshToken)) throw new Exception("Please authenticate");
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
             string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
             string newRefreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
-            await _employeeRepo.UpdateRefreshToken(emp, refreshToken, newRefreshToken);
+            emp.RefreshTokens = emp.RefreshTokens
+                .Select(token => token == oldRefreshToken ? newRefreshToken : token)
+                .ToList();
+
+            await _employeeRepo.SaveChangesAsync();
 
             var empDto = emp.Adapt<LoginResponse>();
 
@@ -91,13 +103,15 @@ namespace HR.Services.EmployeeService
 
             if (refreshToken == string.Empty)
             {
-                await _employeeRepo.ClearRefreshTokens(emp);
+                emp.RefreshTokens.Clear();
             }
             else
             {
-                await _employeeRepo.RemoveSingleRefreshToken(emp, refreshToken);
+                emp.RefreshTokens.Remove(refreshToken);
             }
-            
+
+            await _employeeRepo.SaveChangesAsync();
+
         }
 
 
@@ -111,7 +125,11 @@ namespace HR.Services.EmployeeService
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
-            await _employeeRepo.UpdateVerificationCode(emp, verificationCode);
+            // update verification code
+            emp.VerificationCode = verificationCode;
+            emp.LastLoginTime = DateTime.Now;
+
+            await _employeeRepo.SaveChangesAsync();
 
             // send verifivation code email
         }
@@ -128,7 +146,8 @@ namespace HR.Services.EmployeeService
 
             if (emp.VerificationCode != verificationCode)
             {
-                await _employeeRepo.UpdateVerificationCodeAfterConfermation(emp, "", "");
+                emp.VerificationCode = null;
+                await _employeeRepo.SaveChangesAsync();
                 throw new Exception("Invalid verification code");
             }
 
@@ -146,7 +165,16 @@ namespace HR.Services.EmployeeService
             string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
             string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
-            await _employeeRepo.UpdateVerificationCodeAfterConfermation(emp, passwordHash, refreshToken);
+            // Update Verification Code After Confermation
+            emp.IsVerified = true;
+            emp.RefreshTokens.Add(refreshToken);
+            emp.PasswordHash = passwordHash;
+         
+
+            emp.VerificationCode = null;
+
+
+            await _employeeRepo.SaveChangesAsync();
 
             var empDto = emp.Adapt<LoginResponse>();
 
