@@ -57,7 +57,7 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                string jwtSecret = _configuration["token:SecretKey"]!;
                 Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
@@ -84,7 +84,7 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                string jwtSecret = _configuration["token:SecretKey"]!;
                 Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
@@ -111,7 +111,7 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
+                string jwtSecret = _configuration["token:SecretKey"]!;
                 Token.ExtractClaimsFromToken(clientJWT, jwtSecret, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
@@ -151,6 +151,8 @@ namespace HR.Controllers
             }
         }
 
+
+
         [HttpPatch("confermResetPassword")]
         public async Task<ActionResult<ServiceResponse<LoginResponse>>> ConfermResetPassword([FromBody] ResetPasswordRequest requestBody)
         {
@@ -168,5 +170,7 @@ namespace HR.Controllers
                 return BadRequest(serviceResponse);
             }
         }
+
+
     }
 }

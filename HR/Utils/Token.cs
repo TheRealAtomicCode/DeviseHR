@@ -8,9 +8,15 @@ namespace HR.Utils
     public static class Token
     {
 
-        public static async Task<string> GenerateEmployeeJWT(Employee emp, string secret, string jwtExpTime)
+        public static async Task<string> GenerateEmployeeJWT(Employee emp, IConfiguration _configuration, bool isRefresh)
         {
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
+            string tokenType = "token";
+            if (isRefresh) tokenType = "refreshToken";
+
+            string jwtSecret = _configuration[$"{tokenType}:SecretKey"]!;
+            string jwtExpTime = _configuration[$"${tokenType}:SecretKey"]!;
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSecret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

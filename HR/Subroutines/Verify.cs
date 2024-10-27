@@ -5,9 +5,10 @@ namespace HR.Subroutines
     public class Verify
     {
 
-        public static void EmployeeAccess(Employee emp, string loginAttempLimit, bool verifyNewUser)
+        public static void EmployeeAccess(Employee emp, IConfiguration _configuration, bool verifyNewUser)
         {
             // check company if not expired
+            string loginAttempLimit = _configuration["login:LoginAttempLimit"]!;
 
             if (emp.IsTerminated) throw new Exception("Your Permissions have been Revoked.");
 
@@ -21,6 +22,7 @@ namespace HR.Subroutines
             {
                 if (emp.IsVerified == false) throw new Exception("Please Register your account before logging in");
             }
+
         }
 
 

@@ -41,16 +41,11 @@ namespace HR.Services.EmployeeService
                 throw new Exception("Invalid Email or Password");
             }
 
-            string loginAttempLimit = _configuration["loginTime:LoginAttempLimit"]!;
-            Verify.EmployeeAccess(emp, loginAttempLimit, false);
-
-            string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
-            string refreshSecret = _configuration["refreshSettings:SecretKey"]!;
-            string expTime = _configuration["JwtSettings:ExpTime"]!;
+            Verify.EmployeeAccess(emp, _configuration, false);
 
             // generate auth token
-            string jwt = await Token.GenerateEmployeeJWT(emp, jwtSecret, expTime);
-            string refreshToken = await Token.GenerateEmployeeJWT(emp, refreshSecret, expTime);
+            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, false);
+            string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
             // add new refreshToken
             await _employeeRepo.AddRefreshToken(emp, refreshToken);
@@ -72,15 +67,10 @@ namespace HR.Services.EmployeeService
 
             if (!emp.RefreshTokens.Contains(refreshToken)) throw new Exception("Please authenticate");
 
-            string loginAttempLimit = _configuration["loginTime:LoginAttempLimit"]!;
-            string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
-            string refreshSecret = _configuration["refreshSettings:SecretKey"]!;
-            string expTime = _configuration["JwtSettings:ExpTime"]!;
+            Verify.EmployeeAccess(emp, _configuration, false);
 
-            Verify.EmployeeAccess(emp, loginAttempLimit, false);
-
-            string jwt = await Token.GenerateEmployeeJWT(emp, jwtSecret, expTime);
-            string newRefreshToken = await Token.GenerateEmployeeJWT(emp, refreshSecret, expTime);
+            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
+            string newRefreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
             await _employeeRepo.UpdateRefreshToken(emp, refreshToken, newRefreshToken);
 
@@ -119,9 +109,7 @@ namespace HR.Services.EmployeeService
 
             if (emp == null) throw new Exception("Incorrect email");
 
-            string loginAttempLimit = _configuration["loginTime:LoginAttempLimit"]!;
-
-            Verify.EmployeeAccess(emp, loginAttempLimit, false);
+            Verify.EmployeeAccess(emp, _configuration, false);
 
             await _employeeRepo.UpdateVerificationCode(emp, verificationCode);
 
@@ -147,22 +135,16 @@ namespace HR.Services.EmployeeService
             // generate password hash
             string passwordHash = PasswordUtils.GenerateHash(newPassword);
 
-            string loginAttempLimit = _configuration["JwtSettings:LoginAttempLimit"]!;
+            Verify.EmployeeAccess(emp, _configuration, false);
 
-            Verify.EmployeeAccess(emp, loginAttempLimit, false);
-
-            string logintimeExpiration = _configuration["loginTime:ExpTime"]!;
+            string logintimeExpiration = _configuration["login:ExpTime"]!;
 
             DateTime currentTime = DateTime.Now; // Current time
             DateTime expiresAt = currentTime.AddMinutes(int.Parse(logintimeExpiration));
             if (emp.LastLoginTime > expiresAt) throw new Exception("Verifivation code has expired");
 
-            string jwtSecret = _configuration["JwtSettings:SecretKey"]!;
-            string jwtExpirationTime = _configuration["JwtSettings:ExpTime"]!;
-            string refreshSecret = _configuration["refreshSettings:SecretKey"]!;
-            string refreshExpirationTime = _configuration["refreshSettings:ExpTime"]!;
-            string jwt = await Token.GenerateEmployeeJWT(emp, jwtSecret, jwtExpirationTime);
-            string refreshToken = await Token.GenerateEmployeeJWT(emp, refreshSecret, refreshExpirationTime);
+            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
+            string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
 
             await _employeeRepo.UpdateVerificationCodeAfterConfermation(emp, passwordHash, refreshToken);
 
