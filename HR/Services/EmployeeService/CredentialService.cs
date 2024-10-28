@@ -32,7 +32,7 @@ namespace HR.Services.EmployeeService
 
         public async Task<LoginResponse> FindByCredentials(LoginRequest loginRequest)
         {
-            Employee? emp = await _employeeRepo.GetEmployeeByEmail(loginRequest.Email);
+            Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(loginRequest.Email);
 
             if (emp == null || emp.PasswordHash == null) throw new Exception("Incorrect Email or Password");
 
@@ -47,19 +47,8 @@ namespace HR.Services.EmployeeService
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
-            var tokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
-
-            var refreshTokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
-
-
+            var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
+            var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
 
             // generate auth token
             string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
@@ -147,7 +136,7 @@ namespace HR.Services.EmployeeService
         {
             string verificationCode = StringUtils.GenerateSixDigitString();
 
-            Employee? emp = await _employeeRepo.GetEmployeeByEmail(email);
+            Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(email);
 
             if (emp == null) throw new Exception("Incorrect email");
 
@@ -168,7 +157,7 @@ namespace HR.Services.EmployeeService
             StringUtils.ValidateEmail(email);
             StringUtils.ValidateStrongPassword(newPassword);
 
-            Employee? emp = await _employeeRepo.GetEmployeeByEmail(email);
+            Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(email);
 
             if (emp == null) throw new Exception("Invalid user credencials");
 

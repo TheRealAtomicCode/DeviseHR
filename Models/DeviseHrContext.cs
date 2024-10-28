@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Models;
 
@@ -32,10 +35,6 @@ public partial class DeviseHrContext : DbContext
     public virtual DbSet<Permission> Permissions { get; set; }
 
     public virtual DbSet<WorkingPattern> WorkingPatterns { get; set; }
-
-    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-    //        => optionsBuilder.UseNpgsql("Host=localhost;Database=DeviseHR;Username=postgres;Password=890899000");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -208,7 +207,7 @@ public partial class DeviseHrContext : DbContext
                 .HasColumnName("licence_number");
             entity.Property(e => e.Logo).HasColumnName("logo");
             entity.Property(e => e.MainContactId).HasColumnName("main_contact_id");
-            entity.Property(e => e.MaxUsersAllowed).HasColumnName("max_users_allowed");
+            entity.Property(e => e.MaxEmployeesAllowed).HasColumnName("max_employees_allowed");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(14)
                 .HasColumnName("phone_number");
