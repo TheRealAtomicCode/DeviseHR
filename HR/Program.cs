@@ -20,7 +20,7 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 //string hrServerPort = configuration["HR_SERVER_PORT"];
-var secretKey = configuration["JwtSettings:SecretKey"];
+var secretKey = configuration["token:SecretKey"];
 
 // Add services to the container.
 

@@ -1,7 +1,8 @@
-﻿namespace HR.Utils
+﻿namespace Common
 {
     public class PasswordUtils
     {
+
         public static bool IsMatch(string clientPassword, string passwordHash)
         {
             return BCrypt.Net.BCrypt.Verify(clientPassword, passwordHash);
