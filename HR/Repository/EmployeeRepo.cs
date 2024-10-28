@@ -18,9 +18,12 @@ namespace HR.Repository
             _configuration = configuration;
         }
 
-        public async Task<Employee?> GetEmployeeByEmail(string email)
+        public async Task<Employee?> GetEmployeeByEmailOrDefault(string email)
         {
-            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
+            return await _context.Employees
+                .Include(u => u.Company)
+                .Include(u => u.Permission)
+                .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
         public async Task<Employee?> GetEmployeeById(int id)

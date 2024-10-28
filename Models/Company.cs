@@ -53,7 +53,7 @@ public partial class Company
 
     public bool IsSpecialClient { get; set; }
 
-    public int MaxUsersAllowed { get; set; }
+    public int MaxEmployeesAllowed { get; set; }
 
     public string? SecurityQuestionOne { get; set; }
 
