@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using OP.DTO;
 using OP.Repository.Interfaces;
 
 namespace OP.Repository
 {
     public class OperatorRepo : IOperatorRepo
     {
-
-
         private readonly DeviseHrContext _Context;
         private readonly IConfiguration _configuration;
 
@@ -26,9 +25,33 @@ namespace OP.Repository
         {
             return await _Context.Operators.FirstOrDefaultAsync(op => op.Id == id);
         }
-        public async Task<List<Operator>> GetAllOperators(string email)
+
+        public async Task<ServiceResponse<IEnumerable<Operator>>> GetAllOperators(string email, int pageNumber = 1, int pageSize = 10)
         {
-            return await _Context.Operators.ToListAsync();
+            var collection = _Context.Operators.AsQueryable();
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                collection = collection.Where(op => op.Email.Contains(email));
+            }
+
+            var totalItemCount = await collection.CountAsync();
+
+            var collectionToReturn = await collection
+                .OrderBy(c => c.CreatedAt)
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ServiceResponse<IEnumerable<Operator>>(
+                collectionToReturn,
+                success: true,
+                message: "Operators retrieved successfully",
+                errorCode: 0,
+                totalItemCount: totalItemCount,
+                pageSize: pageSize,
+                currentPage: pageNumber
+            );
         }
 
         public async void IncrementLoginAttemt(Operator op)
@@ -37,19 +60,16 @@ namespace OP.Repository
             await _Context.SaveChangesAsync();
         }
 
-        public async Task<Operator> AddOperator(Operator op)
+        public async Task AddOperator(Operator op)
         {
-            throw new NotImplementedException();
+            await _Context.Operators.AddAsync(op);
+            await _Context.SaveChangesAsync();
         }
 
-        public async Task<Operator> DeleteOperator(Operator op)
+        public async Task DeleteOperator(Operator op)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Operator> UpdateOperator(Operator op)
-        {
-            throw new NotImplementedException();
+            _Context.Operators.Remove(op);
+            await _Context.SaveChangesAsync();
         }
     }
 }
