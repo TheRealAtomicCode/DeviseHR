@@ -1,4 +1,5 @@
 ﻿using Models;
+using OP.DTO;
 
 namespace OP.Repository.Interfaces
 {
@@ -6,10 +7,9 @@ namespace OP.Repository.Interfaces
     {
         Task<Operator?> GetOperatorById(int id);
         Task<Operator?> GetOperatorByEmail(string email);
-        Task<List<Operator>> GetAllOperators(string email);
-        Task<Operator> AddOperator(Operator op);
-        Task<Operator> UpdateOperator(Operator op);
+        Task<ServiceResponse<IEnumerable<Operator>>> GetAllOperators(string email, int pageNumber = 1, int pageSize = 10);
+        Task AddOperator(Operator op);
+        Task DeleteOperator(Operator op);
         void IncrementLoginAttemt(Operator op);
-
     }
 }

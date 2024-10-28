@@ -5,7 +5,7 @@ namespace OP.Controllers.CompanyControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminCompanyController : ControllerBase
+    public class CompanyController : ControllerBase
     {
     }
 }
