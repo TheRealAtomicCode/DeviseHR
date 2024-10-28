@@ -18,6 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
 
+builder.Services
+    .AddControllersWithViews()
+    .AddNewtonsoftJson();
+
 // example for extraction
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
