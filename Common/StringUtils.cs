@@ -1,11 +1,17 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace HR.Utils
+namespace Common
 {
+
     public class StringUtils
     {
 
- 
+
         public static string GenerateSixDigitString()
         {
             Random random = new Random();
@@ -46,6 +52,7 @@ namespace HR.Utils
                 throw new Exception("Password must be at least 8 characters long and contain capital letters, lowercase letters, and numbers.");
             }
         }
+
 
     }
 }

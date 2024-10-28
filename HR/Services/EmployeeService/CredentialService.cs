@@ -6,12 +6,14 @@ using Models;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
 using HR.Repository.Interfaces;
-using HR.Utils;
+
 using System.Text.RegularExpressions;
 using HR.Services.EmployeeService.Interfaces;
 using HR.Subroutines;
 using HR.Repository;
 using System.Net.Sockets;
+using Common;
+using System.Security.Claims;
 
 
 namespace HR.Services.EmployeeService
@@ -45,9 +47,23 @@ namespace HR.Services.EmployeeService
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
+            var tokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+            var refreshTokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+
+
             // generate auth token
-            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, false);
-            string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
+            string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
+            string refreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
 
             // add refresh token
             if (emp.RefreshTokens.Count >= 6)
@@ -77,8 +93,20 @@ namespace HR.Services.EmployeeService
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
-            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
-            string newRefreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
+            var tokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+            var refreshTokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+            string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
+            string newRefreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
 
             emp.RefreshTokens = emp.RefreshTokens
                 .Select(token => token == oldRefreshToken ? newRefreshToken : token)
@@ -162,8 +190,20 @@ namespace HR.Services.EmployeeService
             DateTime expiresAt = currentTime.AddMinutes(int.Parse(logintimeExpiration));
             if (emp.LastLoginTime > expiresAt) throw new Exception("Verifivation code has expired");
 
-            string jwt = await Token.GenerateEmployeeJWT(emp, _configuration, true);
-            string refreshToken = await Token.GenerateEmployeeJWT(emp, _configuration, true);
+            var tokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+            var refreshTokenClaims = new List<Claim>
+                {
+                    new Claim("id", emp.Id.ToString()),
+                    new Claim("userRole", emp.UserRole.ToString()),
+                };
+
+            string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
+            string refreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
 
             // Update Verification Code After Confermation
             emp.IsVerified = true;

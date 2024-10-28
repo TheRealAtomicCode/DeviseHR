@@ -1,33 +1,32 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Models;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HR.Utils
+namespace Common
 {
-    public static class Token
+    public class Token
     {
-
-        public static async Task<string> GenerateEmployeeJWT(Employee emp, IConfiguration _configuration, bool isRefresh)
+        public static async Task<string> GenerateJWT(IConfiguration _configuration, string tokenType, List<Claim> claims)
         {
-            string tokenType = "token";
-            if (isRefresh) tokenType = "refreshToken";
+            
 
             string jwtSecret = _configuration[$"{tokenType}:SecretKey"]!;
-            string jwtExpTime = _configuration[$"${tokenType}:SecretKey"]!;
+            string jwtExpTime = _configuration[$"{tokenType}:ExpTime"]!;
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSecret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var claims = new List<Claim>();
-
-            claims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
-
+            
             var token = new JwtSecurityToken(
                 expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)),
                 signingCredentials: credentials,
@@ -35,7 +34,6 @@ namespace HR.Utils
             );
 
             var jwt = await Task.Run(() => new JwtSecurityTokenHandler().WriteToken(token));
-
             return jwt;
         }
 
@@ -69,9 +67,5 @@ namespace HR.Utils
 
             jwtSecurityToken = (JwtSecurityToken)validateToken;
         }
-
-
-
-
     }
 }

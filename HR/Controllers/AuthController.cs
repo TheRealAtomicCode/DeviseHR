@@ -12,7 +12,7 @@ using HR.Services.EmployeeService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using HR.Utils;
+using Common;
 
 namespace HR.Controllers
 {
