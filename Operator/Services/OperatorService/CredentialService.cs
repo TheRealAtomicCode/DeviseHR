@@ -17,21 +17,22 @@ namespace OP.Services.OperatorService
 {
     public class CredentialService : ICredentialService
     {
-
-        private readonly IOperatorRepo _operatorRepo;
+        private readonly DeviseHrContext _context;
+        private readonly IGenericRepository<Operator> _operatorRepo;
         private readonly IConfiguration _configuration;
 
-        public CredentialService(IOperatorRepo operatorRepo, IConfiguration configuration)
+        public CredentialService(IGenericRepository<Operator> operatorRepo, IConfiguration configuration, DeviseHrContext context)
         {
             _operatorRepo = operatorRepo;
             _configuration = configuration;
+            _context = context;
         }
 
         public async Task<LoginResponse> FindByCredentialts(LoginRequest loginRequest)
         {
             loginRequest.Email.Trim().ToLower();
 
-            Operator? op = await _operatorRepo.GetOperatorByEmail(loginRequest.Email);
+            Operator? op = await _operatorRepo.GetByEmailAsync(loginRequest.Email);
 
             if (op == null || op.PasswordHash == null) throw new Exception("Incorrect Email or Password");
 
@@ -39,7 +40,7 @@ namespace OP.Services.OperatorService
 
             if (!isMatch)
             {
-                _operatorRepo.IncrementLoginAttemt(op);
+                IncrementLoginAttemt(op);
                 throw new Exception("Invalid Email or Password");
             }
 
@@ -61,13 +62,20 @@ namespace OP.Services.OperatorService
             return opDto;
         }
 
+        public async void IncrementLoginAttemt(Operator op)
+        {
+            op.LoginAttempt++;
+            await _context.SaveChangesAsync();
+        }
 
         public Task<Operator> FindAndRefreshOperatorById(int id)
         {
             throw new NotImplementedException();
         }
 
-
-
+        public Task<LoginResponse> FindByCredentials(LoginRequest loginRequest)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

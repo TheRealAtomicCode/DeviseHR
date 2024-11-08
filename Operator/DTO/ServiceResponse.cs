@@ -7,6 +7,14 @@
         {
             Data = data;
         }
+        
+        public ServiceResponse(T data, bool success, string message, int errorCode)
+        {
+            Data = data;
+            Success = success;
+            Message = message;
+            ErrorCode = errorCode;
+        }
 
         public ServiceResponse(T data, bool success, string message, int errorCode, int totalItemCount, int pageSize, int currentPage)
         {

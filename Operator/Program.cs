@@ -1,14 +1,12 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models;
 using OP.DTO.Mapper;
 using OP.Repository;
 using OP.Repository.Interfaces;
-using OP.Services;
 using OP.Services.OperatorService;
 using OP.Services.OperatorService.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
@@ -102,7 +100,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 
 // Scope and Dependancy Injection
-builder.Services.AddScoped<IOperatorRepo, OperatorRepo>();
+builder.Services.AddScoped<IGenericRepository<Operator>, OperatorRepository>();
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 
 // Register mappings
