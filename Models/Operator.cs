@@ -42,4 +42,7 @@ public partial class Operator
     public DateTime? LastActiveTime { get; set; }
 
     public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
+
+    public string GetFullName()
+            => $"{FirstName} {LastName}";
 }

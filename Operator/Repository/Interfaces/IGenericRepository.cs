@@ -9,5 +9,6 @@ namespace OP.Repository.Interfaces
         Task<ServiceResponse<IEnumerable<T>>> GetAllAsync(string? name, int pageNumber = 1, int pageSize = 10);
         Task AddAsync(T opj);
         Task DeleteAsync(T opj);
+        Task<bool> SaveChangesAsync();
     }
 }

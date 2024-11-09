@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using OP.DTO;
+using OP.DTO.Outbound;
 using OP.Repository.Interfaces;
 
 namespace OP.Repository
@@ -23,16 +25,21 @@ namespace OP.Repository
 
         public async Task<Operator?> GetByIdAsync(int id)
         {
-            return await _Context.Operators.FirstOrDefaultAsync(op => op.Id == id);
+            var collection = await _Context.Operators.FirstOrDefaultAsync(op => op.Id == id);
+            if(collection == null)
+                return null;
+
+            return collection;
         }
 
-        public async Task<ServiceResponse<IEnumerable<Operator>>> GetAllAsync(string? email, int pageNumber = 1, int pageSize = 10)
+        public async Task<ServiceResponse<IEnumerable<Operator>>> GetAllAsync(string? name, int pageNumber = 1, int pageSize = 10)
         {
             var collection = _Context.Operators.AsQueryable();
 
-            if (!string.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(name))
             {
-                collection = collection.Where(op => op.Email.Contains(email));
+                name = name.Trim();
+                collection = collection.Where(op => op.GetFullName().Contains(name));
             }
 
             var totalItemCount = await collection.CountAsync();
@@ -42,7 +49,7 @@ namespace OP.Repository
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToListAsync();
-
+            
             return new ServiceResponse<IEnumerable<Operator>>(
                 collectionToReturn,
                 success: true,
@@ -64,6 +71,11 @@ namespace OP.Repository
         {
             _Context.Operators.Remove(op);
             await _Context.SaveChangesAsync();
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _Context.SaveChangesAsync() >= 0;
         }
     }
 }
