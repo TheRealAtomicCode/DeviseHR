@@ -5,28 +5,28 @@ using OP.Repository.Interfaces;
 
 namespace OP.Repository
 {
-    public class OperatorRepo : IOperatorRepo
+    public class OperatorRepository : IGenericRepository<Operator>
     {
         private readonly DeviseHrContext _Context;
         private readonly IConfiguration _configuration;
 
-        public OperatorRepo(DeviseHrContext dbContext, IConfiguration configuration)
+        public OperatorRepository(DeviseHrContext dbContext, IConfiguration configuration)
         {
             _Context = dbContext;
             _configuration = configuration;
         }
 
-        public async Task<Operator?> GetOperatorByEmail(string email)
+        public async Task<Operator?> GetByEmailAsync(string email)
         {
             return await _Context.Operators.FirstOrDefaultAsync(op => op.Email == email);
         }
 
-        public async Task<Operator?> GetOperatorById(int id)
+        public async Task<Operator?> GetByIdAsync(int id)
         {
             return await _Context.Operators.FirstOrDefaultAsync(op => op.Id == id);
         }
 
-        public async Task<ServiceResponse<IEnumerable<Operator>>> GetAllOperators(string email, int pageNumber = 1, int pageSize = 10)
+        public async Task<ServiceResponse<IEnumerable<Operator>>> GetAllAsync(string? email, int pageNumber = 1, int pageSize = 10)
         {
             var collection = _Context.Operators.AsQueryable();
 
@@ -54,19 +54,13 @@ namespace OP.Repository
             );
         }
 
-        public async void IncrementLoginAttemt(Operator op)
-        {
-            op.LoginAttempt++;
-            await _Context.SaveChangesAsync();
-        }
-
-        public async Task AddOperator(Operator op)
+        public async Task AddAsync(Operator op)
         {
             await _Context.Operators.AddAsync(op);
             await _Context.SaveChangesAsync();
         }
 
-        public async Task DeleteOperator(Operator op)
+        public async Task DeleteAsync(Operator op)
         {
             _Context.Operators.Remove(op);
             await _Context.SaveChangesAsync();

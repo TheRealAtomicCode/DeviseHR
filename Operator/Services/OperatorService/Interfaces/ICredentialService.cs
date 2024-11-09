@@ -8,5 +8,6 @@ namespace OP.Services.OperatorService.Interfaces
     {
         Task<LoginResponse> FindByCredentials(LoginRequest loginRequest);
         Task<Operator> FindAndRefreshOperatorById(int id);
+        void IncrementLoginAttemt(Operator op);
     }
 }

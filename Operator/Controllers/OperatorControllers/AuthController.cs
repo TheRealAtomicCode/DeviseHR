@@ -1,13 +1,9 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Models;
 using OP.DTO;
 using OP.DTO.Inbound;
 using OP.DTO.Outbound;
-using OP.Services.OperatorService;
 using OP.Services.OperatorService.Interfaces;
 using OP.Subroutines;
 
