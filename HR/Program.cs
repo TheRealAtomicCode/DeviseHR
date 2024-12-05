@@ -1,8 +1,8 @@
 using HR.DTO.Mapper;
 using HR.Repository;
 using HR.Repository.Interfaces;
-using HR.Services.EmployeeService;
-using HR.Services.EmployeeService.Interfaces;
+using HR.Services.EmployeeServices;
+using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -94,9 +94,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-// Scope and Dependancy Injection
+// Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+
+// Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 
 // Register mappings
 MapConfig.RegisterMappings();

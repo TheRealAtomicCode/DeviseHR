@@ -8,15 +8,17 @@ using HR.DTO.Outbound;
 using HR.Repository.Interfaces;
 
 using System.Text.RegularExpressions;
-using HR.Services.EmployeeService.Interfaces;
+
 using HR.Subroutines;
 using HR.Repository;
 using System.Net.Sockets;
 using Common;
 using System.Security.Claims;
+using HR.Services.UserServices.Interfaces;
 
 
-namespace HR.Services.EmployeeService
+
+namespace HR.Services.EmployeeServices
 {
     public class CredentialService : ICredentialService
     {
@@ -59,7 +61,8 @@ namespace HR.Services.EmployeeService
             {  // remove token if above 6
                 emp.RefreshTokens.RemoveAt(emp.RefreshTokens.Count - 1);
             }
-            emp.RefreshTokens.Insert(0, jwt); // insert at index 0
+            emp.RefreshTokens.Insert(0, refreshToken); // insert at index 0
+           // _employeeRepo.Update(emp);
 
             await _employeeRepo.SaveChangesAsync();
 

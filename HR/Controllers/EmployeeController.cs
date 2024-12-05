@@ -3,6 +3,8 @@ using HR.DTO;
 using HR.DTO.Inbound;
 using HR.DTO.outbound;
 
+using HR.Services.UserServices;
+using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,34 +20,33 @@ namespace HR.Controllers
     {
 
         private readonly IConfiguration _configuration;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IConfiguration configuration)
+        public EmployeeController(IConfiguration configuration, IEmployeeService employeeService)
         {
             _configuration = configuration;
+            _employeeService = employeeService;
         }
 
 
-
-        [HttpPost("addUser")]
+        [HttpPost("createEmployee")]
         [Authorize(Policy = "Manager")]
-        [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> AddUser([FromBody] NewEmployeeDto newEmployee)
+       // [Authorize(Policy = "EnableAddEmployees")]
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
         {
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
 
-                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
-                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
-                DateOnly companyAnnualLeaveDate = DateOnly.Parse(claimsPrincipal.FindFirst("annualLeaveStartDate")!.Value);
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int userType = int.Parse(claims.FindFirst("userRole")!.Value);
+                DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
 
-               // await ManagerUserService.AddUser(newUser, myId, companyId, userType, companyAnnualLeaveDate);
+                int employeeId = await _employeeService.CreateEmployee(newEmployee, myId, companyId, userType);
 
-                var serviceResponse = new ServiceResponse<NewEmployeeDto>(newEmployee, true, "", 0);
-
-                return Ok(serviceResponse);
+                return Created("Success", new { Id = employeeId });
             }
             catch (Exception ex)
             {

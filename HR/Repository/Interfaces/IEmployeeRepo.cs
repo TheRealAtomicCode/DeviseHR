@@ -7,8 +7,7 @@ namespace HR.Repository.Interfaces
         Task<Employee?> GetEmployeeById(int id);
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
         Task<List<Employee>> GetAllEmployees(string email);
-        Task<Employee> AddEmployee(Employee op);
-        Task<Employee> UpdateEmployee(Employee op);
+        Task<int> AddEmployee(Employee newEmployee, int myId, int companyId);
         Task<bool> SaveChangesAsync();
 
     }

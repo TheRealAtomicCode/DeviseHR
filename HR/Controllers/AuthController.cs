@@ -7,8 +7,8 @@ using Models;
 using HR.DTO;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
-using HR.Services.EmployeeService;
-using HR.Services.EmployeeService.Interfaces;
+using HR.Services.EmployeeServices;
+using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -57,9 +57,7 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-                
                 Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
-
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
 
@@ -84,11 +82,9 @@ namespace HR.Controllers
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-             
-                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
-
-                int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+                int userId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
                 await _credentialService.LogoutService(userId, refreshToken);
 
@@ -106,16 +102,14 @@ namespace HR.Controllers
 
         [HttpDelete("logoutAllDevices")]
         [Authorize(Policy = "Employee")]
-        public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices([FromBody] string refreshToken)
+        public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices()
         {
             try
             {
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
-          
-                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
-
-                int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+                int userId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
                 await _credentialService.LogoutService(userId, "");
 

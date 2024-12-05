@@ -2,6 +2,7 @@
 using Models;
 using HR.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.Design;
 
 namespace HR.Repository
 {
@@ -23,7 +24,13 @@ namespace HR.Repository
             return await _context.Employees
                 .Include(u => u.Company)
                 .Include(u => u.Permission)
+        //        .AsNoTracking()
                 .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
+        }
+
+        public void Update(Employee employee)
+        {
+            _context.Update(employee);
         }
 
         public async Task<Employee?> GetEmployeeById(int id)
@@ -40,16 +47,25 @@ namespace HR.Repository
 
         
 
-        public async Task<Employee> AddEmployee(Employee emp)
+        public async Task<int> AddEmployee(Employee newEmployee, int myId, int companyId)
         {
-            throw new NotImplementedException();
-        }
 
+            var employee = new Employee
+            {
+                FirstName = newEmployee.FirstName,
+                LastName = newEmployee.LastName,
+                Email = newEmployee.Email,
+                UserRole = newEmployee.UserRole,
+                PermissionId = newEmployee.PermissionId,
+                DateOfBirth = newEmployee.DateOfBirth,
+                AnnualLeaveStartDate = newEmployee.AnnualLeaveStartDate,
+                AddedByUser = myId,
+                CompanyId = companyId,
+            };
 
+            _context.Employees.Add(employee);
 
-        public async Task<Employee> UpdateEmployee(Employee emp)
-        {
-            throw new NotImplementedException();
+            return employee.Id;
         }
 
 
@@ -58,7 +74,7 @@ namespace HR.Repository
         {
             try
             {
-                await _context.Employees.ToListAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch
