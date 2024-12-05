@@ -1,6 +1,9 @@
-﻿using HR.DTO.Inbound;
+﻿using Common;
+using HR.DTO.Inbound;
 using HR.Repository.Interfaces;
 using HR.Services.UserServices.Interfaces;
+using Mapster;
+using Models;
 
 
 namespace HR.Services.EmployeeServices
@@ -16,11 +19,21 @@ namespace HR.Services.EmployeeServices
             _configuration = configuration;
         }
 
-        public async Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int userType)
+        public async Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int myRole)
         {
-            
+            StringUtils.ValidateNonEmptyStrings([newEmployee.FirstName, newEmployee.LastName]);
+            StringUtils.ValidateEmail(newEmployee.Email);
 
-            return 1;
+            var employee = newEmployee.Adapt<Employee>();
+            employee.CompanyId = companyId;
+            employee.AddedByUser = myId;
+            employee.RefreshTokens = [];
+
+            await _employeeRepo.AddEmployee(employee, myId, companyId);
+
+            await _employeeRepo.SaveChangesAsync();
+
+            return employee.Id;
         }
     }
 }

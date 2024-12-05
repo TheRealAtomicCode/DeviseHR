@@ -10,5 +10,6 @@
         public bool RegisterUser { get; set; } = false;
         public DateOnly DateOfBirth { get; set; }
         public DateOnly AnnualLeaveYearStartDate { get; set; }
+        public DateOnly AnnualLeaveStartDate { get; internal set; }
     }
 }

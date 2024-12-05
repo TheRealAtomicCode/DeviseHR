@@ -4,6 +4,6 @@ namespace HR.Services.UserServices.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int userType);
+        Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int myRole);
     }
 }

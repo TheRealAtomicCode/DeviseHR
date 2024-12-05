@@ -41,10 +41,10 @@ namespace HR.Controllers
 
                 int myId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
-                int userType = int.Parse(claims.FindFirst("userRole")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
                 DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
 
-                int employeeId = await _employeeService.CreateEmployee(newEmployee, myId, companyId, userType);
+                int employeeId = await _employeeService.CreateEmployee(newEmployee, myId, companyId, myRole);
 
                 return Created("Success", new { Id = employeeId });
             }

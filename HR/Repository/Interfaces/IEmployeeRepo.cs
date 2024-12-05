@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using HR.DTO.Inbound;
+using Models;
 
 namespace HR.Repository.Interfaces
 {
@@ -7,7 +8,7 @@ namespace HR.Repository.Interfaces
         Task<Employee?> GetEmployeeById(int id);
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
         Task<List<Employee>> GetAllEmployees(string email);
-        Task<int> AddEmployee(Employee newEmployee, int myId, int companyId);
+        Task AddEmployee(Employee newEmployee, int myId, int companyId);
         Task<bool> SaveChangesAsync();
 
     }

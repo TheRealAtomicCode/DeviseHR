@@ -3,6 +3,7 @@ using Models;
 using HR.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.Design;
+using HR.DTO.Inbound;
 
 namespace HR.Repository
 {
@@ -47,25 +48,9 @@ namespace HR.Repository
 
         
 
-        public async Task<int> AddEmployee(Employee newEmployee, int myId, int companyId)
+        public async Task AddEmployee(Employee newEmployee, int myId, int companyId)
         {
-
-            var employee = new Employee
-            {
-                FirstName = newEmployee.FirstName,
-                LastName = newEmployee.LastName,
-                Email = newEmployee.Email,
-                UserRole = newEmployee.UserRole,
-                PermissionId = newEmployee.PermissionId,
-                DateOfBirth = newEmployee.DateOfBirth,
-                AnnualLeaveStartDate = newEmployee.AnnualLeaveStartDate,
-                AddedByUser = myId,
-                CompanyId = companyId,
-            };
-
-            _context.Employees.Add(employee);
-
-            return employee.Id;
+            await _context.Employees.AddAsync(newEmployee);
         }
 
 
