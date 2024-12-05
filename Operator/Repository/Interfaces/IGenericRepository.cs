@@ -1,14 +1,14 @@
-﻿using OP.DTO;
+﻿using System.Linq.Expressions;
 
-namespace OP.Repository.Interfaces
+namespace Op.Repository.IRepostiory
 {
-    public interface IGenericRepository <T>
+    public interface IGenericRepository<T> where T : class
     {
-        Task<T?> GetByIdAsync(int id);
-        Task<T?> GetByEmailAsync(string email);
-        Task<ServiceResponse<IEnumerable<T>>> GetAllAsync(string? name, int pageNumber = 1, int pageSize = 10);
-        Task AddAsync(T opj);
-        Task DeleteAsync(T opj);
-        Task<bool> SaveChangesAsync();
+        Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, int pageSize = 0, int pageNumber = 1);
+        Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null);
+        Task CreateAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task RemoveAsync(T entity);
+        Task SaveAsync();
     }
 }

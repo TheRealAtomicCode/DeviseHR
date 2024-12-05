@@ -2,29 +2,27 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using OP.DTO;
 using OP.DTO.Inbound;
-using OP.DTO.Outbound;
-using OP.Repository.Interfaces;
+using OP.Services.Interfaces;
 
 namespace OP.Controllers.OperatorControllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class OperatorsController : ControllerBase
     {
-        private readonly IGenericRepository<Operator> _repository;
-        public OperatorsController(IGenericRepository<Operator> repository)
+        private readonly IOperatorService _operatorService;
+
+        public OperatorsController(IOperatorService operatorService)
         {
-            _repository = repository;
+            _operatorService = operatorService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ServiceResponse<Operator>>> GetOperators(string? name, int? pageNumber = 1, int? pageSize = 10)
+        public async Task<IActionResult> GetOperators(string? name, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
-                return Ok(await _repository.GetAllAsync(name: name, pageNumber: pageNumber ?? 1, pageSize: pageSize ?? 10));
+                var operators = await _operatorService.GetAllAsync(name, pageNumber, pageSize);
+                return Ok(operators);
             }
             catch (Exception ex)
             {
@@ -33,16 +31,15 @@ namespace OP.Controllers.OperatorControllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<Operator>>> GetOperatorById(int id)
+        public async Task<IActionResult> GetOperatorById(int id)
         {
             try
             {
-                var operatorEntity = await _repository.GetByIdAsync(id);
+                var operatorEntity = await _operatorService.GetByIdAsync(id);
                 if (operatorEntity == null)
                     return NotFound();
 
-                var operatorDto = operatorEntity.Adapt<OperatorResponseDto>();
-                return Ok(operatorDto);
+                return Ok(operatorEntity);
             }
             catch (Exception ex)
             {
@@ -51,20 +48,27 @@ namespace OP.Controllers.OperatorControllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOperator(CreateOperatorRequest operatorRequestDto)
+        public async Task<IActionResult> AddOperator(CreateOperatorRequest operatorRequestDto)
         {
             try
             {
-                if (operatorRequestDto == null)
-                    return BadRequest();
+                var operatorEntity = operatorRequestDto.Adapt<Operator>();
+                await _operatorService.CreateAsync(operatorEntity);
+                return CreatedAtAction(nameof(GetOperatorById), new { id = operatorEntity.Id }, operatorRequestDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-                Operator operatorObj = operatorRequestDto.Adapt<Operator>();
-                operatorObj.CreatedAt = DateTime.Now;
-
-                await _repository.AddAsync(operatorObj);
-                
-                return CreatedAtAction(nameof(GetOperatorById), new { Id = operatorObj.Id }, operatorRequestDto);
-
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateOperator(int id, [FromBody] CreateOperatorRequest operatorRequestDto)
+        {
+            try
+            {
+                await _operatorService.UpdateOperatorAsync(id, operatorRequestDto);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -73,27 +77,11 @@ namespace OP.Controllers.OperatorControllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> UpdateOperator([FromBody] JsonPatchDocument<CreateOperatorRequest> patchDoc, int id)
+        public async Task<ActionResult> PartialUpdateOperator(int id, [FromBody] JsonPatchDocument<CreateOperatorRequest> patchDoc)
         {
             try
             {
-                var operatorEntity = await _repository.GetByIdAsync(id);
-                if (operatorEntity == null)
-                    return NotFound();
-
-                var toPatch = operatorEntity.Adapt<CreateOperatorRequest>();
-                patchDoc.ApplyTo(toPatch);
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-
-                toPatch.Adapt(operatorEntity);
-
-                await _repository.SaveChangesAsync();
-
+                await _operatorService.PatchOperatorAsync(id, patchDoc);
                 return NoContent();
             }
             catch (Exception ex)
@@ -103,15 +91,11 @@ namespace OP.Controllers.OperatorControllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DelateOperator(int id)
+        public async Task<ActionResult> DeleteOperator(int id)
         {
             try
             {
-                var operatorEntity = await _repository.GetByIdAsync(id);
-                if (operatorEntity == null)
-                    return NotFound();
-
-                await _repository.DeleteAsync(operatorEntity);
+                await _operatorService.DeleteAsync(id);
                 return NoContent();
             }
             catch (Exception ex)

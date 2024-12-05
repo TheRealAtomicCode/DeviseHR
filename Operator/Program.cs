@@ -1,14 +1,15 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models;
+using Op.Repository;
+using Op.Repository.IRepostiory;
 using OP.DTO.Mapper;
-using OP.Repository;
-using OP.Repository.Interfaces;
-using OP.Services.OperatorService;
-using OP.Services.OperatorService.Interfaces;
+using OP.Services;
+using OP.Services.CredentialService;
+using OP.Services.Interfaces;
+using OP.Services.OperatorServices;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json.Serialization;
 
@@ -100,8 +101,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 
 // Scope and Dependancy Injection
-builder.Services.AddScoped<IGenericRepository<Operator>, OperatorRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICredentialService, CredentialService>();
+builder.Services.AddScoped<IOperatorService, OperatorService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 // Register mappings
 MapConfig.RegisterMappings();

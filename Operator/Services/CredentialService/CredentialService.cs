@@ -1,19 +1,13 @@
-﻿
-
-
-using Mapster;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
 using Models;
+using Op.Repository.IRepostiory;
 using OP.DTO.Inbound;
 using OP.DTO.Outbound;
-using OP.Repository.Interfaces;
-using OP.Services.OperatorService.Interfaces;
+using OP.Services.Interfaces;
 using OP.Subroutines;
 using OP.Utils;
-using System.Text.RegularExpressions;
 
-namespace OP.Services.OperatorService
+namespace OP.Services.CredentialService
 {
     public class CredentialService : ICredentialService
     {
@@ -32,7 +26,7 @@ namespace OP.Services.OperatorService
         {
             loginRequest.Email.Trim().ToLower();
 
-            Operator? op = await _operatorRepo.GetByEmailAsync(loginRequest.Email);
+            Operator? op = await _operatorRepo.GetAsync(op => op.Email == loginRequest.Email);
 
             if (op == null || op.PasswordHash == null) throw new Exception("Incorrect Email or Password");
 
