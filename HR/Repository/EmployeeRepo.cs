@@ -57,15 +57,8 @@ namespace HR.Repository
 
         public async Task<bool> SaveChangesAsync()
         {
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await _context.SaveChangesAsync();
+            return true;
         }
 
 

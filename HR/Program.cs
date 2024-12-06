@@ -74,6 +74,17 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Visitor", policy =>
     policy.RequireClaim("userRole", "1", "2", "3", "4", "5"));
+
+    // permissions
+    options.AddPolicy("EnableAddEmployees", policy =>
+    policy.RequireClaim("enableAddEmployees", "true"));
+
+    options.AddPolicy("EnableTerminateEmployees", policy =>
+    policy.RequireClaim("enableTerminateEmployees", "true"));
+
+    // company
+    options.AddPolicy("EnableShowEmployees", policy =>
+    policy.RequireClaim("enableShowEmployees", "true"));
 });
 
 // add the CORS middleware to allow any origin

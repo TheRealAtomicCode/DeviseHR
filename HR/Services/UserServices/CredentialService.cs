@@ -1,4 +1,8 @@
 ﻿
+
+
+
+
 using Mapster;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -56,13 +60,11 @@ namespace HR.Services.EmployeeServices
             string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
             string refreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
 
-            // add refresh token
             if (emp.RefreshTokens.Count >= 6)
-            {  // remove token if above 6
+            {  
                 emp.RefreshTokens.RemoveAt(emp.RefreshTokens.Count - 1);
             }
             emp.RefreshTokens.Insert(0, refreshToken); // insert at index 0
-           // _employeeRepo.Update(emp);
 
             await _employeeRepo.SaveChangesAsync();
 
