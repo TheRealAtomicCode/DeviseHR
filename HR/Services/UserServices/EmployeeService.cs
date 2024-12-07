@@ -32,7 +32,20 @@ namespace HR.Services.EmployeeServices
             employee.AddedByUser = myId;
             employee.RefreshTokens = [];
 
-            await _employeeRepo.AddEmployee(employee, myId, companyId);
+            if (myRole >= 3 && newEmployee.UserRole <= 3) throw new Exception("You can not add managers or admins if your role is a manager"); 
+
+            await _employeeRepo.AddEmployee(employee);
+
+            if (myRole >= 3)
+            {
+                Hierarchy hierarchy = new Hierarchy
+                {
+                    ManagerId = myId,
+                    SubordinateId = employee.Id
+                };
+
+                await _employeeRepo.AddHierarchy(hierarchy);
+            }
 
             if (newEmployee.RegisterUser == true)
             {
@@ -41,14 +54,8 @@ namespace HR.Services.EmployeeServices
                 employee.VerificationCode = otp;
             }
             
-            try
-            {
-                await _employeeRepo.SaveChangesAsync();
-            }
-            catch(DbUpdateException ex)
-            {
-                SqlExceptionHandler.ExceptionHandler(ex, "employee_email_key");
-            }
+            await _employeeRepo.SaveChangesAsync();
+            
 
             return employee.Id;
         }

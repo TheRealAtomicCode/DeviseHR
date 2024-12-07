@@ -8,6 +8,7 @@ using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -42,6 +43,7 @@ namespace HR.Controllers
                 int myId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
                 int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
                 DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
 
                 int employeeId = await _employeeService.CreateEmployee(newEmployee, myId, companyId, myRole);
@@ -53,6 +55,7 @@ namespace HR.Controllers
                 var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
+            
         }
 
 

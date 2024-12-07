@@ -1,0 +1,15 @@
+meta {
+  name: Logout All Devices
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{hr-url}}/api/Auth/logoutAllDevices
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{hr-token}}
+}

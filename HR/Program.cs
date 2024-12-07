@@ -107,6 +107,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
 
 // Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();

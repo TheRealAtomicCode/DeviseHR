@@ -5,16 +5,17 @@ namespace HR.Subroutines
 
     public class SqlExceptionHandler
     {
-        public static void ExceptionHandler(DbUpdateException ex, string contains)
+        public static void ExceptionHandler(Exception ex)
         {
-            if (ex.InnerException != null && ex.InnerException.Message.Contains(contains))
-            {
-                throw new Exception("Email already exists");
-            }
+            if (ex.InnerException == null) throw new Exception("An unexpected error occurred");
 
-            throw new Exception("An unexpected Error occured");
+            string errorMessage = ex.InnerException.Message;
 
-            throw ex;
+            if (errorMessage.Contains("employee_email_key")) throw new Exception("Email already exists");
+
+            if (errorMessage.Contains("employee_permission_id_fkey")) throw new Exception("Permission does not exist");
+
+            throw new Exception("An unexpected error occurred");
         }
 
     }
