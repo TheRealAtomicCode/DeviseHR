@@ -1,8 +1,8 @@
 using HR.DTO.Mapper;
 using HR.Repository;
 using HR.Repository.Interfaces;
-using HR.Services.EmployeeService;
-using HR.Services.EmployeeService.Interfaces;
+using HR.Services.EmployeeServices;
+using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -74,6 +74,17 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Visitor", policy =>
     policy.RequireClaim("userRole", "1", "2", "3", "4", "5"));
+
+    // permissions
+    options.AddPolicy("EnableAddEmployees", policy =>
+    policy.RequireClaim("enableAddEmployees", "true"));
+
+    options.AddPolicy("EnableTerminateEmployees", policy =>
+    policy.RequireClaim("enableTerminateEmployees", "true"));
+
+    // company
+    options.AddPolicy("EnableShowEmployees", policy =>
+    policy.RequireClaim("enableShowEmployees", "true"));
 });
 
 // add the CORS middleware to allow any origin
@@ -94,9 +105,14 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-// Scope and Dependancy Injection
+// Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
+
+// Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 
 // Register mappings
 MapConfig.RegisterMappings();

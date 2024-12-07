@@ -67,5 +67,7 @@ namespace Common
 
             jwtSecurityToken = (JwtSecurityToken)validateToken;
         }
+
+
     }
 }

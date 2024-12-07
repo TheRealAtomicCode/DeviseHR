@@ -1,0 +1,30 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hr-url}}/api/Auth/login
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{hr-token}}
+}
+
+body:json {
+  {
+      "email": "user1@devisehr.com",
+      "password": "password123"
+  }
+  
+}
+
+tests {
+  if(res.getStatus() === 200){
+      bru.setEnvVar('hr-token', res.getBody().data.jwt);
+      bru.setEnvVar('hr-refresh-token', res.getBody().data.refreshToken);
+  }
+}

@@ -1,0 +1,28 @@
+meta {
+  name: create employee
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hr-url}}/api/Employee/createEmployee
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{hr-token}}
+}
+
+body:json {
+  {
+    "firstName": "string",
+    "lastName": "string",
+    "email": "sdsssdsdsddssdsd@dsds.dsds",
+    "userRole": 1,
+    "permissionId": 1,
+    "registerUser": true,
+    "dateOfBirth": "2024-11-01",
+    "annualLeaveStartDate": "2024-11-01"
+  }
+}

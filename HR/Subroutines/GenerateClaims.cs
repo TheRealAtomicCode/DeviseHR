@@ -31,6 +31,7 @@ namespace HR.Subroutines
                     new Claim("enableTwoStageApproval", "true"),
                     // user roles and permissions
                     new Claim("userRole", employee.UserRole.ToString()),
+                    new Claim("permissionId", "0"),
                     new Claim("enableAddEmployees", "true"),
                     new Claim("enableAddLateness", "true"),
                     new Claim("enableAddManditoryLeave", "true"),
@@ -66,6 +67,7 @@ namespace HR.Subroutines
                     new Claim("enableTwoStageApproval", employee.Company.EnableRequireTwoStageApproval ? "true" : "false"),
                     // user roles and permissions
                     new Claim("userRole", employee.UserRole.ToString()),
+                    new Claim("permissionId", employee.PermissionId != null ? employee.PermissionId.ToString()! : "0"),
                     new Claim("enableAddEmployees", employee.Permission.EnableAddEmployees ? "true" : "false"),
                     new Claim("enableAddLateness", employee.Permission.EnableAddLateness ? "true" : "false"),
                     new Claim("enableAddManditoryLeave", employee.Permission.EnableAddManditoryLeave ? "true" : "false"),

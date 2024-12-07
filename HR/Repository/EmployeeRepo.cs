@@ -2,6 +2,9 @@
 using Models;
 using HR.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.Design;
+using HR.DTO.Inbound;
+using HR.Subroutines;
 
 namespace HR.Repository
 {
@@ -23,8 +26,10 @@ namespace HR.Repository
             return await _context.Employees
                 .Include(u => u.Company)
                 .Include(u => u.Permission)
+        //        .AsNoTracking()
                 .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
+
 
         public async Task<Employee?> GetEmployeeById(int id)
         {
@@ -40,33 +45,30 @@ namespace HR.Repository
 
         
 
-        public async Task<Employee> AddEmployee(Employee emp)
+        public async Task AddEmployee(Employee newEmployee)
         {
-            throw new NotImplementedException();
+            await _context.Employees.AddAsync(newEmployee);
         }
 
-
-
-        public async Task<Employee> UpdateEmployee(Employee emp)
+        public async Task AddHierarchy(Hierarchy hierarchy)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(hierarchy);
         }
 
-
-
-        public async Task<bool> SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
             try
             {
-                await _context.Employees.ToListAsync();
-                return true;
+                await _context.SaveChangesAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                SqlExceptionHandler.ExceptionHandler(ex);
             }
+            
+       
         }
 
-
+    
     }
 }

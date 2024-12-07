@@ -37,5 +37,6 @@ CREATE TABLE Employee (
   FOREIGN KEY (company_id) REFERENCES Company (id),
   FOREIGN KEY (permission_id) REFERENCES Permission (id),
  
-  CONSTRAINT check_user_role CHECK (user_role IN (1, 2, 3, 4, 5))
+  CONSTRAINT check_user_role CHECK (user_role IN (1, 2, 3, 4, 5)),
+  CONSTRAINT permission_id_required_case_manager CHECK (user_role <> 3 OR permission_id IS NOT NULL)
 );

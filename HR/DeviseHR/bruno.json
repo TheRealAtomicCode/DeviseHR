@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "DeviseHR",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -36,12 +36,7 @@ namespace OP.Repository
         {
             var collection = _Context.Operators.AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                name = name.Trim();
-                collection = collection.Where(op => op.GetFullName().Contains(name));
-            }
-
+  
             var totalItemCount = await collection.CountAsync();
 
             var collectionToReturn = await collection
