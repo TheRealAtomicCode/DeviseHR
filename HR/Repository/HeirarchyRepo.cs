@@ -3,6 +3,7 @@ using Models;
 using System.Linq.Expressions;
 using System.Linq;
 using HR.Repository.Interfaces;
+using HR.Subroutines;
 
 
 
@@ -26,7 +27,15 @@ namespace HR.Repository
 
         public async Task SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                SqlExceptionHandler.ExceptionHandler(ex);
+            }
+
         }
     }
 }

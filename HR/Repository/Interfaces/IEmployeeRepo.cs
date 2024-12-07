@@ -9,7 +9,6 @@ namespace HR.Repository.Interfaces
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
         Task<List<Employee>> GetAllEmployees(string email);
         Task AddEmployee(Employee newEmployee);
-        Task AddHierarchy(Hierarchy hierarchy);
         Task SaveChangesAsync();
 
     }

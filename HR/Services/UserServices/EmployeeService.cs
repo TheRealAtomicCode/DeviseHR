@@ -13,11 +13,13 @@ namespace HR.Services.EmployeeServices
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepo _employeeRepo;
+        private readonly IHierarchyRepo _hierarchyRepo;
         private readonly IConfiguration _configuration;
 
-        public EmployeeService(IEmployeeRepo employeeRepo, IConfiguration configuration)
+        public EmployeeService(IEmployeeRepo employeeRepo, IHierarchyRepo hierarchyRepo, IConfiguration configuration)
         {
             _employeeRepo = employeeRepo;
+            _hierarchyRepo = hierarchyRepo;
             _configuration = configuration;
         }
 
@@ -32,20 +34,10 @@ namespace HR.Services.EmployeeServices
             employee.AddedByUser = myId;
             employee.RefreshTokens = [];
 
-            if (myRole >= 3 && newEmployee.UserRole <= 3) throw new Exception("You can not add managers or admins if your role is a manager"); 
+            if (myRole >= 3 && newEmployee.UserRole <= 3) throw new Exception("You can not add managers or admins if your role is a manager");
+            if (myRole >= 3 && newEmployee.PermissionId != null) throw new Exception("You can not provide employees permissions");
 
             await _employeeRepo.AddEmployee(employee);
-
-            if (myRole >= 3)
-            {
-                Hierarchy hierarchy = new Hierarchy
-                {
-                    ManagerId = myId,
-                    SubordinateId = employee.Id
-                };
-
-                await _employeeRepo.AddHierarchy(hierarchy);
-            }
 
             if (newEmployee.RegisterUser == true)
             {
@@ -55,7 +47,19 @@ namespace HR.Services.EmployeeServices
             }
             
             await _employeeRepo.SaveChangesAsync();
-            
+
+            if (myRole >= 3)
+            {
+                Hierarchy hierarchy = new Hierarchy
+                {
+                    ManagerId = myId,
+                    SubordinateId = employee.Id
+                };
+
+                await _hierarchyRepo.AddHierarchy(hierarchy);
+            }
+
+            await _hierarchyRepo.SaveChangesAsync();
 
             return employee.Id;
         }

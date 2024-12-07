@@ -15,6 +15,10 @@ namespace HR.Subroutines
 
             if (errorMessage.Contains("employee_permission_id_fkey")) throw new Exception("Permission does not exist");
 
+            if (errorMessage.Contains("permission_id_required_case_manager")) throw new Exception("Managers must be provided with a specific permission");
+
+            if (errorMessage.Contains("permission_id_null_if_not_manager")) throw new Exception("Only managers can be provided with a permission");
+
             throw new Exception("An unexpected error occurred");
         }
 

@@ -50,11 +50,6 @@ namespace HR.Repository
             await _context.Employees.AddAsync(newEmployee);
         }
 
-        public async Task AddHierarchy(Hierarchy hierarchy)
-        {
-            await _context.AddAsync(hierarchy);
-        }
-
         public async Task SaveChangesAsync()
         {
             try
@@ -65,7 +60,6 @@ namespace HR.Repository
             {
                 SqlExceptionHandler.ExceptionHandler(ex);
             }
-            
        
         }
 
