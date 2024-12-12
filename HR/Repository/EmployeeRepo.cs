@@ -31,9 +31,9 @@ namespace HR.Repository
         }
 
 
-        public async Task<Employee?> GetEmployeeById(int id)
+        public async Task<Employee?> GetEmployeeById(int id, int companyId)
         {
-            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
+            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
         }
        
 

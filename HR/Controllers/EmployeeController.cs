@@ -59,6 +59,34 @@ namespace HR.Controllers
         }
 
 
+        [HttpPost("/{employeeId}")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetEmployee([FromRoute] int employeeId)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
+                DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
+
+              //  int employeeId = await _employeeService.GetEmployee(newEmployee, myId, companyId, myRole);
+
+                return Created("Success", new { Id = employeeId });
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
+        }
+
+
 
     }
 }
