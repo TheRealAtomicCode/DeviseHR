@@ -87,6 +87,35 @@ namespace HR.Controllers
         }
 
 
+        [HttpGet]
+        [Authorize(Policy = "StaffMember")]
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetAllEmployee([FromQuery] string searchTerm,[FromQuery] int page, [FromQuery] int skip)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+                bool enableShowEmployees = bool.Parse(claims.FindFirst("enableShowEmployees")!.Value);
+
+                List<FoundEmployee> foundEmployees = await _employeeService.GetAllEmployees(searchTerm, page, skip, myId, companyId, myRole, enableShowEmployees);
+
+                var sr = new ServiceResponse<List<FoundEmployee>>(foundEmployees, true, "", 0);
+
+                return Ok(sr);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
+        }
+
+
 
     }
 }

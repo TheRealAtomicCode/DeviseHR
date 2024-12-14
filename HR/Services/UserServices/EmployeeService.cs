@@ -85,6 +85,20 @@ namespace HR.Services.EmployeeServices
             return employee;
         }
 
-      
+
+        public async Task<List<FoundEmployee>> GetAllEmployees(string searchTerm, int page, int skip, int myId, int companyId, int myRole, bool enableShowEmployees)
+        {
+            int? myIdWhenSearching = null;
+     
+            if (myRole <= StaticRoles.StaffMember && enableShowEmployees == false) return new List<FoundEmployee>();
+
+            if (myRole == StaticRoles.Manager && enableShowEmployees == false) myIdWhenSearching = myId;
+
+            List<FoundEmployee> foundEmployees = await _employeeRepo.GetAllEmployeesByName(searchTerm, page, skip, companyId, myIdWhenSearching);
+
+            return foundEmployees;
+        }
+
+
     }
 }
