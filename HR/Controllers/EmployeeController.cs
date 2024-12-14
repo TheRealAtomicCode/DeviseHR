@@ -32,7 +32,7 @@ namespace HR.Controllers
 
         [HttpPost("createEmployee")]
         [Authorize(Policy = "Manager")]
-        //[Authorize(Policy = "EnableAddEmployees")]
+        [Authorize(Policy = "EnableAddEmployees")]
         public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
         {
             try
@@ -59,7 +59,7 @@ namespace HR.Controllers
         }
 
 
-        [HttpPost("/{employeeId}")]
+        [HttpGet("{employeeId}")]
         [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetEmployee([FromRoute] int employeeId)
         {
@@ -72,11 +72,11 @@ namespace HR.Controllers
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
                 int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
 
-                DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
+                EmployeeDto employeeDto = await _employeeService.GetEmployee(employeeId, myId, companyId, myRole);
 
-                EmployeeDto employee = await _employeeService.GetEmployee(employeeId, myId, companyId, myRole);
+                var sr = new ServiceResponse<EmployeeDto>(employeeDto, true, "", 0);
 
-                return Created("Success", new { Id = employeeId });
+                return Ok(sr);
             }
             catch (Exception ex)
             {

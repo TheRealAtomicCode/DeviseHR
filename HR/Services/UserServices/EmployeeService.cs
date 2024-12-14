@@ -70,9 +70,7 @@ namespace HR.Services.EmployeeServices
 
         public async Task<EmployeeDto> GetEmployee(int employeeId, int myId, int companyId, int myRole)
         {
-            EmployeeDto? employee = await _employeeRepo.GetEmployeeDtoById(employeeId, companyId);
-
-            if (employee == null) throw new Exception("Employee not found");
+            EmployeeDto employee = await _employeeRepo.GetEmployeeDtoById(employeeId, companyId);
 
             if (myId != employee.Id && (myRole <= StaticRoles.StaffMember)) throw new Exception("Insufficient permissions");
 

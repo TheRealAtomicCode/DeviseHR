@@ -5,7 +5,7 @@ namespace HR.Subroutines
     public class Verify
     {
 
-        public static void EmployeeAccess(Employee emp, IConfiguration _configuration, bool verifyNewUser)
+        public static void EmployeeAccess(Employee emp, IConfiguration _configuration)
         {
             // check company if not expired
             string loginAttempLimit = _configuration["login:LoginAttempLimit"]!;
@@ -18,16 +18,29 @@ namespace HR.Subroutines
 
             if (emp.LoginAttempt > loginAttemptsAllowed) throw new Exception("You have attempted to login multiple times unsuccessfully. Please contact your manager to regain access to your account.");
 
-            if (verifyNewUser == true)
-            {
-                if (emp.IsVerified == false) throw new Exception("Please Register your account before logging in");
-            }
+        }
+
+
+        public static void UnregisteredEmployeeAccess(Employee emp, IConfiguration _configuration)
+        {
+            // check company if not expired
+            string loginAttempLimit = _configuration["login:LoginAttempLimit"]!;
+
+            if (emp.IsTerminated) throw new Exception("Your Permissions have been Revoked.");
+
+            if(emp.IsVerified == true) throw new Exception("Please reset your password, and follow the instructions from the email you recieve.");
+
+            if (emp.VerificationCode == null) throw new Exception("Please contact your manager to register your account.");
+
+            int loginAttemptsAllowed = int.Parse(loginAttempLimit);
+
+            if (emp.LoginAttempt > loginAttemptsAllowed) throw new Exception("You have attempted to login multiple times unsuccessfully. Please contact your manager to regain access to your account.");
 
         }
 
 
 
-   
+
 
 
     }

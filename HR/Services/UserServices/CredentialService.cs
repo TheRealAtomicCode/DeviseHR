@@ -51,7 +51,7 @@ namespace HR.Services.EmployeeServices
                 throw new Exception("Incorrect email or password");
             }
 
-            Verify.EmployeeAccess(emp, _configuration, false);
+            Verify.EmployeeAccess(emp, _configuration);
 
             var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
             var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
@@ -85,7 +85,7 @@ namespace HR.Services.EmployeeServices
 
             if (!emp.RefreshTokens.Contains(oldRefreshToken)) throw new Exception("Please authenticate");
 
-            Verify.EmployeeAccess(emp, _configuration, false);
+            Verify.UnregisteredEmployeeAccess(emp, _configuration);
 
             var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
             var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
@@ -136,7 +136,7 @@ namespace HR.Services.EmployeeServices
 
             if (emp == null) throw new Exception("Incorrect email");
 
-            Verify.EmployeeAccess(emp, _configuration, false);
+            Verify.EmployeeAccess(emp, _configuration);
 
             // update verification code
             emp.VerificationCode = verificationCode;
@@ -167,7 +167,7 @@ namespace HR.Services.EmployeeServices
             // generate password hash
             string passwordHash = PasswordUtils.GenerateHash(newPassword);
 
-            Verify.EmployeeAccess(emp, _configuration, false);
+            Verify.UnregisteredEmployeeAccess(emp, _configuration);
 
             string logintimeExpiration = _configuration["login:ExpTime"]!;
 
@@ -175,17 +175,8 @@ namespace HR.Services.EmployeeServices
             DateTime expiresAt = currentTime.AddMinutes(int.Parse(logintimeExpiration));
             if (emp.LastLoginTime > expiresAt) throw new Exception("Verifivation code has expired");
 
-            var tokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
-
-            var refreshTokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
+            var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
+            var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
 
             string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
             string refreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);

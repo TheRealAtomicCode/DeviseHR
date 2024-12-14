@@ -39,30 +39,49 @@ namespace HR.Repository
                 .FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
         }
 
-        public async Task<EmployeeDto?> GetEmployeeDtoById(int employeeId, int companyId)
+
+        public async Task<EmployeeDto> GetEmployeeDtoById(int employeeId, int companyId)
         {
-            var employeeData = await (from e in _context.Employees
-                                      where e.Id == employeeId && e.CompanyId == companyId
-                                      join h in _context.Hierarchies on e.Id equals h.SubordinateId into hierarchy
-                                      from h in hierarchy.DefaultIfEmpty()
-                                      join m in _context.Employees on h.ManagerId equals m.Id into managers
-                                      from m in managers.DefaultIfEmpty()
-                                      select new
-                                      {
-                                          Employee = e,
-                                          Manager = m,
-                                          Hierarchies = hierarchy
-                                      }).FirstOrDefaultAsync();
 
-            if (employeeData == null) return null;
+            var employeeDto = await (from e in _context.Employees
+                                     where e.Id == employeeId && e.CompanyId == companyId
+                                     select new EmployeeDto
+                                     {
+                                         Id = e.Id,
+                                         FirstName = e.FirstName,
+                                         LastName = e.LastName,
+                                         Title = e.Title,
+                                         Email = e.Email,
+                                         DateOfBirth = e.DateOfBirth,
+                                         AnnualLeaveStartDate = e.AnnualLeaveStartDate,
+                                         ProfilePicture = e.ProfilePicture,
+                                         IsTerminated = e.IsTerminated,
+                                         IsVerified = e.IsVerified,
+                                         CreatedAt = e.CreatedAt,
+                                         NiNo = e.NiNo,
+                                         DriversLicenceNumber = e.DriversLicenceNumber,
+                                         DriversLicenceExpirationDate = e.DriversLicenceExpirationDate,
+                                         PassportNumber = e.PassportNumber,
+                                         PassportExpirationDate = e.PassportExpirationDate,
+                                         UserRole = e.UserRole,
+                                         PermissionId = e.PermissionId,
+                                         Managers = new List<ManagerDto>()
+                                     }).FirstOrDefaultAsync();
 
-            var employeeDto = employeeData.Employee.Adapt<EmployeeDto>();
-            employeeDto.Managers = employeeData.Hierarchies.Select(h => new ManagerDto
-            {
-                ManagerId = h.ManagerId,
-                FullName = $"{employeeData.Manager.FirstName} {employeeData.Manager.LastName}",
-                Title = employeeData.Manager.Title
-            }).ToList();
+            if (employeeDto == null) throw new Exception("Employee not found");
+
+            List<ManagerDto> managers = await (from h in _context.Hierarchies
+                                               join m in _context.Employees on h.ManagerId equals m.Id
+                                               where h.SubordinateId == employeeDto.Id
+                                               select new ManagerDto
+                                               {
+                                                   ManagerId = m.Id,
+                                                   FullName = m.FirstName + " " + m.LastName,
+                                                   Title = m.Title,
+                                                   Email = m.Email
+                                               }).ToListAsync();
+
+            employeeDto.Managers = managers;
 
             return employeeDto;
         }
@@ -93,6 +112,6 @@ namespace HR.Repository
        
         }
 
-      
+       
     }
 }
