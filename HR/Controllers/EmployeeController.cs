@@ -32,7 +32,7 @@ namespace HR.Controllers
 
         [HttpPost("createEmployee")]
         [Authorize(Policy = "Manager")]
-        [Authorize(Policy = "EnableAddEmployees")]
+        //[Authorize(Policy = "EnableAddEmployees")]
         public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
         {
             try

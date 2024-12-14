@@ -77,9 +77,9 @@ namespace HR.Services.EmployeeServices
         }
 
 
-        public async Task<LoginResponse> RefreshUserToken(int employeeId, string oldRefreshToken)
+        public async Task<LoginResponse> RefreshUserToken(int employeeId, int companyId, string oldRefreshToken)
         {
-            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId);
+            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
             if(emp == null) throw new Exception("Unable to locate Employee");
 
@@ -87,17 +87,8 @@ namespace HR.Services.EmployeeServices
 
             Verify.EmployeeAccess(emp, _configuration, false);
 
-            var tokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
-
-            var refreshTokenClaims = new List<Claim>
-                {
-                    new Claim("id", emp.Id.ToString()),
-                    new Claim("userRole", emp.UserRole.ToString()),
-                };
+            var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
+            var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
 
             string jwt = await Token.GenerateJWT(_configuration, "token", tokenClaims);
             string newRefreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
@@ -117,9 +108,9 @@ namespace HR.Services.EmployeeServices
         }
 
 
-        public async Task LogoutService(int employeeId, string refreshToken)
+        public async Task LogoutService(int employeeId, int companyId, string refreshToken)
         {
-            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId);
+            Employee? emp = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
             if (emp == null) throw new Exception("User not found");
 

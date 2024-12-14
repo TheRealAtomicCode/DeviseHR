@@ -7,7 +7,7 @@ namespace HR.Repository.Interfaces
     public interface IEmployeeRepo
     {
         Task<EmployeeDto?> GetEmployeeDtoById(int id, int companyId);
-        Task<Employee?> GetEmployeeById(int id);
+        Task<Employee?> GetEmployeeById(int id, int companyId);
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
         Task<List<Employee>> GetAllEmployees(string email);
         Task AddEmployee(Employee newEmployee);

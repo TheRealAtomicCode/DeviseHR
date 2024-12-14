@@ -28,13 +28,15 @@ namespace HR.Repository
             return await _context.Employees
                 .Include(u => u.Company)
                 .Include(u => u.Permission)
-        //        .AsNoTracking()
                 .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
-        public async Task<Employee?> GetEmployeeById(int id)
+        public async Task<Employee?> GetEmployeeById(int id, int companyId)
         {
-            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
+            return await _context.Employees
+                .Include(u => u.Company)
+                .Include(u => u.Permission)
+                .FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
         }
 
         public async Task<EmployeeDto?> GetEmployeeDtoById(int employeeId, int companyId)

@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using HR.Repository;
+using Models;
 using System.Security.Claims;
 
 namespace HR.Subroutines
@@ -10,7 +11,7 @@ namespace HR.Subroutines
         {
             var claims = new List<Claim>();
 
-            if (employee.UserRole == 1 || employee.UserRole == 2)
+            if (employee.UserRole == StaticRoles.Sudo || employee.UserRole == StaticRoles.Admin)
             {
                 claims = new List<Claim>
                 {
@@ -46,7 +47,7 @@ namespace HR.Subroutines
                     new Claim("annualLeaveStartDate", employee.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
-            else if (employee.UserRole == 3 && employee.Permission != null)
+            else if (employee.UserRole == StaticRoles.Manager && employee.Permission != null)
             {
                 claims = new List<Claim>
                 {
@@ -82,7 +83,7 @@ namespace HR.Subroutines
                     new Claim("annualLeaveStartDate", employee.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
-            else if (employee.UserRole == 4 || employee.UserRole == 5)
+            else if (employee.UserRole == StaticRoles.StaffMember || employee.UserRole == StaticRoles.Visitor)
             {
                 claims = new List<Claim>
                 {
@@ -103,6 +104,7 @@ namespace HR.Subroutines
             {
                 new Claim("id", employee.Id.ToString()),
                 new Claim("userRole", employee.UserRole.ToString()),
+                new Claim("companyId", employee.CompanyId.ToString()),
             };
 
             return claims;

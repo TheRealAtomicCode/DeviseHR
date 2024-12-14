@@ -7,20 +7,16 @@ meta {
 post {
   url: {{hr-url}}/api/Employee/createEmployee
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{hr-token}}
+  auth: inherit
 }
 
 body:json {
   {
     "firstName": "string",
     "lastName": "string",
-    "email": "sdfdsdfdsddsgfgfsdsd@dsds.dsds",
-    "userRole": 3,
-    "permissionId": null,
+    "email": "man@dsds.dsds",
+    "userRole": 30,
+    "permissionId": 1,
     "registerUser": true,
     "dateOfBirth": "2024-11-01",
     "annualLeaveStartDate": "2024-11-01"

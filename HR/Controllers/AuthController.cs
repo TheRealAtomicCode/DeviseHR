@@ -59,9 +59,10 @@ namespace HR.Controllers
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
                 Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                int userType = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
+                int userRole = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                var empDto = await _credentialService.RefreshUserToken(myId, refreshToken);
+                var empDto = await _credentialService.RefreshUserToken(myId, companyId, refreshToken);
 
                 var sr = new ServiceResponse<LoginResponse>(empDto, true, "", 0);
 
@@ -86,7 +87,7 @@ namespace HR.Controllers
                 int userId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
-                await _credentialService.LogoutService(userId, refreshToken);
+                await _credentialService.LogoutService(userId, companyId, refreshToken);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
 
@@ -111,7 +112,7 @@ namespace HR.Controllers
                 int userId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
-                await _credentialService.LogoutService(userId, "");
+                await _credentialService.LogoutService(userId, companyId, "");
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
 
