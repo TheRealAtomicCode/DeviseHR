@@ -60,7 +60,7 @@ namespace HR.Controllers
 
 
         [HttpPost("/{employeeId}")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetEmployee([FromRoute] int employeeId)
         {
             try
@@ -74,7 +74,7 @@ namespace HR.Controllers
 
                 DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
 
-              //  int employeeId = await _employeeService.GetEmployee(newEmployee, myId, companyId, myRole);
+                EmployeeDto employee = await _employeeService.GetEmployee(employeeId, myId, companyId, myRole);
 
                 return Created("Success", new { Id = employeeId });
             }

@@ -51,7 +51,7 @@ namespace HR.Controllers
         }
 
         [HttpPost("refresh")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<LoginResponse>>> Refresh([FromBody] string refreshToken)
         {
             try
@@ -76,7 +76,7 @@ namespace HR.Controllers
 
 
         [HttpDelete("logout")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<bool>>> Logout([FromBody] string refreshToken)
         {
             try
@@ -101,7 +101,7 @@ namespace HR.Controllers
 
 
         [HttpDelete("logoutAllDevices")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices()
         {
             try

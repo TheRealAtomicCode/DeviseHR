@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.Design;
 using HR.DTO.Inbound;
 using HR.Subroutines;
+using HR.DTO.outbound;
+using Mapster;
 
 namespace HR.Repository
 {
@@ -30,12 +32,38 @@ namespace HR.Repository
                 .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
-
-        public async Task<Employee?> GetEmployeeById(int id, int companyId)
+        public async Task<Employee?> GetEmployeeById(int id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
+            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
         }
-       
+
+        public async Task<EmployeeDto?> GetEmployeeDtoById(int employeeId, int companyId)
+        {
+            var employeeData = await (from e in _context.Employees
+                                      where e.Id == employeeId && e.CompanyId == companyId
+                                      join h in _context.Hierarchies on e.Id equals h.SubordinateId into hierarchy
+                                      from h in hierarchy.DefaultIfEmpty()
+                                      join m in _context.Employees on h.ManagerId equals m.Id into managers
+                                      from m in managers.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          Employee = e,
+                                          Manager = m,
+                                          Hierarchies = hierarchy
+                                      }).FirstOrDefaultAsync();
+
+            if (employeeData == null) return null;
+
+            var employeeDto = employeeData.Employee.Adapt<EmployeeDto>();
+            employeeDto.Managers = employeeData.Hierarchies.Select(h => new ManagerDto
+            {
+                ManagerId = h.ManagerId,
+                FullName = $"{employeeData.Manager.FirstName} {employeeData.Manager.LastName}",
+                Title = employeeData.Manager.Title
+            }).ToList();
+
+            return employeeDto;
+        }
 
 
         public async Task<List<Employee>> GetAllEmployees(string email)
@@ -63,6 +91,6 @@ namespace HR.Repository
        
         }
 
-    
+      
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Common;
 using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.UserServices.Interfaces;
@@ -24,6 +25,7 @@ namespace HR.Services.EmployeeServices
             _configuration = configuration;
         }
 
+
         public async Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int myRole)
         {
             StringUtils.ValidateNonEmptyStrings([newEmployee.FirstName, newEmployee.LastName]);
@@ -35,8 +37,8 @@ namespace HR.Services.EmployeeServices
             employee.AddedByUser = myId;
             employee.RefreshTokens = [];
 
-            if (myRole >= 3 && newEmployee.UserRole <= 3) throw new Exception("You can not add managers or admins if your role is a manager");
-            if (myRole >= 3 && newEmployee.PermissionId != null) throw new Exception("You can not provide employees permissions");
+            if (myRole <= StaticRoles.Manager && newEmployee.UserRole >= StaticRoles.Manager) throw new Exception("You can not add managers or admins if you have manager permissions");
+            if (myRole <= StaticRoles.Manager && newEmployee.PermissionId != null) throw new Exception("You can not add employees with special permissions");
 
             await _employeeRepo.AddEmployee(employee);
 
@@ -49,7 +51,7 @@ namespace HR.Services.EmployeeServices
             
             await _employeeRepo.SaveChangesAsync();
 
-            if (myRole >= 3)
+            if (myRole <= StaticRoles.Manager)
             {
                 Hierarchy hierarchy = new Hierarchy
                 {
@@ -66,36 +68,25 @@ namespace HR.Services.EmployeeServices
         }
 
 
-        public async Task GetEmployee(int employeeId, int myId, int companyId, int myRole)
+        public async Task<EmployeeDto> GetEmployee(int employeeId, int myId, int companyId, int myRole)
         {
-            Employee? employee = await _employeeRepo.GetEmployeeById(employeeId, companyId);
-
-            if (!employee) throw new Exception("Unable to locate");
-
-            if (myId != employee.Id && (myRole == RoleIds.EmployeeId || myRole == RoleIds.VisitorId)) throw new Exception("Access denined");
-            if (myId != employeeId && (myRole != RoleIds.ManagerId)) throw new Exception("Access denined");
+            EmployeeDto? employee = await _employeeRepo.GetEmployeeDtoById(employeeId, companyId);
 
             if (employee == null) throw new Exception("Employee not found");
 
-            
+            if (myId != employee.Id && (myRole <= StaticRoles.StaffMember)) throw new Exception("Insufficient permissions");
 
-
-            if (myRole >= 3)
+            if (myId != employee.Id && myRole == StaticRoles.Manager)
             {
-                Hierarchy hierarchy = new Hierarchy
+                if (!employee.Managers.Any(m => m.ManagerId == myId))
                 {
-                    ManagerId = myId,
-                    SubordinateId = employee.Id
-                };
-
-                await _hierarchyRepo.AddHierarchy(hierarchy);
+                    throw new Exception("You are not authorized to access this employee's details.");
+                }
             }
 
-            await _hierarchyRepo.SaveChangesAsync();
-
-            return employee.Id;
+            return employee;
         }
 
-
+      
     }
 }

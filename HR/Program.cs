@@ -61,19 +61,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Sudo", policy =>
-    policy.RequireClaim("userRole", "1"));
+    policy.RequireClaim("userRole", "50"));
 
     options.AddPolicy("Admin", policy =>
-    policy.RequireClaim("userRole", "1", "2"));
+    policy.RequireClaim("userRole", "50", "40"));
 
     options.AddPolicy("Manager", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3"));
+    policy.RequireClaim("userRole", "50", "40", "30"));
 
-    options.AddPolicy("Employee", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4"));
+    options.AddPolicy("StaffMember", policy =>
+    policy.RequireClaim("userRole", "50", "40", "30", "20"));
 
     options.AddPolicy("Visitor", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4", "5"));
+    policy.RequireClaim("userRole", "50", "40", "30", "20", "10"));
 
     // permissions
     options.AddPolicy("EnableAddEmployees", policy =>
