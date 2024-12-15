@@ -1,6 +1,7 @@
 ﻿using Common;
 using HR.DTO;
 using HR.DTO.Inbound;
+using HR.Services;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -42,11 +43,9 @@ namespace HR.Controllers
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
                 int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
 
-                Permission permission = await _permissionService.CreatePermissionService(newPermission, myId, companyId);
+                int permissionId = await _permissionService.CreatePermissionService(newPermission, myId, companyId);
 
-                var serviceResponse = new ServiceResponse<Permission>(permission, true, "", 0);
-
-                return Ok(serviceResponse);
+                return Created("Success", new { Id = permissionId });
             }
             catch (Exception ex)
             {

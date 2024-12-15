@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{hr-url}}/api/Employee
+  url: {{hr-url}}/api/Employee?searchTerm=hr.com
   body: none
   auth: inherit
+}
+
+params:query {
+  searchTerm: hr.com
 }

@@ -53,6 +53,9 @@ namespace Common
             }
         }
 
-    
+        public static void ValidateNonEmptyStrings(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
