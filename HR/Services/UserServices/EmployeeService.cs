@@ -86,7 +86,7 @@ namespace HR.Services.EmployeeServices
         }
 
 
-        public async Task<List<FoundEmployee>> GetAllEmployees(string searchTerm, int page, int skip, int myId, int companyId, int myRole, bool enableShowEmployees)
+        public async Task<List<FoundEmployee>> GetAllEmployees(string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees)
         {
             int? myIdWhenSearching = null;
      

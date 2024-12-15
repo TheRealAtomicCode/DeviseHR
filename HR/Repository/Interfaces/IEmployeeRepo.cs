@@ -11,7 +11,7 @@ namespace HR.Repository.Interfaces
         Task<EmployeeDto> GetEmployeeDtoById(int id, int companyId);
         Task<Employee?> GetEmployeeById(int id, int companyId);
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
-        Task<List<FoundEmployee>> GetAllEmployeesByName(string searchTerm, int page, int skip, int companyId, int? myId);
+        Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId);
         Task AddEmployee(Employee newEmployee);
         Task SaveChangesAsync();
 

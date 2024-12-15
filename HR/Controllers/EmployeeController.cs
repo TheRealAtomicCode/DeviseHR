@@ -89,7 +89,7 @@ namespace HR.Controllers
 
         [HttpGet]
         [Authorize(Policy = "StaffMember")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetAllEmployee([FromQuery] string searchTerm,[FromQuery] int page, [FromQuery] int skip)
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> GetAllEmployee([FromQuery] string? searchTerm,[FromQuery] int? page, [FromQuery] int? skip)
         {
             try
             {

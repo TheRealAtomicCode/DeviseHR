@@ -87,10 +87,9 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<FoundEmployee>> GetAllEmployeesByName(string searchTerm, int page, int skip, int companyId, int? myId)
+        public async Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId)
         {
-            int skipCount = (page - 1) * skip;
-            int takeCount = skip;
+            
 
             IQueryable<Employee> query = _context.Employees
                 .Where(e => e.CompanyId == companyId);
@@ -105,9 +104,15 @@ namespace HR.Repository
                 query = query.Where(e => _context.Hierarchies.Any(h => h.ManagerId == myId));
             }
 
-            var employees = await query
-                .Skip(skipCount)     
-                .Take(takeCount)       
+            if (page != null && skip != null)
+            {
+                int skipCount = Math.Abs((int)((page - 1) * skip));
+                int takeCount = Math.Abs((int)skip);
+
+                query = query.Skip(skipCount).Take(takeCount);
+            }
+
+            var employees = await query   
                 .Select(e => new FoundEmployee
                 {
                     Id = e.Id,
