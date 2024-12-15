@@ -1,8 +1,10 @@
 ﻿using Common;
 using HR.DTO.Inbound;
+using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
 using HR.Subroutines;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System.Data;
@@ -22,25 +24,20 @@ namespace HR.Services
         }
 
 
-        public async Task<Permission> CreatePermissionService(PermissionData newPermission, int myId, int companyId)
+        public async Task<int> CreatePermissionService(PermissionData newPermission, int myId, int companyId)
         {
 
             StringUtils.ValidateNonEmptyStrings(newPermission.Name.Trim());
 
-            //Role role = AdminRoleRepository.InsertRole(newRole, myId, companyId, db);
+            var permission = newPermission.Adapt<Permission>();
+            permission.CompanyId = companyId;
+            permission.AddedBy = myId;
 
-            //try
-            //{
-            //    await db.SaveChangesAsync();
-            //}
-            //catch (DbUpdateException ex)
-            //{
-            //    SqlExceptionHandler.RoleSqlExceptionHandler(ex);
-            //}
+            await _permissionRepo.AddPermission(permission);
 
-            //return role;
+            await _permissionRepo.SaveChangesAsync();
 
-            throw new NotImplementedException();
+            return permission.Id;
         }
     }
 }
