@@ -1,0 +1,11 @@
+meta {
+  name: Get all employees
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{hr-url}}/api/Employee
+  body: none
+  auth: inherit
+}

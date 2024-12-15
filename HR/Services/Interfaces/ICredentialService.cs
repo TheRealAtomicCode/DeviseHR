@@ -3,7 +3,7 @@ using HR.DTO.Outbound;
 using Models;
 using System.ComponentModel.Design;
 
-namespace HR.Services.UserServices.Interfaces
+namespace HR.Services.Interfaces
 {
     public interface ICredentialService
     {

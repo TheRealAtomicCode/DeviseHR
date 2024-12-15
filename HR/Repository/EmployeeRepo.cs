@@ -87,12 +87,46 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Employee>> GetAllEmployees(string email)
+        public async Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId)
         {
-            return await _context.Employees.ToListAsync();
+            
+
+            IQueryable<Employee> query = _context.Employees
+                .Where(e => e.CompanyId == companyId);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(e => (e.FirstName + " " + e.LastName).Contains(searchTerm) || e.Email.Contains(searchTerm));
+            }
+
+            if (myId != null)
+            {
+                query = query.Where(e => _context.Hierarchies.Any(h => h.ManagerId == myId));
+            }
+
+            if (page != null && skip != null)
+            {
+                int skipCount = Math.Abs((int)((page - 1) * skip));
+                int takeCount = Math.Abs((int)skip);
+
+                query = query.Skip(skipCount).Take(takeCount);
+            }
+
+            var employees = await query   
+                .Select(e => new FoundEmployee
+                {
+                    Id = e.Id,
+                    FullName = $"{e.FirstName} {e.LastName}",
+                    Title = e.Title,
+                    Email = e.Email
+                })
+                .ToListAsync();
+
+            return employees;
         }
 
-        
+
+
 
         public async Task AddEmployee(Employee newEmployee)
         {

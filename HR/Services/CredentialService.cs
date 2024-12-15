@@ -18,11 +18,11 @@ using HR.Repository;
 using System.Net.Sockets;
 using Common;
 using System.Security.Claims;
-using HR.Services.UserServices.Interfaces;
+using HR.Services.Interfaces;
 
 
 
-namespace HR.Services.EmployeeServices
+namespace HR.Services
 {
     public class CredentialService : ICredentialService
     {
@@ -61,7 +61,7 @@ namespace HR.Services.EmployeeServices
             string refreshToken = await Token.GenerateJWT(_configuration, "refreshToken", refreshTokenClaims);
 
             if (emp.RefreshTokens.Count >= 6)
-            {  
+            {
                 emp.RefreshTokens.RemoveAt(emp.RefreshTokens.Count - 1);
             }
             emp.RefreshTokens.Insert(0, refreshToken); // insert at index 0
@@ -81,7 +81,7 @@ namespace HR.Services.EmployeeServices
         {
             Employee? emp = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
-            if(emp == null) throw new Exception("Unable to locate Employee");
+            if (emp == null) throw new Exception("Unable to locate Employee");
 
             if (!emp.RefreshTokens.Contains(oldRefreshToken)) throw new Exception("Please authenticate");
 
@@ -185,7 +185,7 @@ namespace HR.Services.EmployeeServices
             emp.IsVerified = true;
             emp.RefreshTokens.Add(refreshToken);
             emp.PasswordHash = passwordHash;
-         
+
 
             emp.VerificationCode = null;
 

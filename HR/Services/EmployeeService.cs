@@ -3,14 +3,14 @@ using HR.DTO.Inbound;
 using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
-using HR.Services.UserServices.Interfaces;
+using HR.Services.Interfaces;
 using HR.Subroutines;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
 
-namespace HR.Services.EmployeeServices
+namespace HR.Services
 {
     public class EmployeeService : IEmployeeService
     {
@@ -48,7 +48,7 @@ namespace HR.Services.EmployeeServices
                 // send verification code
                 employee.VerificationCode = otp;
             }
-            
+
             await _employeeRepo.SaveChangesAsync();
 
             if (myRole <= StaticRoles.Manager)
@@ -72,7 +72,7 @@ namespace HR.Services.EmployeeServices
         {
             EmployeeDto employee = await _employeeRepo.GetEmployeeDtoById(employeeId, companyId);
 
-            if (myId != employee.Id && (myRole <= StaticRoles.StaffMember)) throw new Exception("Insufficient permissions");
+            if (myId != employee.Id && myRole <= StaticRoles.StaffMember) throw new Exception("Insufficient permissions");
 
             if (myId != employee.Id && myRole == StaticRoles.Manager)
             {
@@ -85,6 +85,27 @@ namespace HR.Services.EmployeeServices
             return employee;
         }
 
-      
+
+        public async Task<List<FoundEmployee>> GetAllEmployees(string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees)
+        {
+            int? myIdWhenSearching = null;
+
+            if (myRole <= StaticRoles.StaffMember && enableShowEmployees == false) return new List<FoundEmployee>();
+
+            if (myRole == StaticRoles.Manager && enableShowEmployees == false) myIdWhenSearching = myId;
+
+            List<FoundEmployee> foundEmployees = await _employeeRepo.GetAllEmployeesByName(searchTerm, page, skip, companyId, myIdWhenSearching);
+
+            return foundEmployees;
+        }
+
+        //public async Task<int> DeleteEmployees(int employeeId, int myId, int companyId)
+        //{
+        //    List<FoundEmployee> foundEmployees = await _employeeRepo.GetEmployeeById(employeeId, companyId);
+
+        //    return foundEmployees;
+        //}
+
+
     }
 }

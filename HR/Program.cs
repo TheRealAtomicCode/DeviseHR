@@ -1,8 +1,8 @@
 using HR.DTO.Mapper;
 using HR.Repository;
 using HR.Repository.Interfaces;
-using HR.Services.EmployeeServices;
-using HR.Services.UserServices.Interfaces;
+using HR.Services;
+using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -112,6 +112,7 @@ builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
 // Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 
 // Register mappings

@@ -88,8 +88,35 @@ namespace HR.Subroutines
                 claims = new List<Claim>
                 {
                     new Claim("id", employee.Id.ToString()),
+                    // companyId and companySettings
+                    new Claim("companyId", employee.Company.Id.ToString()),
+                    new Claim("enableSemiPersonalInformation", employee.Company.EnableSemiPersonalInformation ? "true" : "false"),
+                    new Claim("enableShowEmployees", employee.Company.EnableShowEmployees ? "true" : "false"),
+                    new Claim("enableToil", employee.Company.EnableToil ? "true" : "false"),
+                    new Claim("enableOvertime", employee.Company.EnableOvertime ? "true" : "false"),
+                    new Claim("enableAbsenceConflictsOutsideDepartments", employee.Company.EnableAbsenceConflictsOutsideDepartments ? "true" : "false"),
+                    new Claim("enableCarryover", employee.Company.EnableCarryover ? "true" : "false"),
+                    new Claim("enableSelfCancelLeaveRequests", employee.Company.EnableSelfCancelLeaveRequests ? "true" : "false"),
+                    new Claim("enableEditMyInformation", employee.Company.EnableEditMyInformation ? "true" : "false"),
+                    new Claim("enableAcceptDeclineShifts", employee.Company.EnableAcceptDeclineShifts ? "true" : "false"),
+                    new Claim("enableTakeoverShifts", employee.Company.EnableTakeoverShift ? "true" : "false"),
+                    new Claim("enableBroadcastShiftSwap", employee.Company.EnableBroadcastShiftSwap ? "true" : "false"),
+                    new Claim("enableTwoStageApproval", employee.Company.EnableRequireTwoStageApproval ? "true" : "false"),
+                    // user roles and permissions
                     new Claim("companyId", employee.Company.Id.ToString()),
                     new Claim("userRole", employee.UserRole.ToString()),
+                    new Claim("permissionId", "0"),
+                    new Claim("enableAddEmployees", "false"),
+                    new Claim("enableAddLateness", "false"),
+                    new Claim("enableAddManditoryLeave", "false"),
+                    new Claim("enableApproveAbsence", "false"),
+                    new Claim("enableCreatePattern", "false"),
+                    new Claim("enableCreateRotas", "false"),
+                    new Claim("enableDeleteEmployee", "false"),
+                    new Claim("enableTerminateEmployees", "false"),
+                    new Claim("enableViewEmployeeNotifications", "false"),
+                    new Claim("enableViewEmployeePayroll", "false"),
+                    new Claim("enableViewEmployeeSensitiveInformation", "false"),
                     new Claim("annualLeaveStartDate", employee.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
