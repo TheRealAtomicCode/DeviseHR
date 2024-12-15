@@ -7,12 +7,11 @@ using Models;
 using HR.DTO;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
-using HR.Services.EmployeeServices;
-using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common;
+using HR.Services.Interfaces;
 
 namespace HR.Controllers
 {

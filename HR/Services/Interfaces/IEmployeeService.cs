@@ -2,7 +2,7 @@
 using HR.DTO.outbound;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace HR.Services.UserServices.Interfaces
+namespace HR.Services.Interfaces
 {
     public interface IEmployeeService
     {
