@@ -30,9 +30,9 @@ namespace HR.Controllers
 
 
 
-        [HttpPost("CreateRole")]
+        [HttpPost("CreatePermission")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<Permission>>> CreateRole(PermissionData newPermission)
+        public async Task<ActionResult<ServiceResponse<Permission>>> CreatePermission(PermissionData newPermission)
         {
             try
             {

@@ -27,7 +27,7 @@ namespace HR.Services
         public async Task<int> CreatePermissionService(PermissionData newPermission, int myId, int companyId)
         {
 
-            StringUtils.ValidateNonEmptyStrings(newPermission.Name.Trim());
+            StringUtils.ValidateNonEmptyStrings([newPermission.PermissionName.Trim()]);
 
             var permission = newPermission.Adapt<Permission>();
             permission.CompanyId = companyId;

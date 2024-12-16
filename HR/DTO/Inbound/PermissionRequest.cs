@@ -2,7 +2,7 @@
 {
     public class PermissionData
     {
-        public string Name { get; set; } = null!;
+        public string PermissionName { get; set; } = null!;
         public bool EnableAddEmployees { get; set; }
         public bool EnableTerminateEmployees { get; set; }
         public bool EnableDeleteEmployee { get; set; }
