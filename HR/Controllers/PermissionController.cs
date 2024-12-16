@@ -133,5 +133,33 @@ namespace HR.Controllers
         }
 
 
+        [HttpPatch("EditSubordinates")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<string>>> EditSubordinates([FromRoute] int permissionId, [FromBody] EditSubordinatesDto editSubordinatesDto)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
+                await _permissionService.EditSubordinatesService(editSubordinatesDto, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<string>("Subordinates Successfully edited", true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                string cleanedErrorMessage = ex.Message.Substring(ex.Message.IndexOf(":") + 2);
+                var serviceResponse = new ServiceResponse<string>(null!, false, cleanedErrorMessage, 0);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
     }
 }

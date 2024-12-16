@@ -13,6 +13,7 @@ namespace HR.Services.Interfaces
         Task<List<Permission>> GetAllPermissions(int companyId, int? page, int? skip);
         Task EditPermission(JsonPatchDocument<EditPermissionDto> patchDoc, int permissionId, int myId, int companyId);
         Task<List<SubordinateResponseDto>> GetSubordinatesService(int managerId, int myId, int companyId);
+        Task EditSubordinatesService(EditSubordinatesDto editSubordinatesDto, int myId, int companyId);
 
     }
 }

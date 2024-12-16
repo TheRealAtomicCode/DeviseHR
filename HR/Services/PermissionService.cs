@@ -19,7 +19,7 @@ namespace HR.Services
         private readonly IPermissionRepo _permissionRepo;
         private readonly IConfiguration _configuration;
 
-        public PermissionService(IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo, IConfiguration configuration)
+        public PermissionService(IPermissionRepo permissionRepo, IConfiguration configuration)
         {
             _permissionRepo = permissionRepo;
             _configuration = configuration;
@@ -78,5 +78,54 @@ namespace HR.Services
 
             return subordinates;
         }
+
+
+
+        public async Task EditSubordinatesService(EditSubordinatesDto editSubordinatesDtos, int myId, int companyId)
+        {
+            if (editSubordinatesDtos.SubordinatesToBeAdded.Count > 200 || editSubordinatesDtos.SubordinatesToBeRemoved.Count > 200) throw new Exception("Please edit at most 200 emloyees at a time");
+
+            // checking manager is valid
+            if (editSubordinatesDtos.ManagerId == myId) throw new Exception("You can not add yourself as a manager since you have admin permissions");
+            var manager = await _permissionRepo.GetEmployeeById(editSubordinatesDtos.ManagerId, companyId);
+            if (manager == null) throw new Exception("Manager not found");
+            if (manager.UserRole != StaticRoles.Manager) throw new Exception("User must be of type manager to have subordinates");
+
+            // checking if the subordinates are managers
+            var subordinatesToBeAddedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeAdded, companyId);
+            var subordinatesToBeRemovedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeRemoved, companyId);
+
+            if (subordinatesToBeAddedWithoutManagerType.Count > editSubordinatesDtos.SubordinatesToBeAdded.Count ||
+                subordinatesToBeRemovedWithoutManagerType.Count > editSubordinatesDtos.SubordinatesToBeRemoved.Count)
+            {
+                throw new Exception("You can not add users of type manager as subordinates");
+            }
+
+            // if statement for the hierarchies to be removed
+            if (editSubordinatesDtos.SubordinatesToBeRemoved.Count > 0)
+            {
+                foreach (var subordinate in subordinatesToBeRemovedWithoutManagerType)
+                {
+                    if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your us");
+                    // deleting hierarchy
+                    await _permissionRepo.RemoveHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
+                }
+            }
+
+            // if statement for the hierarchies to be added
+            if (editSubordinatesDtos.SubordinatesToBeAdded.Count > 0)
+            {
+                foreach (var subordinate in subordinatesToBeAddedWithoutManagerType)
+                {
+                    if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your manager");
+                    // Create a new hierarchy where the managerId is the current manager's Id and the subordinateId is from the subordinatesToBeAddedWithoutManagerType list
+                    await _permissionRepo.AddHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
+                }
+            }
+
+            await _permissionRepo.SaveChangesAsync();
+        }
+
+
     }
 }

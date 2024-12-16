@@ -146,6 +146,16 @@ namespace HR.Repository
        
         }
 
-       
+        // compied
+        public async Task AddHierarchy(int managerId, int subordinateId)
+        {
+            await _context.Hierarchies.AddAsync(new Hierarchy
+            {
+                ManagerId = managerId,
+                SubordinateId = subordinateId
+            });
+        }
+
+
     }
 }

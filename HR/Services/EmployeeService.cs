@@ -14,13 +14,11 @@ namespace HR.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepo _employeeRepo;
-        private readonly IHierarchyRepo _hierarchyRepo;
         private readonly IConfiguration _configuration;
 
-        public EmployeeService(IEmployeeRepo employeeRepo, IHierarchyRepo hierarchyRepo, IConfiguration configuration)
+        public EmployeeService(IEmployeeRepo employeeRepo, IConfiguration configuration)
         {
             _employeeRepo = employeeRepo;
-            _hierarchyRepo = hierarchyRepo;
             _configuration = configuration;
         }
 
@@ -48,20 +46,12 @@ namespace HR.Services
                 employee.VerificationCode = otp;
             }
 
-            await _employeeRepo.SaveChangesAsync();
-
             if (myRole <= StaticRoles.Manager)
             {
-                Hierarchy hierarchy = new Hierarchy
-                {
-                    ManagerId = myId,
-                    SubordinateId = employee.Id
-                };
-
-                await _hierarchyRepo.AddHierarchy(hierarchy);
+                await _employeeRepo.AddHierarchy(myId, employee.Id);
             }
 
-            await _hierarchyRepo.SaveChangesAsync();
+            await _employeeRepo.SaveChangesAsync();
 
             return employee.Id;
         }

@@ -42,10 +42,12 @@ namespace HR.DTO.Inbound
     }
 
 
-    public class EditSubordinatesRequest
+    public class EditSubordinatesDto
     {
         public int ManagerId { get; set; }
         public List<int> SubordinatesToBeAdded { get; set; } = new List<int>();
         public List<int> SubordinatesToBeRemoved { get; set; } = new List<int>();
     }
+
+ 
 }
