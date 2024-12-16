@@ -4,9 +4,8 @@ using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
-using HR.Subroutines;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 using Models;
 
 
@@ -15,13 +14,11 @@ namespace HR.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepo _employeeRepo;
-        private readonly IHierarchyRepo _hierarchyRepo;
         private readonly IConfiguration _configuration;
 
-        public EmployeeService(IEmployeeRepo employeeRepo, IHierarchyRepo hierarchyRepo, IConfiguration configuration)
+        public EmployeeService(IEmployeeRepo employeeRepo, IConfiguration configuration)
         {
             _employeeRepo = employeeRepo;
-            _hierarchyRepo = hierarchyRepo;
             _configuration = configuration;
         }
 
@@ -49,20 +46,12 @@ namespace HR.Services
                 employee.VerificationCode = otp;
             }
 
-            await _employeeRepo.SaveChangesAsync();
-
             if (myRole <= StaticRoles.Manager)
             {
-                Hierarchy hierarchy = new Hierarchy
-                {
-                    ManagerId = myId,
-                    SubordinateId = employee.Id
-                };
-
-                await _hierarchyRepo.AddHierarchy(hierarchy);
+                await _employeeRepo.AddHierarchy(myId, employee.Id);
             }
 
-            await _hierarchyRepo.SaveChangesAsync();
+            await _employeeRepo.SaveChangesAsync();
 
             return employee.Id;
         }
@@ -99,12 +88,28 @@ namespace HR.Services
             return foundEmployees;
         }
 
-        //public async Task<int> DeleteEmployees(int employeeId, int myId, int companyId)
-        //{
-        //    List<FoundEmployee> foundEmployees = await _employeeRepo.GetEmployeeById(employeeId, companyId);
+        public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int companyId)
+        {
+            var employee = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
-        //    return foundEmployees;
-        //}
+            if (employee == null)
+            {
+                throw new Exception("Unable to locate employee");
+            }
+
+            var toPatch = employee.Adapt<EditEmployeeDto>();
+
+            patchDoc.ApplyTo(toPatch);
+            toPatch.Adapt(employee);
+
+            employee.UpdatedAt = DateTime.UtcNow;
+            employee.UpdatedByUser = myId;
+
+            await _employeeRepo.SaveChangesAsync();
+        }
+
+      
+
 
 
     }

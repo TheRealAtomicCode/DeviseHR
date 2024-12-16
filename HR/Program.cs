@@ -15,6 +15,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
 
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    });
+
 // example for extraction
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -107,7 +113,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
 builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
 
 // Scoped Injection Services

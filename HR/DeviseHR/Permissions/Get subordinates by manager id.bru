@@ -1,0 +1,11 @@
+meta {
+  name: Get subordinates by manager id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{hr-url}}/api/Permission/GetSubordinates/2
+  body: none
+  auth: inherit
+}
