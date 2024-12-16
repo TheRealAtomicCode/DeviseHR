@@ -5,6 +5,7 @@ using HR.Services;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Models;
@@ -77,6 +78,30 @@ namespace HR.Controllers
                 var serviceResponse = new ServiceResponse<Permission>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
+        }
+
+        [HttpPatch("{permissionId}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditEmployee([FromRoute] int permissionId, [FromBody] JsonPatchDocument<EditPermissionDto> patchDoc)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+
+                await _permissionService.EditPermission(patchDoc, permissionId, myId, companyId);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
         }
 
 

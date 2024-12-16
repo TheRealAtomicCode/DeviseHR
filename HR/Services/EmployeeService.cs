@@ -98,7 +98,7 @@ namespace HR.Services
             return foundEmployees;
         }
 
-        public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int myRole, int companyId)
+        public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int companyId)
         {
             var employee = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
@@ -111,6 +111,9 @@ namespace HR.Services
 
             patchDoc.ApplyTo(toPatch);
             toPatch.Adapt(employee);
+
+            employee.UpdatedAt = DateTime.UtcNow;
+            employee.UpdatedByUser = myId;
 
             await _employeeRepo.SaveChangesAsync();
         }

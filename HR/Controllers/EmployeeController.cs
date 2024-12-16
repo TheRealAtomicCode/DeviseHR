@@ -126,9 +126,8 @@ namespace HR.Controllers
 
                 int myId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
-                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
 
-                await _employeeService.EditEmployee(patchDoc, employeeId, myId, myRole, companyId);
+                await _employeeService.EditEmployee(patchDoc, employeeId, myId, companyId);
 
                 return NoContent();
             }

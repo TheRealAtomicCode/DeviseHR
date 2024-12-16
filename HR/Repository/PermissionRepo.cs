@@ -40,6 +40,10 @@ namespace HR.Repository
             return await query.ToListAsync();
         }
 
+        public async Task<Permission?> GetPermissionById(int id, int companyId)
+        {
+            return await _context.Permissions.Where(p => p.Id == id && p.CompanyId == companyId).FirstOrDefaultAsync();
+        }
 
         public async Task SaveChangesAsync()
         {

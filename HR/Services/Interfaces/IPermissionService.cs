@@ -1,4 +1,5 @@
 ﻿using HR.DTO.Inbound;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Models;
 using System.ComponentModel.Design;
@@ -9,6 +10,7 @@ namespace HR.Services.Interfaces
     {
         Task<int> CreatePermissionService(PermissionData newPermission, int myId, int companyId);
         Task<List<Permission>> GetAllPermissions(int companyId, int? page, int? skip);
-        //Task<List<Permission>> GetAllPermissions(int permissionId, int companyId, int page, int skip);
+        Task EditPermission(JsonPatchDocument<EditPermissionDto> patchDoc, int permissionId, int myId, int companyId);
+
     }
 }
