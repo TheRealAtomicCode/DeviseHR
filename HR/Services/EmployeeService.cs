@@ -4,9 +4,8 @@ using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
-using HR.Subroutines;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 using Models;
 
 
@@ -99,12 +98,25 @@ namespace HR.Services
             return foundEmployees;
         }
 
-        //public async Task<int> DeleteEmployees(int employeeId, int myId, int companyId)
-        //{
-        //    List<FoundEmployee> foundEmployees = await _employeeRepo.GetEmployeeById(employeeId, companyId);
+        public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int myRole, int companyId)
+        {
+            var employee = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
-        //    return foundEmployees;
-        //}
+            if (employee == null)
+            {
+                throw new Exception("Unable to locate employee");
+            }
+
+            var toPatch = employee.Adapt<EditEmployeeDto>();
+
+            patchDoc.ApplyTo(toPatch);
+            toPatch.Adapt(employee);
+
+            await _employeeRepo.SaveChangesAsync();
+        }
+
+      
+
 
 
     }
