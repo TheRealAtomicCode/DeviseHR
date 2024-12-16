@@ -39,5 +39,10 @@ namespace HR.Services
 
             return permission.Id;
         }
+
+        public async Task<List<Permission>> GetAllPermissions(int companyId, int? page, int? skip)
+        {
+            return await _permissionRepo.GetAllPermissionsByCompanyId(companyId, page, skip);
+        }
     }
 }

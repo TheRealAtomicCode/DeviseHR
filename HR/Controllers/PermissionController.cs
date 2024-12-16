@@ -55,5 +55,30 @@ namespace HR.Controllers
         }
 
 
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Permission>>>> GetAllPermission([FromQuery] int? page, [FromQuery] int? skip)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+
+                List<Permission> permissions = await _permissionService.GetAllPermissions(companyId, page, skip);
+
+                var sr = new ServiceResponse<List<Permission>>(permissions, true, "", 0);
+
+                return Ok(sr);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<Permission>(null!, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
     }
 }

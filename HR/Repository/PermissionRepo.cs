@@ -1,4 +1,5 @@
 ﻿using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,22 @@ namespace HR.Repository
         {
             await _context.Permissions.AddAsync(newPermission);
         }
-       
+
+        public async Task<List<Permission>> GetAllPermissionsByCompanyId(int companyId, int? page, int? skip)
+        {
+            var query = _context.Permissions.AsQueryable();
+            query = query.Where(p => p.CompanyId == companyId);
+
+            if (page.HasValue && skip.HasValue)
+            {
+                int skipCount = Math.Abs((page.Value - 1) * skip.Value);
+                int takeCount = Math.Abs(skip.Value);
+
+                query = query.Skip(skipCount).Take(takeCount);
+            }
+
+            return await query.ToListAsync();
+        }
 
 
         public async Task SaveChangesAsync()
