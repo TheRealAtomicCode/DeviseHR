@@ -45,6 +45,27 @@ namespace HR.Repository
             return await _context.Permissions.Where(p => p.Id == id && p.CompanyId == companyId).FirstOrDefaultAsync();
         }
 
+        public async Task<List<SubordinateResponseDto>> GetSubordinatesByManagerId(int managerId, int companyId)
+        {
+            var userInfos = await 
+               (from u in _context.Employees
+                join h in _context.Hierarchies on u.Id equals h.SubordinateId into subordinates
+                from s in subordinates.DefaultIfEmpty()
+                where u.CompanyId == companyId && u.Id != managerId
+                select new SubordinateResponseDto
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    UserType = u.UserRole,
+                    Id = u.Id,
+                    IsSubordinate = (s != null && s.ManagerId == managerId)
+                }
+            ).ToListAsync();
+
+            return userInfos;
+        }
+
         public async Task SaveChangesAsync()
         {
             try

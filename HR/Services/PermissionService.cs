@@ -1,5 +1,6 @@
 ﻿using Common;
 using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
@@ -69,5 +70,13 @@ namespace HR.Services
         }
 
 
+        public async Task<List<SubordinateResponseDto>> GetSubordinatesService(int managerId, int myId, int companyId)
+        {
+            if (managerId == myId) throw new Exception("Everyone is your subordinate");
+
+            var subordinates = await _permissionRepo.GetSubordinatesByManagerId(managerId, companyId);
+
+            return subordinates;
+        }
     }
 }

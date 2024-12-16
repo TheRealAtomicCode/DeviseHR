@@ -1,6 +1,7 @@
 ﻿using Common;
 using HR.DTO;
 using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Services;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -82,7 +83,7 @@ namespace HR.Controllers
 
         [HttpPatch("{permissionId}")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditEmployee([FromRoute] int permissionId, [FromBody] JsonPatchDocument<EditPermissionDto> patchDoc)
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditPermission([FromRoute] int permissionId, [FromBody] JsonPatchDocument<EditPermissionDto> patchDoc)
         {
             try
             {
@@ -102,6 +103,33 @@ namespace HR.Controllers
                 return BadRequest(serviceResponse);
             }
 
+        }
+
+
+        [HttpGet("GetSubordinates/{managerId}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<SubordinateResponseDto>>>> GetSubordinates(int managerId)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
+                List<SubordinateResponseDto> subordinates = await _permissionService.GetSubordinatesService(managerId, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<List<SubordinateResponseDto>>(subordinates, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<List<SubordinateResponseDto>>(null!, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
         }
 
 
