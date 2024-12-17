@@ -63,13 +63,27 @@ namespace HR.Repository
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     Email = u.Email,
-                    UserType = u.UserRole,
+                    UserRole = u.UserRole,
                     Id = u.Id,
-                    IsSubordinate = (s != null && s.ManagerId == managerId)
+                    //IsSubordinate = (s != null && s.ManagerId == managerId)
                 }
             ).ToListAsync();
 
-            return userInfos;
+            var xxx = await (
+                from e in _context.Employees
+                join h in _context.Hierarchies
+                on e.Id equals h.SubordinateId
+                where h.ManagerId == managerId && e.CompanyId == companyId
+                select new SubordinateResponseDto
+                {
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    Email = e.Email,
+                    UserRole = e.UserRole,
+                    Id = e.Id
+                }).ToListAsync();
+
+            return xxx;
         }
 
         public async Task<List<NonManagerUserDto>> GetNoneManagerEmployeesByIdList(List<int> employeeIds, int companyId)
