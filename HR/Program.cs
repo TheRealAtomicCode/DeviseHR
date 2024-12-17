@@ -119,6 +119,7 @@ builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IContractService, ContractService>();
 
 
 // Register mappings
