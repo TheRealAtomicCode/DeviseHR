@@ -6,8 +6,8 @@
         public string FirstName { get; set; } = String.Empty;
         public string LastName { get; set; } = String.Empty;
         public string Email { get; set; } = String.Empty;
-        public int UserType { get; set; }
-        public bool IsSubordinate { get; set; }
+        public int UserRole { get; set; }
+       // public bool IsSubordinate { get; set; }
     }
 
 
