@@ -2,7 +2,7 @@
 {
     public class CreateContractDto
     {
-        public int UserId { get; set; }
+        public int employeeId { get; set; }
         public int PatternId { get; set; }
         public int ContractType { get; set; }
         public string StartDate { get; set; } = string.Empty;
@@ -21,3 +21,5 @@
 
 
     }
+
+}

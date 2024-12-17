@@ -58,5 +58,34 @@ namespace HR.Controllers
         }
 
 
+        [HttpPost("CalculateLeaveYear")]
+        [Authorize(Policy = "Manager")]
+        [Authorize(Policy = "EnableAddEmployees")]
+        public async Task<ActionResult<ServiceResponse<CreateContractDto>>> calculateLeaveYear([FromBody] CreateContractDto newConract)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+                bool enableAddEmployees = bool.Parse(claims.FindFirst("enableAddEmployees")!.Value);
+
+                var calculatedContract = await _contractService.CalculateLeaveYear(newConract, companyId);
+
+                var serviceResponse = new ServiceResponse<AddContractRequest>(calculatedContract, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<AddContractRequest>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
     }
 }
