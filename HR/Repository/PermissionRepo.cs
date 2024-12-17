@@ -53,23 +53,7 @@ namespace HR.Repository
 
         public async Task<List<SubordinateResponseDto>> GetSubordinatesByManagerId(int managerId, int companyId)
         {
-            var userInfos = await 
-               (from u in _context.Employees
-                join h in _context.Hierarchies on u.Id equals h.SubordinateId into subordinates
-                from s in subordinates.DefaultIfEmpty()
-                where u.CompanyId == companyId && u.Id != managerId
-                select new SubordinateResponseDto
-                {
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email,
-                    UserRole = u.UserRole,
-                    Id = u.Id,
-                    //IsSubordinate = (s != null && s.ManagerId == managerId)
-                }
-            ).ToListAsync();
-
-            var xxx = await (
+            var subordinates = await (
                 from e in _context.Employees
                 join h in _context.Hierarchies
                 on e.Id equals h.SubordinateId
@@ -83,7 +67,7 @@ namespace HR.Repository
                     Id = e.Id
                 }).ToListAsync();
 
-            return xxx;
+            return subordinates;
         }
 
         public async Task<List<NonManagerUserDto>> GetNoneManagerEmployeesByIdList(List<int> employeeIds, int companyId)

@@ -4,8 +4,20 @@ meta {
   seq: 3
 }
 
-get {
-  url: 
-  body: none
-  auth: none
+patch {
+  url: {{hr-url}}/api/Permission/EditSubordinates
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "managerId": 5,
+    "subordinatesToBeAdded": [
+      7,8,9
+    ],
+    "subordinatesToBeRemoved": [
+      7
+    ]
+  }
 }

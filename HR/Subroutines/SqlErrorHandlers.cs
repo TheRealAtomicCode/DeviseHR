@@ -19,6 +19,8 @@ namespace HR.Subroutines
 
             if (errorMessage.Contains("permission_id_null_if_not_manager")) throw new Exception("Only managers can be provided with a permission");
 
+            if (errorMessage.Contains("uq_hierarchies")) throw new Exception("The provided employees have already been added as subordinates to that manager");
+
             throw new Exception("An unexpected error occurred");
         }
 
