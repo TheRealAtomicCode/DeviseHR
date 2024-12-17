@@ -95,21 +95,10 @@ namespace HR.Services
             var subordinatesToBeAddedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeAdded, companyId);
             var subordinatesToBeRemovedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeRemoved, companyId);
 
-            if (subordinatesToBeAddedWithoutManagerType.Count > editSubordinatesDtos.SubordinatesToBeAdded.Count ||
-                subordinatesToBeRemovedWithoutManagerType.Count > editSubordinatesDtos.SubordinatesToBeRemoved.Count)
+            if (subordinatesToBeAddedWithoutManagerType.Count < editSubordinatesDtos.SubordinatesToBeAdded.Count ||
+                subordinatesToBeRemovedWithoutManagerType.Count < editSubordinatesDtos.SubordinatesToBeRemoved.Count)
             {
                 throw new Exception("You can not add users of type manager as subordinates");
-            }
-
-            // if statement for the hierarchies to be removed
-            if (editSubordinatesDtos.SubordinatesToBeRemoved.Count > 0)
-            {
-                foreach (var subordinate in subordinatesToBeRemovedWithoutManagerType)
-                {
-                    if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your us");
-                    // deleting hierarchy
-                    await _permissionRepo.RemoveHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
-                }
             }
 
             // if statement for the hierarchies to be added
@@ -120,6 +109,17 @@ namespace HR.Services
                     if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your manager");
                     // Create a new hierarchy where the managerId is the current manager's Id and the subordinateId is from the subordinatesToBeAddedWithoutManagerType list
                     await _permissionRepo.AddHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
+                }
+            }
+
+            // if statement for the hierarchies to be removed
+            if (editSubordinatesDtos.SubordinatesToBeRemoved.Count > 0)
+            {
+                foreach (var subordinate in subordinatesToBeRemovedWithoutManagerType)
+                {
+                    if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your us");
+                    // deleting hierarchy
+                    await _permissionRepo.RemoveHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
                 }
             }
 
