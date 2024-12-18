@@ -67,13 +67,43 @@ namespace HR.Subroutines
         }
 
 
-        public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly contractStartDate, DateOnly annualLeaveStartDate, bool isDays)
+        //public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly contractStartDate, DateOnly annualLeaveStartDate, bool isDays)
+        //{
+        //    // get contract start date
+        //    if (contractStartDate < annualLeaveStartDate) throw new Exception("Unexpected error occured while calculating the current contract");
+
+
+        //    int daysBetween = DateModifier.GetDaysBetween(contractStartDate, annualLeaveStartDate.AddYears(1).AddDays(-1));
+
+        //    double contractLeaveRatio;
+
+        //    if (isDays)
+        //    {
+        //        contractLeaveRatio = (double)newContract.ContractedDaysPerWeek / (double)newContract.CompanyDaysPerWeek;
+        //    }
+        //    else
+        //    {
+        //        contractLeaveRatio = (double)newContract.ContractedHoursPerWeek / (double)newContract.CompanyHoursPerWeek;
+        //    }
+
+        //    double contractleaveEntitlementPerYear = contractLeaveRatio * newContract.CompanyLeaveEntitlement;
+
+        //    double thisContractEntitlement = (contractleaveEntitlementPerYear / 365) * daysBetween;
+
+        //    NewContractCalculationResult newContractCalculationResult = new NewContractCalculationResult(contractleaveEntitlementPerYear, thisContractEntitlement);
+
+        //    return newContractCalculationResult;
+        //}
+
+        public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly annualLeaveStartDate, bool isDays)
         {
             // get contract start date
-            if (contractStartDate < annualLeaveStartDate) throw new Exception("Unexpected error occured while calculating the current contract");
+            if (newContract.StartDate < annualLeaveStartDate)
+            {
+                newContract.StartDate = newContract.StartDate.AddYears(1);
+            }
 
-
-            int daysBetween = DateModifier.GetDaysBetween(contractStartDate, annualLeaveStartDate.AddYears(1).AddDays(-1));
+            int daysBetween = DateModifier.GetDaysBetween(newContract.StartDate, annualLeaveStartDate.AddYears(1).AddDays(-1));
 
             double contractLeaveRatio;
 

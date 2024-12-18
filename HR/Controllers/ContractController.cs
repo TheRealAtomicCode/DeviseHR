@@ -70,18 +70,16 @@ namespace HR.Controllers
 
                 int myId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
-                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
-                bool enableAddEmployees = bool.Parse(claims.FindFirst("enableAddEmployees")!.Value);
 
                 var calculatedContract = await _contractService.CalculateLeaveYear(newConract, companyId);
 
-                var serviceResponse = new ServiceResponse<AddContractRequest>(calculatedContract, true, "");
+                var serviceResponse = new ServiceResponse<CreateContractDto>(calculatedContract, true, "", 0);
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<AddContractRequest>(null!, false, ex.Message);
+                var serviceResponse = new ServiceResponse<CreateContractDto>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
         }

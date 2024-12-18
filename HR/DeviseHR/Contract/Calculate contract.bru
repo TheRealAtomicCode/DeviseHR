@@ -1,0 +1,32 @@
+meta {
+  name: Calculate contract
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hr-url}}/api/Contract/CalculateLeaveYear
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "employeeId": 15,
+    "patternId": 0,
+    "contractType": 2,
+    "startDate": "2022-01-01",
+    "isDays": true,
+    "contractedHoursPerWeek": 40,
+    "contractedDaysPerWeek": 5,
+    "companyHoursPerWeek": 40,
+    "companyDaysPerWeek": 5,
+    "avrageWorkingDay": 5,
+    "companyLeaveEntitlement": 40,
+    "contractedLeaveEntitlement": 0,
+    "firstLeaveAllowence": 0,
+    "nextLeaveAllowence": 0,
+    "termTimeId": 0,
+    "discardedId": 0
+  }
+}
