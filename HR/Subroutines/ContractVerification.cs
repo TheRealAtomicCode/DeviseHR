@@ -6,7 +6,7 @@ namespace HR.Subroutines
     public class ContractVerification
     {
 
-        public static bool CheckAllContractsHaveSameLeaveUnit(List<Contract> existingContracts, CreateContractDto? newContract)
+        public static bool CheckAndGetLeaveUnit(List<Contract> existingContracts, CreateContractDto? newContract)
         {
             bool isDays;
 

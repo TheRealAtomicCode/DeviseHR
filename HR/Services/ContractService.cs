@@ -37,7 +37,7 @@ namespace HR.Services
 
         //    List<Contract> existingContracts = await _contractRepo.GetContractByLeaveYear(employee, annualLeaveStartDate);
 
-        //    bool isDays = ContractVerification.CheckAllContractsHaveSameLeaveUnit(existingContracts, newContract);
+        //    bool isDays = ContractVerification.CheckAndGetLeaveUnit(existingContracts, newContract);
 
         //    int previousLeaveYearEntitlement = CalculateContract.CalculateLeaveYearEntitlement(existingContracts, annualLeaveStartDate, newContract.StartDate, isDays);
 
@@ -66,7 +66,11 @@ namespace HR.Services
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.StartDate, employee.AnnualLeaveStartDate);
 
-            bool isDays = true;
+            List<Contract> existingContracts = await _contractRepo.GetContractByLeaveYear(employee, annualLeaveStartDate);
+
+            bool isDays = ContractVerification.CheckAndGetLeaveUnit(existingContracts, newContract);
+
+            int previousLeaveYearEntitlement = CalculateContract.CalculateLeaveYearEntitlement(existingContracts, annualLeaveStartDate, newContract.StartDate, isDays);
 
             NewContractCalculationResult newContractResult = CalculateContract.CalculateNewContractEntitlementMut(newContract, annualLeaveStartDate, isDays);
 

@@ -28,38 +28,36 @@ namespace HR.Repository
 
             Contract? contractBeforeFirst;
 
-            if (contracts.Count == 0)
-            {
-                contractBeforeFirst = await _context.Contracts
-                        .Where(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId &&
-                         c.ContractStartDate < annualLeaveStartDate)
-                        .OrderByDescending(c => c.ContractStartDate)
-                        .FirstOrDefaultAsync();
+            /* 
+             * 
+             * IMPORTANT CONTEXT
+            
+                This code does the following:
+            
+                -- it gets the contract before the list of contracts that were selected between 2 dates (the annual leave start and end date)
 
-                if (contractBeforeFirst != null)
-                {
-                    contracts.Add(contractBeforeFirst);
-                }
-            }
-            else
-            {
-                if (contracts[0].ContractStartDate > employee.AnnualLeaveStartDate)
-                {
-                    contractBeforeFirst = await _context.Contracts
-                        .Where(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId &&
-                         c.ContractStartDate < annualLeaveStartDate)
-                        .OrderByDescending(c => c.ContractStartDate)
-                        .FirstOrDefaultAsync();
+                -- it is important to get that contract as the contract that was selected may have started after the annual leave start date
 
-                    if (contractBeforeFirst != null)
-                    {
-                        contracts.Add(contractBeforeFirst);
-                    }
-                }
+                -- thus not selectng an entire year, but a partial year
+
+                -- also if no contracts were found, it could be due to an existing contract that has started before the annual; leave start date,
+                -- and the employee has been on that contact ever sinse.
+
+                if a contract was found, it must be appended to the start of the list of contracts, then cut off later
+
+            */
+            contractBeforeFirst = await _context.Contracts
+                             .Where(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId &&
+                              c.ContractStartDate < annualLeaveStartDate)
+                             .OrderByDescending(c => c.ContractStartDate)
+                             .FirstOrDefaultAsync();
+
+            if (contractBeforeFirst != null)
+            {
+                contracts.Add(contractBeforeFirst);
             }
 
             return contracts;
-
         }
 
 
