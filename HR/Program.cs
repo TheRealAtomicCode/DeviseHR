@@ -114,11 +114,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
+builder.Services.AddScoped<IContractRepo, ContractRepo>();
 
 // Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IContractService, ContractService>();
 
 
 // Register mappings
