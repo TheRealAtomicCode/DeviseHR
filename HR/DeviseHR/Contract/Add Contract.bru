@@ -1,0 +1,32 @@
+meta {
+  name: Add Contract
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{hr-url}}/api/Contract/CreateContract
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "employeeId": 10,
+    "patternId": 0,
+    "contractType": 2,
+    "contractStartDate": "2022-01-01",
+    "isDays": true,
+    "contractedHoursPerWeek": 40,
+    "contractedDaysPerWeek": 5,
+    "companyHoursPerWeek": 40,
+    "companyDaysPerWeek": 5,
+    "averageWorkingDay": 8,
+    "companyLeaveEntitlement": 80,
+    "contractedLeaveEntitlement": 80,
+    "firstLeaveAllowence": 80,
+    "nextLeaveAllowence": 80,
+    "termTimeId": 0,
+    "discardedId": 0
+  }
+}

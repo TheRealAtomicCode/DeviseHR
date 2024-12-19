@@ -8,7 +8,7 @@ namespace HR.Subroutines
     public class CalculateContract
     {
 
-        public static int CalculateLeaveYearEntitlement(List<Contract> contracts, DateOnly annualLeaveStartDate, DateOnly newContractStartDate, bool isDays)
+        public static int CalculateLeaveYearEntitlement(List<Contract> contracts, DateOnly annualLeaveStartDate, DateOnly newContractStartDate, int leaveUnit)
         {
             int result = 0;
 
@@ -44,13 +44,17 @@ namespace HR.Subroutines
 
                     double contractLeaveRatio;
 
-                    if (isDays)
+                    if (leaveUnit == 1)
                     {
                         contractLeaveRatio = (double)contracts[i].ContractedDaysPerWeek / (double)contracts[i].CompanyDaysPerWeek;
                     }
-                    else
+                    else if(leaveUnit == 2)
                     {
                         contractLeaveRatio = (double)contracts[i].ContractedHoursPerWeek / (double)contracts[i].CompanyHoursPerWeek;
+                    }
+                    else
+                    {
+                        throw new Exception("Unable to calculate leave, due to incorrect leave units");
                     }
 
                     double contractleaveEntitlementPerYear = contractLeaveRatio * contracts[i].CompanyLeaveEntitlement;
@@ -95,25 +99,29 @@ namespace HR.Subroutines
         //    return newContractCalculationResult;
         //}
 
-        public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly annualLeaveStartDate, bool isDays)
+        public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly annualLeaveStartDate, int leaveUnit)
         {
             // get contract start date
-            if (newContract.StartDate < annualLeaveStartDate)
+            if (newContract.ContractStartDate < annualLeaveStartDate)
             {
-                newContract.StartDate = newContract.StartDate.AddYears(1);
+                newContract.ContractStartDate = newContract.ContractStartDate.AddYears(1);
             }
 
-            int daysBetween = DateModifier.GetDaysBetween(newContract.StartDate, annualLeaveStartDate.AddYears(1).AddDays(-1));
+            int daysBetween = DateModifier.GetDaysBetween(newContract.ContractStartDate, annualLeaveStartDate.AddYears(1).AddDays(-1));
 
             double contractLeaveRatio;
 
-            if (isDays)
+            if (leaveUnit == 1)
             {
                 contractLeaveRatio = (double)newContract.ContractedDaysPerWeek / (double)newContract.CompanyDaysPerWeek;
             }
-            else
+            else if(leaveUnit == 2)
             {
                 contractLeaveRatio = (double)newContract.ContractedHoursPerWeek / (double)newContract.CompanyHoursPerWeek;
+            }
+            else
+            {
+                throw new Exception("Unable to calculate leave, due to incorrect leave units");
             }
 
             double contractleaveEntitlementPerYear = contractLeaveRatio * newContract.CompanyLeaveEntitlement;

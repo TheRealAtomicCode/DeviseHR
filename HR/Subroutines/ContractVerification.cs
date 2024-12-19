@@ -6,16 +6,22 @@ namespace HR.Subroutines
     public class ContractVerification
     {
 
-        public static bool CheckAndGetLeaveUnit(List<Contract> existingContracts, CreateContractDto? newContract)
+        public static int CheckAndGetLeaveUnit(List<Contract> existingContracts, CreateContractDto? newContract)
         {
+            // 0 no previous contracts
+            // 1 days
+            // 2 hours
             bool isDays;
+            int leaveUnit = 0;
 
             if (existingContracts.Count > 0)
             {
+                leaveUnit = existingContracts[0].IsDays == true ? 1 : 2;
                 isDays = existingContracts[0].IsDays;
             }
             else if (newContract != null)
             {
+                leaveUnit = newContract.IsDays == true ? 1 : 2;
                 isDays = newContract.IsDays;
             }
             else
@@ -33,7 +39,7 @@ namespace HR.Subroutines
                 if (newContract.IsDays != isDays) throw new Exception("You can not add a new contract with a different leave unit.");
             }
 
-            return isDays;
+            return leaveUnit;
         }
 
     }

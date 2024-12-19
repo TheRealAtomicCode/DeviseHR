@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -42,13 +43,11 @@ namespace HR.Controllers
                 DateOnly companyAnnualLeaveDate = DateOnly.Parse(claims.FindFirst("annualLeaveStartDate")!.Value);
                 bool enableAddEmployees = bool.Parse(claims.FindFirst("enableAddEmployees")!.Value);
 
-              //  var calculatedContract = await ManagerContractService.AddContract(newConract, myId, companyId, myRole, enableAddEmployees);
+                var addedContract = await _contractService.CreateContract(newConract, myId, companyId, myRole);
 
-              //  var serviceResponse = new ServiceResponse<Contract>(calculatedContract, true, "");
+                var serviceResponse = new ServiceResponse<Contract>(addedContract, true, "", 0);
 
-               // return Ok(serviceResponse);
-
-               throw new NotImplementedException();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
