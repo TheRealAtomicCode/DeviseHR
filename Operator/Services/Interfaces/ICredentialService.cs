@@ -2,7 +2,7 @@
 using OP.DTO.Inbound;
 using OP.DTO.Outbound;
 
-namespace OP.Services.OperatorService.Interfaces
+namespace OP.Services.Interfaces
 {
     public interface ICredentialService
     {

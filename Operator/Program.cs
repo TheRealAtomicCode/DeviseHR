@@ -1,14 +1,15 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models;
+using Op.Repository;
+using Op.Repository.IRepostiory;
 using OP.DTO.Mapper;
-using OP.Repository;
-using OP.Repository.Interfaces;
-using OP.Services.OperatorService;
-using OP.Services.OperatorService.Interfaces;
+using OP.Services;
+using OP.Services.CredentialService;
+using OP.Services.Interfaces;
+using OP.Services.OperatorServices;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json.Serialization;
 
@@ -25,7 +26,7 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 //string hrServerPort = configuration["HR_SERVER_PORT"];
-var secretKey = configuration["JwtSettings:SecretKey"];
+var secretKey = configuration["token:SecretKey"];
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -65,19 +66,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Sudo", policy =>
-    policy.RequireClaim("userRole", "1"));
+    policy.RequireClaim("userRole", "50"));
 
     options.AddPolicy("Admin", policy =>
-    policy.RequireClaim("userRole", "1", "2"));
+    policy.RequireClaim("userRole", "50", "40"));
 
     options.AddPolicy("Manager", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3"));
+    policy.RequireClaim("userRole", "50", "40", "30"));
 
     options.AddPolicy("Employee", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4"));
+    policy.RequireClaim("userRole", "50", "40", "30", "20"));
 
     options.AddPolicy("Visitor", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4", "5"));
+    policy.RequireClaim("userRole", "50", "40", "30", "20", "10"));
 });
 
 // add the CORS middleware to allow any origin
@@ -100,8 +101,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 
 // Scope and Dependancy Injection
-builder.Services.AddScoped<IGenericRepository<Operator>, OperatorRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(Repository<>));
+
 builder.Services.AddScoped<ICredentialService, CredentialService>();
+builder.Services.AddScoped<IOperatorService, OperatorService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 // Register mappings
 MapConfig.RegisterMappings();
