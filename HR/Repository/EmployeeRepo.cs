@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.Design;
 using HR.DTO.Inbound;
 using HR.Subroutines;
+using HR.DTO.outbound;
+using Mapster;
 
 namespace HR.Repository
 {
@@ -26,24 +28,105 @@ namespace HR.Repository
             return await _context.Employees
                 .Include(u => u.Company)
                 .Include(u => u.Permission)
-        //        .AsNoTracking()
                 .FirstOrDefaultAsync(emp => emp.Email == email.Trim().ToLower());
         }
 
-
-        public async Task<Employee?> GetEmployeeById(int id)
+        public async Task<Employee?> GetEmployeeById(int id, int companyId)
         {
-            return await _context.Employees.FirstOrDefaultAsync(emp => emp.Id == id);
-        }
-       
-
-
-        public async Task<List<Employee>> GetAllEmployees(string email)
-        {
-            return await _context.Employees.ToListAsync();
+            return await _context.Employees
+                .Include(u => u.Company)
+                .Include(u => u.Permission)
+                .FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
         }
 
-        
+
+        public async Task<EmployeeDto> GetEmployeeDtoById(int employeeId, int companyId)
+        {
+
+            var employeeDto = await (from e in _context.Employees
+                                     where e.Id == employeeId && e.CompanyId == companyId
+                                     select new EmployeeDto
+                                     {
+                                         Id = e.Id,
+                                         FirstName = e.FirstName,
+                                         LastName = e.LastName,
+                                         Title = e.Title,
+                                         Email = e.Email,
+                                         DateOfBirth = e.DateOfBirth,
+                                         AnnualLeaveStartDate = e.AnnualLeaveStartDate,
+                                         ProfilePicture = e.ProfilePicture,
+                                         IsTerminated = e.IsTerminated,
+                                         IsVerified = e.IsVerified,
+                                         CreatedAt = e.CreatedAt,
+                                         NiNo = e.NiNo,
+                                         DriversLicenceNumber = e.DriversLicenceNumber,
+                                         DriversLicenceExpirationDate = e.DriversLicenceExpirationDate,
+                                         PassportNumber = e.PassportNumber,
+                                         PassportExpirationDate = e.PassportExpirationDate,
+                                         UserRole = e.UserRole,
+                                         PermissionId = e.PermissionId,
+                                         Managers = new List<ManagerDto>()
+                                     }).FirstOrDefaultAsync();
+
+            if (employeeDto == null) throw new Exception("Employee not found");
+
+            List<ManagerDto> managers = await (from h in _context.Hierarchies
+                                               join m in _context.Employees on h.ManagerId equals m.Id
+                                               where h.SubordinateId == employeeDto.Id
+                                               select new ManagerDto
+                                               {
+                                                   ManagerId = m.Id,
+                                                   FullName = m.FirstName + " " + m.LastName,
+                                                   Title = m.Title,
+                                                   Email = m.Email
+                                               }).ToListAsync();
+
+            employeeDto.Managers = managers;
+
+            return employeeDto;
+        }
+
+
+        public async Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId)
+        {
+            
+
+            IQueryable<Employee> query = _context.Employees
+                .Where(e => e.CompanyId == companyId);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(e => (e.FirstName + " " + e.LastName).Contains(searchTerm) || e.Email.Contains(searchTerm));
+            }
+
+            if (myId != null)
+            {
+                query = query.Where(e => _context.Hierarchies.Any(h => h.ManagerId == myId));
+            }
+
+            if (page != null && skip != null)
+            {
+                int skipCount = Math.Abs((int)((page - 1) * skip));
+                int takeCount = Math.Abs((int)skip);
+
+                query = query.Skip(skipCount).Take(takeCount);
+            }
+
+            var employees = await query   
+                .Select(e => new FoundEmployee
+                {
+                    Id = e.Id,
+                    FullName = $"{e.FirstName} {e.LastName}",
+                    Title = e.Title,
+                    Email = e.Email
+                })
+                .ToListAsync();
+
+            return employees;
+        }
+
+
+
 
         public async Task AddEmployee(Employee newEmployee)
         {
@@ -63,6 +146,16 @@ namespace HR.Repository
        
         }
 
-    
+        // compied
+        public async Task AddHierarchy(int managerId, int subordinateId)
+        {
+            await _context.Hierarchies.AddAsync(new Hierarchy
+            {
+                ManagerId = managerId,
+                SubordinateId = subordinateId
+            });
+        }
+
+
     }
 }

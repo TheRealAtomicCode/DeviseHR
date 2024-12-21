@@ -1,8 +1,8 @@
 using HR.DTO.Mapper;
 using HR.Repository;
 using HR.Repository.Interfaces;
-using HR.Services.EmployeeServices;
-using HR.Services.UserServices.Interfaces;
+using HR.Services;
+using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +14,12 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
+
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    });
 
 // example for extraction
 builder.Configuration
@@ -61,19 +67,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Sudo", policy =>
-    policy.RequireClaim("userRole", "1"));
+    policy.RequireClaim("userRole", "50"));
 
     options.AddPolicy("Admin", policy =>
-    policy.RequireClaim("userRole", "1", "2"));
+    policy.RequireClaim("userRole", "50", "40"));
 
     options.AddPolicy("Manager", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3"));
+    policy.RequireClaim("userRole", "50", "40", "30"));
 
-    options.AddPolicy("Employee", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4"));
+    options.AddPolicy("StaffMember", policy =>
+    policy.RequireClaim("userRole", "50", "40", "30", "20"));
 
     options.AddPolicy("Visitor", policy =>
-    policy.RequireClaim("userRole", "1", "2", "3", "4", "5"));
+    policy.RequireClaim("userRole", "50", "40", "30", "20", "10"));
 
     // permissions
     options.AddPolicy("EnableAddEmployees", policy =>
@@ -107,11 +113,14 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
+builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
+builder.Services.AddScoped<IContractRepo, ContractRepo>();
 
 // Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IContractService, ContractService>();
 
 
 // Register mappings

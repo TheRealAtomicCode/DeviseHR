@@ -2,11 +2,10 @@
 using HR.DTO;
 using HR.DTO.Inbound;
 using HR.DTO.outbound;
-
-using HR.Services.UserServices;
-using HR.Services.UserServices.Interfaces;
+using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -33,7 +32,7 @@ namespace HR.Controllers
         [HttpPost("createEmployee")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
+        public async Task<IActionResult> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
         {
             try
             {
@@ -57,6 +56,117 @@ namespace HR.Controllers
             }
             
         }
+
+
+        [HttpGet("{employeeId}")]
+        [Authorize(Policy = "StaffMember")]
+        public async Task<ActionResult<ServiceResponse<EmployeeDto>>> GetEmployee([FromRoute] int employeeId)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
+                EmployeeDto employeeDto = await _employeeService.GetEmployee(employeeId, myId, companyId, myRole);
+
+                var sr = new ServiceResponse<EmployeeDto>(employeeDto, true, "", 0);
+
+                return Ok(sr);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
+        }
+
+
+        [HttpGet]
+        [Authorize(Policy = "StaffMember")]
+        public async Task<ActionResult<ServiceResponse<List<FoundEmployee>>>> GetAllEmployee([FromQuery] string? searchTerm,[FromQuery] int? page, [FromQuery] int? skip)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+                bool enableShowEmployees = bool.Parse(claims.FindFirst("enableShowEmployees")!.Value);
+
+                List<FoundEmployee> foundEmployees = await _employeeService.GetAllEmployees(searchTerm, page, skip, myId, companyId, myRole, enableShowEmployees);
+
+                var sr = new ServiceResponse<List<FoundEmployee>>(foundEmployees, true, "", 0);
+
+                return Ok(sr);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
+        }
+
+
+        [HttpPatch("{employeeId}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditEmployee([FromRoute] int employeeId, [FromBody] JsonPatchDocument<EditEmployeeDto>  patchDoc)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+
+                await _employeeService.EditEmployee(patchDoc, employeeId, myId, companyId);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+
+        }
+
+
+
+
+        //[HttpDelete("{employeeId}")]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> DeleteEmployee([FromRoute] int employeeId)
+        //{
+        //    try
+        //    {
+        //        string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+        //        Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+        //        int myId = int.Parse(claims.FindFirst("id")!.Value);
+        //        int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+
+        //        int employeeId = await _employeeService.DeleteEmployee(employeeId, myId, companyId);
+
+        //        var sr = new ServiceResponse<List<FoundEmployee>>(foundEmployees, true, "", 0);
+
+        //        return Ok(sr);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
+        //        return BadRequest(serviceResponse);
+        //    }
+
+        //}
 
 
 

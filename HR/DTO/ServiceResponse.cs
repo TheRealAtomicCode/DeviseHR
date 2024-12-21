@@ -3,7 +3,7 @@
     public class ServiceResponse<T>
     {
 
-        public ServiceResponse(T data)
+        public ServiceResponse(T data, bool v)
         {
             Data = data;
         }

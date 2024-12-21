@@ -7,12 +7,11 @@ using Models;
 using HR.DTO;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
-using HR.Services.EmployeeServices;
-using HR.Services.UserServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common;
+using HR.Services.Interfaces;
 
 namespace HR.Controllers
 {
@@ -51,7 +50,7 @@ namespace HR.Controllers
         }
 
         [HttpPost("refresh")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<LoginResponse>>> Refresh([FromBody] string refreshToken)
         {
             try
@@ -59,9 +58,10 @@ namespace HR.Controllers
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
                 Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                int userType = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
+                int userRole = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                var empDto = await _credentialService.RefreshUserToken(myId, refreshToken);
+                var empDto = await _credentialService.RefreshUserToken(myId, companyId, refreshToken);
 
                 var sr = new ServiceResponse<LoginResponse>(empDto, true, "", 0);
 
@@ -76,7 +76,7 @@ namespace HR.Controllers
 
 
         [HttpDelete("logout")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<bool>>> Logout([FromBody] string refreshToken)
         {
             try
@@ -86,7 +86,7 @@ namespace HR.Controllers
                 int userId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
-                await _credentialService.LogoutService(userId, refreshToken);
+                await _credentialService.LogoutService(userId, companyId, refreshToken);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
 
@@ -101,7 +101,7 @@ namespace HR.Controllers
 
 
         [HttpDelete("logoutAllDevices")]
-        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "StaffMember")]
         public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices()
         {
             try
@@ -111,7 +111,7 @@ namespace HR.Controllers
                 int userId = int.Parse(claims.FindFirst("id")!.Value);
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
 
-                await _credentialService.LogoutService(userId, "");
+                await _credentialService.LogoutService(userId, companyId, "");
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
 

@@ -7,11 +7,7 @@ meta {
 delete {
   url: {{hr-url}}/api/auth/logout
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{hr-token}}
+  auth: inherit
 }
 
 body:json {
