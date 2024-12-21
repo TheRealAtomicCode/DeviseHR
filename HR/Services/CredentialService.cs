@@ -1,18 +1,11 @@
-﻿
-
-
-
-
-using Mapster;
+﻿using Mapster;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using HR.DTO.Inbound;
 using HR.DTO.Outbound;
 using HR.Repository.Interfaces;
-
 using System.Text.RegularExpressions;
-
 using HR.Subroutines;
 using HR.Repository;
 using System.Net.Sockets;

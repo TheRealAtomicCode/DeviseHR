@@ -1,4 +1,5 @@
 ﻿using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Microsoft.EntityFrameworkCore;
@@ -120,6 +121,20 @@ namespace HR.Repository
 
             return isRelated;
         }
+
+
+        public async Task<Contract?> GetLastContractByDateOrDefault(Employee employee, DateOnly providedDate)
+        {
+            Contract? contract = await _context.Contracts
+                .OrderByDescending(c => c.ContractStartDate)
+                .FirstOrDefaultAsync(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId && c.ContractStartDate <= providedDate);
+
+            return contract;
+        }
+
+        
+
+
 
         // save
         public async Task SaveChangesAsync()

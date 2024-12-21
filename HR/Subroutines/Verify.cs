@@ -26,15 +26,15 @@ namespace HR.Subroutines
             // check company if not expired
             string loginAttempLimit = _configuration["login:LoginAttempLimit"]!;
 
-            if (emp.IsTerminated) throw new Exception("Your Permissions have been Revoked.");
+            if (emp.IsTerminated) throw new Exception("Permissions revoked.");
 
-            if(emp.IsVerified == true) throw new Exception("Please reset your password, and follow the instructions from the email you recieve.");
+            if(emp.IsVerified == false) throw new Exception("Account not verified.");
 
-            if (emp.VerificationCode == null) throw new Exception("Please contact your manager to register your account.");
+            // if (emp.VerificationCode == null) throw new Exception("Please contact your manager to register your account.");
 
             int loginAttemptsAllowed = int.Parse(loginAttempLimit);
 
-            if (emp.LoginAttempt > loginAttemptsAllowed) throw new Exception("You have attempted to login multiple times unsuccessfully. Please contact your manager to regain access to your account.");
+            if (emp.LoginAttempt > loginAttemptsAllowed) throw new Exception("login attemt limit reached.");
 
         }
 
