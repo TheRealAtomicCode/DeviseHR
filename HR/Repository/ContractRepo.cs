@@ -26,7 +26,7 @@ namespace HR.Repository
 
             List<Contract> contracts = await _context.Contracts
                 .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId && c.ContractStartDate >= annualLeaveStartDate && c.ContractStartDate <= annualLeaveEndDate)
-                .OrderByDescending(c => c.ContractStartDate)
+                .OrderBy(c => c.ContractStartDate)
                 .ToListAsync();
 
             Contract? contractBeforeFirst;

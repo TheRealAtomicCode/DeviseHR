@@ -37,7 +37,15 @@ namespace HR.Subroutines
                     }
                     else
                     {
-                        contractEndDate = contracts[i + 1].ContractStartDate;
+                        if(i + 1 < contracts.Count)
+                        {
+                            contractEndDate = contracts[i + 1].ContractStartDate;
+                        }
+                        else
+                        {
+                            contractEndDate = newContractStartDate.AddDays(-1);
+                        }
+                        
                     }
 
                     int daysBetween = DateModifier.GetDaysBetween(contractStartDate, contractEndDate);

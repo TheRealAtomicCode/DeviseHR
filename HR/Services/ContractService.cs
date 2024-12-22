@@ -154,6 +154,11 @@ namespace HR.Services
 
                 var requestedAnnualeLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
 
+                //
+                //
+                //
+                // NOTE
+                // DELETE WHEN WORKING ON FRONT END IF NEEDED
                 if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
 
                 Contract? firstContract = await _contractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
