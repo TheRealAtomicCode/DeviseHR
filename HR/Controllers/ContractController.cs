@@ -48,13 +48,13 @@ namespace HR.Controllers
 
                 var addedContract = await _contractService.CreateContract(newConract, myId, companyId, myRole);
 
-                var serviceResponse = new ServiceResponse<Contract>(addedContract, true, "", 0);
+                var serviceResponse = new ServiceResponse<ContractDto>(addedContract, true, "", 0);
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<CreateContractDto>(null!, false, ex.Message, 0);
+                var serviceResponse = new ServiceResponse<ContractDto>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
         }
@@ -93,6 +93,11 @@ namespace HR.Controllers
         {
             try
             {
+                // NOTE!!!
+                // this controller must take in the leaveYear Date based on the first annual leave year start date to get accurate results
+                // for example: if the employees annual leave start date was 1st of april and the first contract started from 2022
+                // then you should search from 01-04-2022 until 01-04-nextYear
+
                 string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
                 Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
 

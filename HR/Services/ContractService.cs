@@ -10,6 +10,7 @@ using Mapster;
 using Models;
 using System.ComponentModel.Design;
 
+
 namespace HR.Services
 {
     public class ContractService : IContractService
@@ -69,7 +70,7 @@ namespace HR.Services
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
 
-            List<Contract> existingContracts = await _contractRepo.GetContractByLeaveYear(employee, annualLeaveStartDate);
+            List<Contract> existingContracts = await _contractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
 
             int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
 
@@ -86,8 +87,6 @@ namespace HR.Services
 
             return newContract;
         }
-
-
 
 
 
@@ -123,7 +122,7 @@ namespace HR.Services
             var employee = await _contractRepo.GetEmployeeById(newContract.EmployeeId, companyId);
             if (employee == null) throw new Exception("Employee not found");
 
-            Contract? lastContract = await _contractRepo.GetLastContractOrDefault(employee);
+            Contract? lastContract = await _contractRepo.GetLastContractOrDefault(employee.Id, employee.CompanyId);
 
             if (lastContract != null && lastContract.IsDays != newContract.IsDays) throw new Exception("Can not add contracts with different leave units.");
 
@@ -140,11 +139,8 @@ namespace HR.Services
 
 
 
-        public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly leaveYearDate, int employeeId, int myId, int userType, int companyId)
+        public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
         {
-            var db = new DeviseHrContext();
-
-
             int requestAddOrError = await ValidateRequestOrAddAbsence(myId, userType, employeeId);
 
             // 1 add
@@ -156,13 +152,21 @@ namespace HR.Services
 
                 if (employee == null) throw new Exception("Employee not found");
 
-                Contract? lastContract = await _contractRepo.GetLastContractByDateOrDefault(employee, leaveYearDate);
+                var requestedAnnualeLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
+
+                if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
+
+                Contract? firstContract = await _contractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
+
+                if (firstContract == null) throw new Exception("Employee does not have any contracts");
+
+                Contract? lastContract = await _contractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
 
                 ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
-                if (lastContract == null) throw new Exception("No Contract available");
+                if (lastContract == null) throw new Exception("Employee does not have any contracts");
 
-                List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(employee.AnnualLeaveStartDate, leaveYearDate);
+                List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
 
                 ContractAndLeaveYearCount contractAndLeaveYears = new ContractAndLeaveYearCount{
                     contract = lastContractDto,
@@ -250,9 +254,5 @@ namespace HR.Services
 
         }
 
-        Task<Contract> IContractService.CreateContract(CreateContractDto newContract, int myId, int companyId, int userRole)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

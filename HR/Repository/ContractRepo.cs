@@ -19,13 +19,13 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractByLeaveYear(Employee employee, DateOnly annualLeaveStartDate)
+        public async Task<List<Contract>> GetContractsByLeaveYear(int employeeId, int compayId, DateOnly annualLeaveStartDate)
         {
 
             DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1);
 
             List<Contract> contracts = await _context.Contracts
-                .Where(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId && c.ContractStartDate >= annualLeaveStartDate && c.ContractStartDate <= annualLeaveEndDate)
+                .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId && c.ContractStartDate >= annualLeaveStartDate && c.ContractStartDate <= annualLeaveEndDate)
                 .OrderByDescending(c => c.ContractStartDate)
                 .ToListAsync();
 
@@ -50,7 +50,7 @@ namespace HR.Repository
 
             */
             contractBeforeFirst = await _context.Contracts
-                             .Where(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId &&
+                             .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId &&
                               c.ContractStartDate < annualLeaveStartDate)
                              .OrderByDescending(c => c.ContractStartDate)
                              .FirstOrDefaultAsync();
@@ -63,10 +63,31 @@ namespace HR.Repository
             return contracts;
         }
 
-        public async Task<Contract?> GetLastContractOrDefault(Employee employee)
+        public async Task<Contract?> GetLastContractOrDefault(int employeeId, int companyId)
         {
             Contract? contract = await _context.Contracts.OrderByDescending(c => c.ContractStartDate)
-                .FirstOrDefaultAsync(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId);
+                .FirstOrDefaultAsync(c => c.EmployeeId == employeeId && c.CompanyId == companyId);
+
+            return contract;
+        }
+
+
+        public async Task<Contract?> GetLastContractByDate(int employeeId, int companyId, DateOnly endOfLaveYear)
+        {
+            Contract? contract = await _context.Contracts
+                .OrderByDescending(c => c.ContractStartDate)
+                .FirstOrDefaultAsync(c => c.EmployeeId == employeeId && c.CompanyId == companyId && c.ContractStartDate <= endOfLaveYear);
+
+            return contract;
+        }
+
+
+
+        public async Task<Contract?> GetFirstContractOrDefault(int employeeId, int companyId)
+        {
+            Contract? contract = await _context.Contracts
+                .OrderBy(c => c.ContractStartDate)
+                .FirstOrDefaultAsync(c => c.EmployeeId == employeeId && c.CompanyId == companyId);
 
             return contract;
         }
@@ -123,16 +144,9 @@ namespace HR.Repository
         }
 
 
-        public async Task<Contract?> GetLastContractByDateOrDefault(Employee employee, DateOnly providedDate)
-        {
-            Contract? contract = await _context.Contracts
-                .OrderByDescending(c => c.ContractStartDate)
-                .FirstOrDefaultAsync(c => c.EmployeeId == employee.Id && c.CompanyId == employee.CompanyId && c.ContractStartDate <= providedDate);
-
-            return contract;
-        }
-
         
+
+
 
 
 

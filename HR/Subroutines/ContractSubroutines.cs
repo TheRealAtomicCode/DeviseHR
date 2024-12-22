@@ -45,27 +45,33 @@ namespace HR.Subroutines
         }
 
 
-        public static List<StartAndEndDate> GetLeaveYearCount(DateOnly annualLeaveStartDate, DateOnly providedDate)
+        public static List<StartAndEndDate> GetLeaveYearCount(DateOnly requestedDate, DateOnly employeeAnnualLeaveStartDate, DateOnly firstContractStartDate)
         {
-            // get leave year count if the provided date is for this year
-            // not getting leave year counts if other year date is provided, because by default the user will get this year, but after
-            // may request another year, which in that case, the user will already have the leave year count locally
+            // NOTE
+            // ONLY GETS YEAR GETS LEAVE YEARS WHEN DATE IS LOCATED WITHIN AN ACTUAL LEAVE YEAR
+            // IF leave year first starts on 01-04-2022 and you request 01-01-2022
+            // IT WILL NOT RESPONSE WITH THE 2022 leave year as being accurate
+            // YOU MUST SELECT LEAVE YEAR WITH THE START OF THE LEAVE YEAR IN DATES AND MONTHS TO BE ACCURATE
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            DateOnly leaveYearStartDate = DateModifier.GetLeaveYearStartDate(today, annualLeaveStartDate);
+            DateOnly firstLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(firstContractStartDate, employeeAnnualLeaveStartDate);
+            DateOnly currentLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(today, employeeAnnualLeaveStartDate);
 
             List<StartAndEndDate> leaveYearDates = new List<StartAndEndDate>();
-            if (providedDate >= leaveYearStartDate && providedDate < leaveYearStartDate.AddYears(1))
+
+            int leaveYearCount = (currentLeaveYearStartDate.Year + 2) - firstLeaveYearStartDate.Year;
+
+            for (int i = 0; i < leaveYearCount; i++)
             {
-                int leaveYearCount = providedDate.Year - leaveYearStartDate.Year + 2;
-                for (int i = 0; i < leaveYearCount; i++)
-                {
-                    StartAndEndDate startAndEndDate = new StartAndEndDate();
-                    DateOnly leaveYearDate = leaveYearStartDate.AddYears(i);
-                    startAndEndDate.StartDate = leaveYearDate;
-                    startAndEndDate.EndDate = leaveYearDate.AddYears(1).AddDays(-1);
-                    leaveYearDates.Add(startAndEndDate);
-                }
+                StartAndEndDate startAndEndDate = new StartAndEndDate();
+                DateOnly leaveYearDate = firstLeaveYearStartDate.AddYears(i);
+                startAndEndDate.StartDate = leaveYearDate;
+                startAndEndDate.EndDate = leaveYearDate.AddYears(1).AddDays(-1);
+
+                if (requestedDate >= startAndEndDate.StartDate && requestedDate <= startAndEndDate.EndDate) startAndEndDate.IsSelectedYear = true;
+
+                leaveYearDates.Add(startAndEndDate);
             }
+            //}
 
             return leaveYearDates;
         }

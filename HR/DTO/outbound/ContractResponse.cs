@@ -10,6 +10,7 @@
     {
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
+        public bool IsSelectedYear { get; set; } = false;
     }
 
     public class ContractAndLeaveYearCount
