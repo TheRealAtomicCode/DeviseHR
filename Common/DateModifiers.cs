@@ -55,6 +55,13 @@ namespace Common
             return leaveYearStartDate;
         }
 
+        public static int GetNumberOfDaysInYear(DateOnly date)
+        {
+            bool isLeapYear = DateTime.IsLeapYear(date.Year);
+            int daysInYear = isLeapYear ? 366 : 365;
+            return daysInYear;
+        }
+
 
     }
 }

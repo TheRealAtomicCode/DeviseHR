@@ -80,9 +80,9 @@ namespace HR.Services
             // double thisLeaveYearsAllowance = previousLeaveYearEntitlement + newContractResult.ThisContractEntitlement;
             double thisLeaveYearsAllowance = newContractResult.ThisContractEntitlement;
 
-            newContract.FirstLeaveAllowence = (int)Math.Ceiling(thisLeaveYearsAllowance + previousLeaveYearEntitlement);
-            newContract.NextLeaveAllowence = (int)Math.Ceiling(newContractResult.ContractleaveEntitlementPerYear);
-            newContract.ContractedLeaveEntitlement = (int)Math.Ceiling(newContractResult.ContractleaveEntitlementPerYear);
+            newContract.FirstLeaveAllowence = NumberUtils.RoundCustom(thisLeaveYearsAllowance + previousLeaveYearEntitlement);
+            newContract.NextLeaveAllowence = NumberUtils.RoundCustom(newContractResult.ContractleaveEntitlementPerYear);
+            newContract.ContractedLeaveEntitlement = NumberUtils.RoundCustom(newContractResult.ContractleaveEntitlementPerYear);
 
             return newContract;
         }
@@ -180,7 +180,7 @@ namespace HR.Services
         //
         //
         //
-        // Seb Services
+        // Sub Services
         //
         //
 
