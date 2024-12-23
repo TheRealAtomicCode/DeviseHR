@@ -5,20 +5,22 @@ using Models;
 
 namespace HR.UOW
 {
-    public class CEP_UOW : ICEP_UOW
+    public class MainUOW : IMainUOW
     {
         private readonly DeviseHrContext _context;
 
         public IContractRepo ContractRepo { get; }
         public IEmployeeRepo EmployeeRepo { get; }
         public IPermissionRepo PermissionRepo { get; }
+        public IHierarchyRepo HierarchyRepo { get; }
 
-        public CEP_UOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo)
+        public MainUOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo)
         {
             _context = context;
             ContractRepo = contractRepo;
             EmployeeRepo = employeeRepo;
             PermissionRepo = permissionRepo;
+            HierarchyRepo = hierarchyRepo;
         }
 
         public async Task SaveChangesAsync()

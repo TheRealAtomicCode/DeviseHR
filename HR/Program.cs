@@ -123,9 +123,10 @@ builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
 builder.Services.AddScoped<IContractRepo, ContractRepo>();
+builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
 
 // Scoperd Unit of work injections
-builder.Services.AddScoped<ICEP_UOW, CEP_UOW>();
+builder.Services.AddScoped<IMainUOW, MainUOW>();
 
 
 // Register mappings
