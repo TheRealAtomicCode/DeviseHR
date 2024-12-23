@@ -1,0 +1,15 @@
+meta {
+  name: Get Leave year
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{hr-url}}/api/Contract/GetLeaveYear/3?leaveYearDate=2024-01-01
+  body: none
+  auth: inherit
+}
+
+params:query {
+  leaveYearDate: 2024-01-01
+}

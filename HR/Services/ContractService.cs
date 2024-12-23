@@ -1,11 +1,15 @@
 ﻿using Common;
 using HR.DTO;
 using HR.DTO.Inbound;
+using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
 using HR.Subroutines;
+using Mapster;
 using Models;
+using System.ComponentModel.Design;
+
 
 namespace HR.Services
 {
@@ -66,9 +70,9 @@ namespace HR.Services
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
 
-            List<Contract> existingContracts = await _contractRepo.GetContractByLeaveYear(employee, annualLeaveStartDate);
+            List<Contract> existingContracts = await _contractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
 
-            int leaveUnit = ContractVerification.CheckAndGetLeaveUnit(existingContracts, newContract);
+            int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
 
             int previousLeaveYearEntitlement = CalculateContract.CalculateLeaveYearEntitlement(existingContracts, annualLeaveStartDate, newContract.ContractStartDate, leaveUnit);
 
@@ -77,9 +81,9 @@ namespace HR.Services
             // double thisLeaveYearsAllowance = previousLeaveYearEntitlement + newContractResult.ThisContractEntitlement;
             double thisLeaveYearsAllowance = newContractResult.ThisContractEntitlement;
 
-            newContract.FirstLeaveAllowence = (int)Math.Ceiling(thisLeaveYearsAllowance + previousLeaveYearEntitlement);
-            newContract.NextLeaveAllowence = (int)Math.Ceiling(newContractResult.ContractleaveEntitlementPerYear);
-            newContract.ContractedLeaveEntitlement = (int)Math.Ceiling(newContractResult.ContractleaveEntitlementPerYear);
+            newContract.FirstLeaveAllowence = NumberUtils.RoundCustom(thisLeaveYearsAllowance + previousLeaveYearEntitlement);
+            newContract.NextLeaveAllowence = NumberUtils.RoundCustom(newContractResult.ContractleaveEntitlementPerYear);
+            newContract.ContractedLeaveEntitlement = NumberUtils.RoundCustom(newContractResult.ContractleaveEntitlementPerYear);
 
             return newContract;
         }
@@ -88,9 +92,7 @@ namespace HR.Services
 
 
 
-
-
-        public async Task<Contract> CreateContract(CreateContractDto newContract, int myId, int companyId, int userRole)
+        public async Task<ContractDto> CreateContract(CreateContractDto newContract, int myId, int companyId, int userRole)
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
@@ -120,7 +122,7 @@ namespace HR.Services
             var employee = await _contractRepo.GetEmployeeById(newContract.EmployeeId, companyId);
             if (employee == null) throw new Exception("Employee not found");
 
-            Contract? lastContract = await _contractRepo.GetLastContractOrDefault(employee);
+            Contract? lastContract = await _contractRepo.GetLastContractOrDefault(employee.Id, employee.CompanyId);
 
             if (lastContract != null && lastContract.IsDays != newContract.IsDays) throw new Exception("Can not add contracts with different leave units.");
 
@@ -130,15 +132,132 @@ namespace HR.Services
 
             await _contractRepo.SaveChangesAsync();
 
-            // remove sensitive information
-            addedContract.Employee = null!;
-            addedContract.Company = null!;
+            ContractDto addedContractDto = addedContract.Adapt<ContractDto>();
 
-            return addedContract;
+            return addedContractDto;
         }
 
 
-    
+
+        public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
+        {
+            int requestAddOrError = await ValidateRequestOrAddAbsence(myId, userType, employeeId);
+
+            // 1 add
+            // 0 request
+            // -1 add
+            if (requestAddOrError == 1 || requestAddOrError == 0)
+            {
+                var employee = await _contractRepo.GetEmployeeById(employeeId, companyId);
+
+                if (employee == null) throw new Exception("Employee not found");
+
+                var requestedAnnualeLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
+
+                //
+                //
+                //
+                // NOTE
+                // DELETE WHEN WORKING ON FRONT END IF NEEDED
+                if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
+
+                Contract? firstContract = await _contractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
+
+                if (firstContract == null) throw new Exception("Employee does not have any contracts");
+
+                Contract? lastContract = await _contractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
+
+                ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
+
+                if (lastContract == null) throw new Exception("Employee does not have any contracts");
+
+                List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
+
+                ContractAndLeaveYearCount contractAndLeaveYears = new ContractAndLeaveYearCount{
+                    contract = lastContractDto,
+                    leaveYears = leaveYears
+                };
+
+                return contractAndLeaveYears;
+            }
+
+            throw new Exception("You do not have sufficiant permissions to view this profile.");
+
+        }
+
+
+        //
+        //
+        //
+        // Sub Services
+        //
+        //
+
+
+        public async Task<int> ValidateRequestOrAddAbsence(int myId, int userRole, int userId)
+        {
+
+            // -1 error
+            // 0 request
+            // 1 add
+
+            if (userId == myId)
+            {
+                if (userRole >= StaticRoles.Admin)
+                {
+                    // check if i have a manager
+                    bool hasManager = await _contractRepo.HasManager(myId);
+
+                    if (hasManager)
+                    {
+                        // request
+                        return 0;
+                    }
+                    else
+                    {
+                        // add
+                        return 1;
+                    }
+                }
+                else
+                {
+                    // request
+                    return 0;
+                }
+
+
+            }
+            else
+            {
+                if (userRole >= StaticRoles.Admin)
+                {
+                    // add
+                    return 1;
+                }
+                else if (userRole == StaticRoles.Manager)
+                {
+                    bool isSubordinate = await _contractRepo.IsRelated(myId, userId);
+
+                    if (isSubordinate)
+                    {
+                        // add
+                        return 1;
+                    }
+                    else
+                    {
+                        // error
+                        return -1;
+                    }
+                }
+                else
+                {
+                    // error
+                    return -1;
+                }
+
+            }
+
+        }
 
     }
 }

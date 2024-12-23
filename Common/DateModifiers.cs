@@ -45,14 +45,27 @@ namespace Common
             return days;
         }
 
-        public static DateOnly GetLeaveYearStartDate(DateOnly newContractStartDate, DateOnly annualLeaveStartDateFrom70s)
+        public static DateOnly GetLeaveYearStartDate(DateOnly newContractStartDate, DateOnly annualLeaveStartDateFrom1900s)
         {
             int year = newContractStartDate.Year;
-            int month = annualLeaveStartDateFrom70s.Month;
-            int day = annualLeaveStartDateFrom70s.Day;
-
+            int month = annualLeaveStartDateFrom1900s.Month;
+            int day = annualLeaveStartDateFrom1900s.Day;
+  
             DateOnly leaveYearStartDate = new DateOnly(year, month, day);
+
+            if(newContractStartDate < leaveYearStartDate)
+            {
+                leaveYearStartDate = leaveYearStartDate.AddYears(-1);
+            }
+
             return leaveYearStartDate;
+        }
+
+        public static int GetNumberOfDaysInYear(DateOnly date)
+        {
+            bool isLeapYear = DateTime.IsLeapYear(date.Year);
+            int daysInYear = isLeapYear ? 366 : 365;
+            return daysInYear;
         }
 
 

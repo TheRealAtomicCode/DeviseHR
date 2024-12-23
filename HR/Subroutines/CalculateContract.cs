@@ -37,7 +37,15 @@ namespace HR.Subroutines
                     }
                     else
                     {
-                        contractEndDate = contracts[i + 1].ContractStartDate;
+                        if(i + 1 < contracts.Count)
+                        {
+                            contractEndDate = contracts[i + 1].ContractStartDate;
+                        }
+                        else
+                        {
+                            contractEndDate = newContractStartDate.AddDays(-1);
+                        }
+                        
                     }
 
                     int daysBetween = DateModifier.GetDaysBetween(contractStartDate, contractEndDate);
@@ -59,7 +67,9 @@ namespace HR.Subroutines
 
                     double contractleaveEntitlementPerYear = contractLeaveRatio * contracts[i].CompanyLeaveEntitlement;
 
-                    double thisContractEntitlement = (contractleaveEntitlementPerYear / 365) * daysBetween;
+                    int numberOfDatsInYear = DateModifier.GetNumberOfDaysInYear(annualLeaveStartDate);
+
+                    double thisContractEntitlement = (contractleaveEntitlementPerYear / numberOfDatsInYear) * daysBetween;
 
                     leaveYearEntitlement += thisContractEntitlement;
                 }
@@ -126,7 +136,9 @@ namespace HR.Subroutines
 
             double contractleaveEntitlementPerYear = contractLeaveRatio * newContract.CompanyLeaveEntitlement;
 
-            double thisContractEntitlement = (contractleaveEntitlementPerYear / 365) * daysBetween;
+            int numberOfDaysInYear = DateModifier.GetNumberOfDaysInYear(annualLeaveStartDate);
+
+            double thisContractEntitlement = (contractleaveEntitlementPerYear / numberOfDaysInYear) * daysBetween;
 
             NewContractCalculationResult newContractCalculationResult = new NewContractCalculationResult(contractleaveEntitlementPerYear, thisContractEntitlement);
 
