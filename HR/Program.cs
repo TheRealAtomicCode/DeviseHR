@@ -118,12 +118,14 @@ builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IAbsenceService, AbsenceService>();
 
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
 builder.Services.AddScoped<IContractRepo, ContractRepo>();
 builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
+builder.Services.AddScoped<IAbsenceRepo, AbsenceRepo>();
 
 // Scoperd Unit of work injections
 builder.Services.AddScoped<IMainUOW, MainUOW>();

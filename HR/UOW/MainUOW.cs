@@ -1,4 +1,5 @@
-﻿using HR.Repository.Interfaces;
+﻿using HR.Repository;
+using HR.Repository.Interfaces;
 using HR.Subroutines;
 using HR.UOW.Interfaces;
 using Models;
@@ -13,14 +14,16 @@ namespace HR.UOW
         public IEmployeeRepo EmployeeRepo { get; }
         public IPermissionRepo PermissionRepo { get; }
         public IHierarchyRepo HierarchyRepo { get; }
+        public IAbsenceRepo AbsenceRepo { get; }
 
-        public MainUOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo)
+        public MainUOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo, IAbsenceRepo absenceRepo)
         {
             _context = context;
             ContractRepo = contractRepo;
             EmployeeRepo = employeeRepo;
             PermissionRepo = permissionRepo;
             HierarchyRepo = hierarchyRepo;
+            AbsenceRepo = absenceRepo;
         }
 
         public async Task SaveChangesAsync()
