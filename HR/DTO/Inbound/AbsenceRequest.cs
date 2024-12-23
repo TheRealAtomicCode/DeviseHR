@@ -2,9 +2,9 @@
 {
     public class AddAbsenceRequest
     {
-        public int UserId { get; set; }
-        public string StartDate { get; set; } = string.Empty;
-        public string EndDate { get; set; } = string.Empty;
+        public int EmployeeId { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
         public string StartTime { get; set; } = string.Empty;
         public string EndTime { get; set; } = string.Empty;
         public int TimeDeducted { get; set; }

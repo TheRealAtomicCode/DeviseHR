@@ -187,78 +187,8 @@ namespace HR.Services
         }
 
 
-        //
-        //
-        //
-        // Sub Services
-        //
-        //
 
-
-        public async Task<int> ValidateRequestOrAddAbsence(int myId, int userRole, int userId)
-        {
-
-            // -1 error
-            // 0 request
-            // 1 add
-
-            if (userId == myId)
-            {
-                if (userRole >= StaticRoles.Admin)
-                {
-                    // check if i have a manager
-                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
-
-                    if (hasManager)
-                    {
-                        // request
-                        return 0;
-                    }
-                    else
-                    {
-                        // add
-                        return 1;
-                    }
-                }
-                else
-                {
-                    // request
-                    return 0;
-                }
-
-
-            }
-            else
-            {
-                if (userRole >= StaticRoles.Admin)
-                {
-                    // add
-                    return 1;
-                }
-                else if (userRole == StaticRoles.Manager)
-                {
-                    bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, userId);
-
-                    if (isSubordinate)
-                    {
-                        // add
-                        return 1;
-                    }
-                    else
-                    {
-                        // error
-                        return -1;
-                    }
-                }
-                else
-                {
-                    // error
-                    return -1;
-                }
-
-            }
-
-        }
+        
 
     }
 }

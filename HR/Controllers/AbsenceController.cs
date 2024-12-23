@@ -40,8 +40,7 @@ namespace HR.Controllers
 
                 var serviceResponse = new ServiceResponse<AbsenceDto>(addedAbsence, true, "", 0);
 
-                //return Ok(serviceResponse);
-                throw new NotImplementedException();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
