@@ -13,14 +13,8 @@ namespace HR.Repository.Interfaces
         Task<Contract?> GetLastContractByDate(int employeeId, int companyId, DateOnly providedDate);
         Task<Contract?> GetFirstContractOrDefault(int employeeId, int companyId);
 
-        // hirrarchy related
-        Task<bool> HasManager(int subordinateId);
-        Task<bool> IsRelated(int managerId, int subordinateId);
-
         // save
         Task SaveChangesAsync();
 
-        // copied
-        Task<Employee?> GetEmployeeById(int id, int companyId);
     }
 }

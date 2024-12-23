@@ -124,31 +124,6 @@ namespace HR.Repository
         }
 
 
-        // hierarchy related
-        public async Task<bool> HasManager(int subordinateId)
-        {
-            var hierarchy = await _context.Hierarchies.FirstOrDefaultAsync(s => s.SubordinateId == subordinateId);
-
-            bool hasManager = hierarchy != null;
-
-            return hasManager;
-        }
-
-        public async Task<bool> IsRelated(int managerId, int subordinateId)
-        {
-            var hierarchy = await _context.Hierarchies.FirstOrDefaultAsync(s => s.ManagerId == managerId && s.SubordinateId == subordinateId);
-
-            bool isRelated = hierarchy != null;
-
-            return isRelated;
-        }
-
-
-        
-
-
-
-
 
         // save
         public async Task SaveChangesAsync()
@@ -165,15 +140,6 @@ namespace HR.Repository
         }
 
 
-
-        // coplied
-        public async Task<Employee?> GetEmployeeById(int id, int companyId)
-        {
-            return await _context.Employees
-                .Include(u => u.Company)
-                .Include(u => u.Permission)
-                .FirstOrDefaultAsync(emp => emp.Id == id && emp.CompanyId == companyId);
-        }
 
         
     }

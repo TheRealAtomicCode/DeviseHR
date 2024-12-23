@@ -6,6 +6,7 @@ using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
 using HR.Subroutines;
+using HR.UOW.Interfaces;
 using Mapster;
 using Models;
 using System.ComponentModel.Design;
@@ -16,12 +17,12 @@ namespace HR.Services
     public class ContractService : IContractService
     {
 
-        private readonly IContractRepo _contractRepo;
+        private readonly IMainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public ContractService(IContractRepo contractRepo, IConfiguration configuration)
+        public ContractService(IMainUOW mainUOW, IConfiguration configuration)
         {
-            _contractRepo = contractRepo;
+            _mainUOW = mainUOW;
             _configuration = configuration;
         }
 
@@ -65,12 +66,12 @@ namespace HR.Services
 
             if (newContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
 
-            var employee = await _contractRepo.GetEmployeeById(newContract.EmployeeId, companyId);
+            var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(newContract.EmployeeId, companyId);
             if (employee == null) throw new Exception("Employee not found");
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
 
-            List<Contract> existingContracts = await _contractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
+            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
 
             int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
 
@@ -105,7 +106,7 @@ namespace HR.Services
             {
                 if (newContract.EmployeeId == myId)
                 {
-                    bool hasManager = await _contractRepo.HasManager(myId);
+                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
                     if (hasManager) throw new Exception("Admins with a manager asigned to their profile can not add contracts to their own accounts.");
                 }
             }
@@ -114,23 +115,23 @@ namespace HR.Services
             {
                 if (newContract.EmployeeId == myId) throw new Exception("Managers can not add conracts to their own profiles, please contact your Admin.");
 
-                bool isSubordinate = await _contractRepo.IsRelated(myId, newContract.EmployeeId);
+                bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, newContract.EmployeeId);
 
                 if (!isSubordinate) throw new Exception("You can not add contracts to users who are not your direct subordinates.");
             }
 
-            var employee = await _contractRepo.GetEmployeeById(newContract.EmployeeId, companyId);
+            var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(newContract.EmployeeId, companyId);
             if (employee == null) throw new Exception("Employee not found");
 
-            Contract? lastContract = await _contractRepo.GetLastContractOrDefault(employee.Id, employee.CompanyId);
+            Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractOrDefault(employee.Id, employee.CompanyId);
 
             if (lastContract != null && lastContract.IsDays != newContract.IsDays) throw new Exception("Can not add contracts with different leave units.");
 
             if (lastContract != null && lastContract.ContractStartDate >= newContract.ContractStartDate) throw new Exception("Can not add contact before previous contract start date.");
 
-            Contract addedContract = await _contractRepo.AddContract(employee, newContract, myId, companyId);
+            Contract addedContract = await _mainUOW.ContractRepo.AddContract(employee, newContract, myId, companyId);
 
-            await _contractRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             ContractDto addedContractDto = addedContract.Adapt<ContractDto>();
 
@@ -148,7 +149,7 @@ namespace HR.Services
             // -1 add
             if (requestAddOrError == 1 || requestAddOrError == 0)
             {
-                var employee = await _contractRepo.GetEmployeeById(employeeId, companyId);
+                var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
 
                 if (employee == null) throw new Exception("Employee not found");
 
@@ -161,11 +162,11 @@ namespace HR.Services
                 // DELETE WHEN WORKING ON FRONT END IF NEEDED
                 if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
 
-                Contract? firstContract = await _contractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
+                Contract? firstContract = await _mainUOW.ContractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
 
                 if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
-                Contract? lastContract = await _contractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
+                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
 
                 ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
@@ -206,7 +207,7 @@ namespace HR.Services
                 if (userRole >= StaticRoles.Admin)
                 {
                     // check if i have a manager
-                    bool hasManager = await _contractRepo.HasManager(myId);
+                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
 
                     if (hasManager)
                     {
@@ -236,7 +237,7 @@ namespace HR.Services
                 }
                 else if (userRole == StaticRoles.Manager)
                 {
-                    bool isSubordinate = await _contractRepo.IsRelated(myId, userId);
+                    bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, userId);
 
                     if (isSubordinate)
                     {

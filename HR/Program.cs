@@ -3,6 +3,8 @@ using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services;
 using HR.Services.Interfaces;
+using HR.UOW;
+using HR.UOW.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -111,16 +113,20 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-// Scoped Injection Repo
-builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
-builder.Services.AddScoped<IContractRepo, ContractRepo>();
-
 // Scoped Injection Services
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IContractService, ContractService>();
+
+// Scoped Injection Repo
+builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
+builder.Services.AddScoped<IContractRepo, ContractRepo>();
+builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
+
+// Scoperd Unit of work injections
+builder.Services.AddScoped<IMainUOW, MainUOW>();
 
 
 // Register mappings

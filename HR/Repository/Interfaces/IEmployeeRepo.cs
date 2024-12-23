@@ -15,8 +15,6 @@ namespace HR.Repository.Interfaces
         Task AddEmployee(Employee newEmployee);
         Task SaveChangesAsync();
 
-        // copied
-        Task AddHierarchy(int managerId, int subordinateId);
 
     }
 }

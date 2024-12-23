@@ -4,6 +4,8 @@ using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
+using HR.UOW;
+using HR.UOW.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.JsonPatch;
 using Models;
@@ -13,12 +15,12 @@ namespace HR.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IEmployeeRepo _employeeRepo;
+        private readonly IMainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public EmployeeService(IEmployeeRepo employeeRepo, IConfiguration configuration)
+        public EmployeeService(IMainUOW mainUOW, IConfiguration configuration)
         {
-            _employeeRepo = employeeRepo;
+            _mainUOW = mainUOW;
             _configuration = configuration;
         }
 
@@ -37,7 +39,7 @@ namespace HR.Services
             if (myRole <= StaticRoles.Manager && newEmployee.UserRole >= StaticRoles.Manager) throw new Exception("You can not add managers or admins if you have manager permissions");
             if (myRole <= StaticRoles.Manager && newEmployee.PermissionId != null) throw new Exception("You can not add employees with special permissions");
 
-            await _employeeRepo.AddEmployee(employee);
+            await _mainUOW.EmployeeRepo.AddEmployee(employee);
 
             if (newEmployee.RegisterUser == true)
             {
@@ -48,10 +50,10 @@ namespace HR.Services
 
             if (myRole <= StaticRoles.Manager)
             {
-                await _employeeRepo.AddHierarchy(myId, employee.Id);
+                await _mainUOW.HierarchyRepo.AddHierarchy(myId, employee.Id);
             }
 
-            await _employeeRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             return employee.Id;
         }
@@ -59,7 +61,7 @@ namespace HR.Services
 
         public async Task<EmployeeDto> GetEmployee(int employeeId, int myId, int companyId, int myRole)
         {
-            EmployeeDto employee = await _employeeRepo.GetEmployeeDtoById(employeeId, companyId);
+            EmployeeDto employee = await _mainUOW.EmployeeRepo.GetEmployeeDtoById(employeeId, companyId);
 
             if (myId != employee.Id && myRole <= StaticRoles.StaffMember) throw new Exception("Insufficient permissions");
 
@@ -83,14 +85,14 @@ namespace HR.Services
 
             if (myRole == StaticRoles.Manager && enableShowEmployees == false) myIdWhenSearching = myId;
 
-            List<FoundEmployee> foundEmployees = await _employeeRepo.GetAllEmployeesByName(searchTerm, page, skip, companyId, myIdWhenSearching);
+            List<FoundEmployee> foundEmployees = await _mainUOW.EmployeeRepo.GetAllEmployeesByName(searchTerm, page, skip, companyId, myIdWhenSearching);
 
             return foundEmployees;
         }
 
         public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int companyId)
         {
-            var employee = await _employeeRepo.GetEmployeeById(employeeId, companyId);
+            var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
 
             if (employee == null)
             {
@@ -105,7 +107,7 @@ namespace HR.Services
             employee.UpdatedAt = DateTime.UtcNow;
             employee.UpdatedByUser = myId;
 
-            await _employeeRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
         }
 
       

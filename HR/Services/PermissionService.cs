@@ -5,6 +5,7 @@ using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
 using HR.Subroutines;
+using HR.UOW.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,12 @@ namespace HR.Services
     public class PermissionService : IPermissionService
     {
 
-        private readonly IPermissionRepo _permissionRepo;
+        private readonly IMainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public PermissionService(IPermissionRepo permissionRepo, IConfiguration configuration)
+        public PermissionService(IMainUOW mainUOW, IConfiguration configuration)
         {
-            _permissionRepo = permissionRepo;
+            _mainUOW = mainUOW;
             _configuration = configuration;
         }
 
@@ -35,9 +36,9 @@ namespace HR.Services
             permission.CompanyId = companyId;
             permission.AddedBy = myId;
 
-            await _permissionRepo.AddPermission(permission);
+            await _mainUOW.PermissionRepo.AddPermission(permission);
 
-            await _permissionRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             return permission.Id;
         }
@@ -45,13 +46,13 @@ namespace HR.Services
 
         public async Task<List<Permission>> GetAllPermissions(int companyId, int? page, int? skip)
         {
-            return await _permissionRepo.GetAllPermissionsByCompanyId(companyId, page, skip);
+            return await _mainUOW.PermissionRepo.GetAllPermissionsByCompanyId(companyId, page, skip);
         }
 
 
         public async Task EditPermission(JsonPatchDocument<EditPermissionDto> patchDoc, int permissionId, int myId, int companyId)
         {
-            var permission = await _permissionRepo.GetPermissionById(permissionId, companyId);
+            var permission = await _mainUOW.PermissionRepo.GetPermissionById(permissionId, companyId);
 
             if (permission == null)
             {
@@ -66,7 +67,7 @@ namespace HR.Services
             permission.UpdatedAt = DateTime.UtcNow;
             permission.UpdatedBy = myId;
 
-            await _permissionRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
         }
 
 
@@ -74,7 +75,7 @@ namespace HR.Services
         {
             if (managerId == myId) throw new Exception("Everyone is your subordinate");
 
-            var subordinates = await _permissionRepo.GetSubordinatesByManagerId(managerId, companyId);
+            var subordinates = await _mainUOW.HierarchyRepo.GetSubordinatesByManagerId(managerId, companyId);
 
             return subordinates;
         }
@@ -87,13 +88,13 @@ namespace HR.Services
 
             // checking manager is valid
             if (editSubordinatesDtos.ManagerId == myId) throw new Exception("You can not add yourself as a manager since you have admin permissions");
-            var manager = await _permissionRepo.GetEmployeeById(editSubordinatesDtos.ManagerId, companyId);
+            var manager = await _mainUOW.EmployeeRepo.GetEmployeeById(editSubordinatesDtos.ManagerId, companyId);
             if (manager == null) throw new Exception("Manager not found");
             if (manager.UserRole != StaticRoles.Manager) throw new Exception("User must be of type manager to have subordinates");
 
             // checking if the subordinates are managers
-            var subordinatesToBeAddedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeAdded, companyId);
-            var subordinatesToBeRemovedWithoutManagerType = await _permissionRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeRemoved, companyId);
+            var subordinatesToBeAddedWithoutManagerType = await _mainUOW.HierarchyRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeAdded, companyId);
+            var subordinatesToBeRemovedWithoutManagerType = await _mainUOW.HierarchyRepo.GetNoneManagerEmployeesByIdList(editSubordinatesDtos.SubordinatesToBeRemoved, companyId);
 
             if (subordinatesToBeAddedWithoutManagerType.Count < editSubordinatesDtos.SubordinatesToBeAdded.Count ||
                 subordinatesToBeRemovedWithoutManagerType.Count < editSubordinatesDtos.SubordinatesToBeRemoved.Count)
@@ -108,7 +109,7 @@ namespace HR.Services
                 {
                     if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your manager");
                     // Create a new hierarchy where the managerId is the current manager's Id and the subordinateId is from the subordinatesToBeAddedWithoutManagerType list
-                    await _permissionRepo.AddHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
+                    await _mainUOW.HierarchyRepo.AddHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
                 }
             }
 
@@ -119,11 +120,11 @@ namespace HR.Services
                 {
                     if (subordinate.CompanyId != companyId) throw new Exception("Unexpected error, please contact your us");
                     // deleting hierarchy
-                    await _permissionRepo.RemoveHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
+                    await _mainUOW.HierarchyRepo.RemoveHierarchy(editSubordinatesDtos.ManagerId, subordinate.Id);
                 }
             }
 
-            await _permissionRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
         }
 
 
