@@ -17,32 +17,13 @@ namespace HR.Repository
         }
 
 
-        public async Task<Absence> AddOrRequestAbsence(AddAbsenceRequest absenceRequest, DateOnly startDate, DateOnly endDate, TimeOnly startTime, TimeOnly endTime, int myId, int companyId, bool IsApproved)
+        public async Task<Absence> AddOrRequestAbsence(Absence absence)
         {
-            int approvedBy = 0;
-            if (IsApproved == true) approvedBy = myId;
-
-            Absence absence = new Absence
-            {
-                AbsenceStartDate = startDate,
-                AbsenceEndDate = endDate,
-                StartTime = startTime,
-                EndTime = endTime,
-                IsApproved = IsApproved,
-                IsPending = !IsApproved,
-                ApprovedId = approvedBy,
-                ApprovedByAdmin = 0,
-                AbsenceTypeId = absenceRequest.AbsenceType,
-                DaysDeducted = absenceRequest.TimeDeducted,
-                HoursDeducted = absenceRequest.TimeDeducted,
-                AddedBy = myId,
-            };
-
             await _context.Absences.AddAsync(absence);
 
             return absence;
         }
 
-
+   
     }
 }

@@ -126,6 +126,7 @@ namespace HR.Repository
 
         public async Task<List<Contract>> GetContractsBetweenDates(DateOnly startDate, DateOnly endDate, int employeeId, int companyId)
         {
+            // this NEEDS FIXING
             List<Contract> contracts = await _context.Contracts
                 .Where(c => c.ContractStartDate >= startDate && c.ContractStartDate <= endDate && c.EmployeeId == employeeId && c.CompanyId == companyId)
                 .OrderBy(c => c.ContractStartDate)

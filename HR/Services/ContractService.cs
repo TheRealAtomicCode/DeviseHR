@@ -142,7 +142,7 @@ namespace HR.Services
 
         public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
         {
-            int requestAddOrError = await ValidateRequestOrAddAbsence(myId, userType, employeeId);
+            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, userType, employeeId);
 
             // 1 add
             // 0 request

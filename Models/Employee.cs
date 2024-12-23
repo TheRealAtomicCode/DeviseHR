@@ -77,7 +77,7 @@ public partial class Employee
 
     public virtual ICollection<Absence> AbsenceApprovedByAdminNavigations { get; set; } = new List<Absence>();
 
-    public virtual ICollection<Absence> AbsenceApproveds { get; set; } = new List<Absence>();
+    public virtual ICollection<Absence> AbsenceApprovedByNavigations { get; set; } = new List<Absence>();
 
     public virtual ICollection<Absence> AbsenceEmployees { get; set; } = new List<Absence>();
 

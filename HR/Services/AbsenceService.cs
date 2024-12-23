@@ -20,7 +20,7 @@ namespace HR.Services
             _configuration = configuration;
         }
 
-        public async Task<AbsenceDto> AddOrRequestAbsence(AddAbsenceRequest absenceRequest, int myId, int companyId, int userRole)
+        public async Task<AbsenceDto> AddOrRequestAbsence(AddAbsenceRequest absenceRequest, int myId, int companyId, int myRole)
         {
             DateOnly startDate = DateOnly.FromDateTime(absenceRequest.StartDateTime);
             DateOnly endDate = DateOnly.FromDateTime(absenceRequest.EndDateTime);
@@ -31,27 +31,34 @@ namespace HR.Services
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
             List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsBetweenDates(startDate, endDate, absenceRequest.EmployeeId, companyId);
 
-            if (contracts.Count == 0) throw new Exception("User has no contract");
+            if (contracts.Count == 0) throw new Exception("Employee has no contracts");
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
 
-            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, userRole, absenceRequest.EmployeeId);
+            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, absenceRequest.EmployeeId);
 
-            var addedAbsence = new Absence();
+            int absenceState = 0;
+            if (requestAddOrError == 1) absenceState = 2;
+            if (requestAddOrError == -1) throw new Exception("Your permissions are not sufficiant for the operation");
 
-            // -1 error
-            // 0 request
-            // 1 add
-            switch (requestAddOrError)
+            int? approvedBy = null;
+            if(absenceState == 1) approvedBy = myId;
+
+            Absence absence = new Absence
             {
-                case 0: addedAbsence = await _mainUOW.AbsenceRepo.AddOrRequestAbsence(absenceRequest, startDate, endDate, startTime, endTime, myId, companyId, false);
-                    break;
-                case 1: addedAbsence = await _mainUOW.AbsenceRepo.AddOrRequestAbsence(absenceRequest, startDate, endDate, startTime, endTime, myId, companyId, true);
-                    break;
-                case -1: throw new Exception("Your permissions are not sufficiant for the operation.");
-                default: throw new Exception("An unexpected error has occured while adding the Absence.");
-            }
+                AbsenceStartDate = startDate,
+                AbsenceEndDate = endDate,
+                StartTime = startTime,
+                EndTime = endTime,
+                AbsenceState = absenceState,
+                ApprovedBy = approvedBy,
+                ApprovedByAdmin = 0,
+                AbsenceTypeId = absenceRequest.AbsenceType,
+                DaysDeducted = absenceRequest.TimeDeducted,
+                HoursDeducted = absenceRequest.TimeDeducted,
+                AddedBy = myId,
+            };
 
-            var absenceDto = addedAbsence.Adapt<AbsenceDto>();
+            var absenceDto = absence.Adapt<AbsenceDto>();
 
             return absenceDto;
         }

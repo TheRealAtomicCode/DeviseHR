@@ -50,10 +50,11 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AbsenceEndDate).HasColumnName("absence_end_date");
             entity.Property(e => e.AbsenceStartDate).HasColumnName("absence_start_date");
+            entity.Property(e => e.AbsenceState).HasColumnName("absence_state");
             entity.Property(e => e.AbsenceTypeId).HasColumnName("absence_type_id");
             entity.Property(e => e.AddedBy).HasColumnName("added_by");
+            entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
             entity.Property(e => e.ApprovedByAdmin).HasColumnName("approved_by_admin");
-            entity.Property(e => e.ApprovedId).HasColumnName("approved_id");
             entity.Property(e => e.Comment)
                 .HasMaxLength(255)
                 .HasColumnName("comment");
@@ -67,16 +68,10 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.EndTime).HasColumnName("end_time");
             entity.Property(e => e.HoursDeducted).HasColumnName("hours_deducted");
-            entity.Property(e => e.IsApproved)
-                .HasDefaultValue(false)
-                .HasColumnName("is_approved");
             entity.Property(e => e.IsDays)
                 .HasDefaultValue(true)
                 .HasColumnName("is_days");
             entity.Property(e => e.IsFirstHalfDay).HasColumnName("is_first_half_day");
-            entity.Property(e => e.IsPending)
-                .HasDefaultValue(true)
-                .HasColumnName("is_pending");
             entity.Property(e => e.StartTime).HasColumnName("start_time");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -89,13 +84,13 @@ public partial class DeviseHrContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_absence_type");
 
+            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.AbsenceApprovedByNavigations)
+                .HasForeignKey(d => d.ApprovedBy)
+                .HasConstraintName("fk_approved_by_manager");
+
             entity.HasOne(d => d.ApprovedByAdminNavigation).WithMany(p => p.AbsenceApprovedByAdminNavigations)
                 .HasForeignKey(d => d.ApprovedByAdmin)
                 .HasConstraintName("fk_approved_by_admin");
-
-            entity.HasOne(d => d.Approved).WithMany(p => p.AbsenceApproveds)
-                .HasForeignKey(d => d.ApprovedId)
-                .HasConstraintName("fk_approved_by_manager");
 
             entity.HasOne(d => d.Company).WithMany(p => p.Absences)
                 .HasForeignKey(d => d.CompanyId)

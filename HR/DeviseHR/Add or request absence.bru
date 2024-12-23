@@ -1,0 +1,25 @@
+meta {
+  name: Add or request absence
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{hr-url}}/api/Absence/AddOrRequestAbsence
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "employeeId": 0,
+    "startDateTime": "2024-12-23T20:01:59.566Z",
+    "endDateTime": "2024-12-23T20:01:59.566Z",
+    "startTime": "string",
+    "endTime": "string",
+    "timeDeducted": 0,
+    "absenceType": 0,
+    "isDays": true,
+    "comment": "string"
+  }
+}
