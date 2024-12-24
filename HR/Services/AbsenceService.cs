@@ -34,6 +34,9 @@ namespace HR.Services
             if (contracts.Count == 0) throw new Exception("Employee has no contracts");
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
 
+            int employeeId = contracts[0].EmployeeId;
+            int contractId = contracts[0].Id;
+
             int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, absenceRequest.EmployeeId);
 
             int absenceState = 0;
@@ -51,14 +54,21 @@ namespace HR.Services
                 EndTime = endTime,
                 AbsenceState = absenceState,
                 ApprovedBy = approvedBy,
-                ApprovedByAdmin = 0,
+                ApprovedByAdmin = approvedBy,
                 AbsenceTypeId = absenceRequest.AbsenceType,
                 DaysDeducted = absenceRequest.TimeDeducted,
                 HoursDeducted = absenceRequest.TimeDeducted,
                 AddedBy = myId,
+                IsDays = false,
+                IsFirstHalfDay = null,
+                EmployeeId = absenceRequest.EmployeeId,
+                CompanyId = companyId,
+                ContractId = contractId
             };
 
+            await _mainUOW.AbsenceRepo.AddAbsence(absence);
 
+            await _mainUOW.SaveChangesAsync();
 
             var absenceDto = absence.Adapt<AbsenceDto>();
 

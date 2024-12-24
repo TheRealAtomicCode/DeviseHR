@@ -5,6 +5,6 @@ namespace HR.Repository.Interfaces
 {
     public interface IAbsenceRepo
     {
-        Task<Absence> AddOrRequestAbsence(Absence absence);
+        Task<Absence> AddAbsence(Absence absence);
     }
 }

@@ -17,7 +17,7 @@ namespace HR.Repository
         }
 
 
-        public async Task<Absence> AddOrRequestAbsence(Absence absence)
+        public async Task<Absence> AddAbsence(Absence absence)
         {
             await _context.Absences.AddAsync(absence);
 
