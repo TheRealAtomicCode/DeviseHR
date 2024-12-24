@@ -19,13 +19,11 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractsByLeaveYear(int employeeId, int compayId, DateOnly annualLeaveStartDate)
+        public async Task<List<Contract>> GetContractsThatFallInDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
         {
 
-            DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1);
-
             List<Contract> contracts = await _context.Contracts
-                .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId && c.ContractStartDate >= annualLeaveStartDate && c.ContractStartDate <= annualLeaveEndDate)
+                .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId && c.ContractStartDate >= startDate && c.ContractStartDate <= endDate)
                 .OrderBy(c => c.ContractStartDate)
                 .ToListAsync();
 
@@ -51,7 +49,7 @@ namespace HR.Repository
             */
             contractBeforeFirst = await _context.Contracts
                              .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId &&
-                              c.ContractStartDate < annualLeaveStartDate)
+                              c.ContractStartDate < startDate)
                              .OrderByDescending(c => c.ContractStartDate)
                              .FirstOrDefaultAsync();
 
@@ -72,7 +70,7 @@ namespace HR.Repository
         }
 
 
-        public async Task<Contract?> GetLastContractByDate(int employeeId, int companyId, DateOnly endOfLaveYear)
+        public async Task<Contract?> GetLastContractByDateOrDefault(int employeeId, int companyId, DateOnly endOfLaveYear)
         {
             Contract? contract = await _context.Contracts
                 .OrderByDescending(c => c.ContractStartDate)
@@ -124,17 +122,6 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractsBetweenDates(DateOnly startDate, DateOnly endDate, int employeeId, int companyId)
-        {
-            // this NEEDS FIXING
-            List<Contract> contracts = await _context.Contracts
-                .Where(c => c.ContractStartDate >= startDate && c.ContractStartDate <= endDate && c.EmployeeId == employeeId && c.CompanyId == companyId)
-                .OrderBy(c => c.ContractStartDate)
-                .ToListAsync();
-
-            return contracts;
-        }
-
 
 
 
@@ -154,8 +141,6 @@ namespace HR.Repository
 
         }
 
-
-
-        
+      
     }
 }

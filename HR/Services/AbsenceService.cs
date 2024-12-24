@@ -29,7 +29,7 @@ namespace HR.Services
             TimeOnly endTime = TimeOnly.FromDateTime(absenceRequest.EndDateTime);
 
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
-            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsBetweenDates(startDate, endDate, absenceRequest.EmployeeId, companyId);
+            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, startDate, endDate);
 
             if (contracts.Count == 0) throw new Exception("Employee has no contracts");
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
@@ -57,6 +57,8 @@ namespace HR.Services
                 HoursDeducted = absenceRequest.TimeDeducted,
                 AddedBy = myId,
             };
+
+
 
             var absenceDto = absence.Adapt<AbsenceDto>();
 

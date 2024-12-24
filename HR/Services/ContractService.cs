@@ -70,8 +70,9 @@ namespace HR.Services
             if (employee == null) throw new Exception("Employee not found");
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
+            DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
 
-            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
+            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
 
             int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
 
@@ -166,7 +167,7 @@ namespace HR.Services
 
                 if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
-                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
+                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
 
                 ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
