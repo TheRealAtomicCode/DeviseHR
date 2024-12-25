@@ -3,14 +3,17 @@
     public class AddAbsenceRequest
     {
         public int EmployeeId { get; set; }
-        public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
-        public string StartTime { get; set; } = string.Empty;
-        public string EndTime { get; set; } = string.Empty;
-        public int TimeDeducted { get; set; }
-        public int AbsenceType { get; set; }
+        public DateOnly AbsenceStartDate { get; set; }
+        public DateOnly AbsenceEndDate { get; set; }
+        public bool? IsFirstHalfDay { get; set; }
         public bool IsDays { get; set; }
-        public string Comment { get; set; } = string.Empty;
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+        public int? DaysDeducted { get; set; }
+        public int? HoursDeducted { get; set; }
+        public int AbsenceTypeId { get; set; }
+        public string? Comment { get; set; }
     }
+
 
 }

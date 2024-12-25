@@ -48,8 +48,9 @@ namespace HR.Controllers
             {
                 var serviceResponse = new ServiceResponse<AbsenceDto>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
-          
             }
         }
+
+
     }
 }

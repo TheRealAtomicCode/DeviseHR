@@ -3,232 +3,424 @@ import { hash, genSalt } from 'https://deno.land/x/bcrypt@v0.3.0/mod.ts';
 import { config } from 'https://deno.land/x/dotenv/mod.ts';
 
 async function hashPassword(password: string): Promise<string> {
-	const salt = await genSalt(10);
-	const hashedPassword = await hash(password, salt);
-	return hashedPassword;
+  const salt = await genSalt(10);
+  const hashedPassword = await hash(password, salt);
+  return hashedPassword;
 }
 
 async function insertUser(client: Client, user: any) {
-	try {
-		const opquery = `
-      INSERT INTO Operator (first_name, last_name, email, password_hash, profile_picture, is_terminated, user_role, refresh_tokens, is_verified, added_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+  try {
+    // Insert into Operator table
+    const operatorQuery = `
+      INSERT INTO Operator (
+        first_name, 
+        last_name, 
+        email, 
+        password_hash, 
+        profile_picture, 
+        is_terminated, 
+        user_role, 
+        refresh_tokens, 
+        is_verified, 
+        added_by
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+      );
     `;
+    const operatorValues = [
+      user.first_name,
+      user.last_name,
+      user.email,
+      user.password_hash,
+      user.profile_picture,
+      user.is_terminated,
+      user.user_role,
+      user.refresh_tokens,
+      true,  // is_verified
+      1,     // added_by (assuming this is the admin or system user)
+    ];
 
-		const opvalues = [
-			user.first_name,
-			user.last_name,
-			user.email,
-			user.password_hash,
-			user.profile_picture,
-			user.is_terminated,
-			user.user_role,
-			user.refresh_tokens,
-			true,
-			1,
-		];
+    await client.queryObject(operatorQuery, operatorValues);
 
-		await client.queryObject(opquery, opvalues);
 
-		const companiesquery = `
-      INSERT INTO Company (company_name, licence_number, phone_number, expiration_date, added_by_operator, max_employees_allowed, account_number, annual_leave_start_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING id;
-    `;
 
-		const companyValues = [
-			'DeviseHR',
-			'222222',
-			'2222222',
-			'2024-12-31T23:59:59Z',
-			1,
-			20,
-			'22222',
-			'1970-01-01',
-		];
+	//
+	//
+	// companies and admins
+	//
+	//
 
-		const company2Values = [
-			'DeviseMD',
-			'222221',
-			'2222223',
-			'2024-12-31T23:59:59Z',
-			1,
-			20,
-			'22221',
-			'1970-01-01',
-		];
+	    // Insert into Company table (for company 1)
+		const company1Query = `
+		INSERT INTO Company (
+		  company_name, 
+		  licence_number, 
+		  phone_number, 
+		  expiration_date, 
+		  added_by_operator, 
+		  max_employees_allowed, 
+		  account_number, 
+		  annual_leave_start_date
+		)
+		VALUES (
+		  $1, $2, $3, $4, $5, $6, $7, $8
+		)
+		RETURNING id;
+	  `;
+	  const company1Values = [
+		'DeviseHR',
+		'222222',
+		'2222222',
+		'2024-12-31T23:59:59Z',
+		1,     // added_by_operator (operator id)
+		20,    // max_employees_allowed
+		'22222',
+		'1970-01-01',  // annual_leave_start_date
+	  ];
+	  
+	  const { rows: company1Rows } = await client.queryObject<{ id: number }>(company1Query, company1Values);
+	  let companyId1 = company1Rows[0].id;
 
-		const { rows } = await client.queryObject<{ id: number }>(
-			companiesquery,
-			companyValues
+	 // Insert users for company 1
+	 const adminQuery = `
+	 INSERT INTO Employee (
+	   first_name, 
+	   last_name, 
+	   email, 
+	   added_by_user, 
+	   added_by_operator, 
+	   user_role, 
+	   password_hash, 
+	   is_verified, 
+	   company_id, 
+	   annual_leave_start_date,
+	   permission_id
+	 )
+	 VALUES (
+	   $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+	 );
+   `;
+   const adminsForCompany1 = [
+	 { first_name: 'user1', last_name: 'HR', email: 'user1@devisehr.com', user_role: 50, permissionId: null },
+	 { first_name: 'user2', last_name: 'hr', email: 'user2@devisehr.com', user_role: 40, permissionId: null },
+   ];
+
+   for (const user of adminsForCompany1) {
+	 const userValues = [
+	   user.first_name,
+	   user.last_name,
+	   user.email,
+	   20,    // added_by_user (user id)
+	   1,     // added_by_operator (operator id)
+	   user.user_role,
+	   user.password_hash,
+	   true,  // is_verified
+	   companyId1,
+	   '1970-01-01',  // annual_leave_start_date
+	   user.permissionId
+	 ];
+
+	 await client.queryObject(adminQuery, userValues);
+	 console.log(`User ${user.first_name} inserted successfully into company 1.`);
+   }
+
+   // Insert into Company table (for company 2)
+   const company2Query = `
+	 INSERT INTO Company (
+	   company_name, 
+	   licence_number, 
+	   phone_number, 
+	   expiration_date, 
+	   added_by_operator, 
+	   max_employees_allowed, 
+	   account_number, 
+	   annual_leave_start_date
+	 )
+	 VALUES (
+	   $1, $2, $3, $4, $5, $6, $7, $8
+	 )
+	 RETURNING id;
+   `;
+   const company2Values = [
+	 'DeviseMD',
+	 '222221',
+	 '2222223',
+	 '2024-12-31T23:59:59Z',
+	 1,     // added_by_operator (operator id)
+	 20,    // max_employees_allowed
+	 '22221',
+	 '1970-01-01',  // annual_leave_start_date
+   ];
+
+   const { rows: company2Rows } = await client.queryObject<{ id: number }>(company2Query, company2Values);
+   var companyId2 = company2Rows[0].id;
+
+   // Insert users for company 2
+   const adminsForCompany2 = [
+	   { first_name: 'user1', last_name: 'md', email: 'user1@devisemd.com', user_role: 50, permissionId: null },
+	   { first_name: 'user2', last_name: 'md', email: 'user20@devisemd.com', user_role: 40, permissionId: null },
+   ];
+
+   for (const user of adminsForCompany2) {
+	 const userValues = [
+	   user.first_name,
+	   user.last_name,
+	   user.email,
+	   20,    // added_by_user (user id)
+	   1,     // added_by_operator (operator id)
+	   user.user_role,
+	   user.password_hash,
+	   true,  // is_verified
+	   companyId2,
+	   '1970-01-01',  // annual_leave_start_date
+	   user.permissionId
+	 ];
+
+	 await client.queryObject(adminQuery, userValues);
+	 console.log(`User ${user.first_name} inserted successfully into company 2.`);
+   }
+
+
+	//
+	//
+	// permissions
+	//
+	//
+	   // Insert permissions for company 1
+	   const permissionQuery = `
+		INSERT INTO public.permission (
+			permission_name, 
+			enable_add_employees, 
+			enable_terminate_employees, 
+			enable_delete_employee, 
+			enable_create_pattern, 
+			enable_approve_absence, 
+			enable_add_manditory_leave, 
+			enable_add_lateness, 
+			enable_create_rotas, 
+			enable_view_employee_notifications, 
+			enable_view_employee_payroll, 
+			enable_view_employee_sensitive_information, 
+			created_at, 
+			updated_at, 
+			added_by, 
+			updated_by, 
+			company_id
+		) 
+		VALUES (
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
 		);
-		let companyId = rows[0].id;
-
-		const userQuery = `
-      INSERT INTO Employee (first_name, last_name, email, added_by_user, added_by_operator, user_role, password_hash, is_verified, company_id, annual_leave_start_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-    `;
-
-		const userValues = [
-			'user1',
-			'HR',
-			'user1@devisehr.com',
-			20,
-			1,
-			50,
-			user.password_hash,
-			true,
-			companyId,
-			'1970-01-01',
-		];
-
-		await client.queryObject(userQuery, userValues);
-		console.log('User inserted successfully 1 company 1.');
-
-		const user2Values = [
-			'user2',
-			'hr',
-			'user2@devisehr.com',
-			20,
-			1,
-			40,
-			user.password_hash,
-			true,
-			companyId,
-			'1970-01-01',
-		];
-
-		await client.queryObject(userQuery, user2Values);
-		console.log('User inserted successfully 2 company 2.');
-
-		const roo = await client.queryObject<{ id: number }>(
-			companiesquery,
-			company2Values
-		);
-		companyId = roo.rows[0].id;
-
-		const user3Values = [
-			'user1',
-			'md',
-			'user3@devisehr.com',
-			20,
-			1,
-			50,
-			user.password_hash,
-			true,
-			companyId,
-			'1970-01-01',
-		];
-
-		await client.queryObject(userQuery, user3Values);
-		console.log('User inserted successfully 3 company 3.');
-
-		const user4Values = [
-			'user2',
-			'md',
-			'user4@devisehr.com',
-			20,
-			1,
-			40,
-			user.password_hash,
-			true,
-			companyId,
-			'1970-01-01',
-		];
-
-		await client.queryObject(userQuery, user4Values);
-		console.log('User inserted successfully 4 company 3.');
-
-		// permissions
-		// permissions
-		// permissions
-		// permissions
-		// permissions
-
-		const permissionQuery = `
-			INSERT INTO public.permission (
-				permission_name, 
-				enable_add_employees, 
-				enable_terminate_employees, 
-				enable_delete_employee, 
-				enable_create_pattern, 
-				enable_approve_absence, 
-				enable_add_manditory_leave, 
-				enable_add_lateness, 
-				enable_create_rotas, 
-				enable_view_employee_notifications, 
-				enable_view_employee_payroll, 
-				enable_view_employee_sensitive_information, 
-				created_at, 
-				updated_at, 
-				added_by, 
-				updated_by, 
-				company_id
-			) 
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17);
 		`;
-
 		const permissionValues = [
-			'super-manager',
-			true, // enable_add_employees
-			true, // enable_terminate_employees
-			true, // enable_delete_employee
-			true, // enable_create_pattern
-			true, // enable_approve_absence
-			true, // enable_add_manditory_leave
-			true, // enable_add_lateness
-			true, // enable_create_rotas
-			true, // enable_view_employee_notifications
-			true, // enable_view_employee_payroll
-			true, // enable_view_employee_sensitive_information
-			new Date(), // created_at (current date)
-			new Date(), // updated_at (current date)
-			1, // added_by (example user)
-			null, // updated_by (example user)
-			1, // company_id (assuming this is defined elsewhere)
+		'super-manager',
+		true,  // enable_add_employees
+		true,  // enable_terminate_employees
+		true,  // enable_delete_employee
+		true,  // enable_create_pattern
+		true,  // enable_approve_absence
+		true,  // enable_add_mandatory_leave
+		true,  // enable_add_lateness
+		true,  // enable_create_rotas
+		true,  // enable_view_employee_notifications
+		true,  // enable_view_employee_payroll
+		true,  // enable_view_employee_sensitive_information
+		new Date(), // created_at (current date)
+		new Date(), // updated_at (current date)
+		1,     // added_by (admin/operator)
+		null,  // updated_by
+		1,     // company_id (for company 1)
 		];
-
-		// Now execute the query
+	
 		await client.queryObject(permissionQuery, permissionValues);
-		console.log('Permission inserted for company 1 successfully.');
-	} catch (error) {
-		console.error('Error inserting user:', error);
-	} finally {
-		await client.end();
+		console.log('Permission inserted successfully for company 1.');
+	
+	
+		// Insert permissions for company 2
+		permissionValues[14] = 9; // Change company_id to 2 for company 2
+		permissionValues[16] = 2; // Change company_id to 2 for company 2
+		await client.queryObject(permissionQuery, permissionValues);
+		console.log('Permission inserted successfully for company 2.');
+
+
+//
+//
+// managers and employees
+//
+//
+    // Insert users for company 1
+    const userQuery = `
+      INSERT INTO Employee (
+        first_name, 
+        last_name, 
+        email, 
+        added_by_user, 
+        added_by_operator, 
+        user_role, 
+        password_hash, 
+        is_verified, 
+        company_id, 
+        annual_leave_start_date,
+		permission_id
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+      );
+    `;
+    const usersForCompany1 = [
+	  { first_name: 'user3', last_name: 'hr', email: 'user3@devisehr.com', user_role: 30, permissionId: 1 },
+	  { first_name: 'user4', last_name: 'hr', email: 'user4@devisehr.com', user_role: 30, permissionId: 1 },
+	  { first_name: 'user5', last_name: 'hr', email: 'user5@devisehr.com', user_role: 20, permissionId: null },
+	  { first_name: 'user6', last_name: 'hr', email: 'user6@devisehr.com', user_role: 20, permissionId: null },
+	  { first_name: 'user7', last_name: 'hr', email: 'user7@devisehr.com', user_role: 20, permissionId: null },
+	  { first_name: 'user8', last_name: 'hr', email: 'user8@devisehr.com', user_role: 20, permissionId: null },
+    ];
+
+    for (const user of usersForCompany1) {
+      const userValues = [
+        user.first_name,
+        user.last_name,
+        user.email,
+        20,    // added_by_user (user id)
+        1,     // added_by_operator (operator id)
+        user.user_role,
+        user.password_hash,
+        true,  // is_verified
+        companyId1,
+        '1970-01-01',  // annual_leave_start_date
+		user.permissionId
+      ];
+
+      await client.queryObject(userQuery, userValues);
+      console.log(`User ${user.first_name} inserted successfully into company 1.`);
+    }
+
+  
+
+    // Insert users for company 2
+    const usersForCompany2 = [
+		{ first_name: 'user3', last_name: 'md', email: 'user3@devisemd.com', user_role: 30, permissionId: 1 },
+		{ first_name: 'user4', last_name: 'md', email: 'user4@devisemd.com', user_role: 30, permissionId: 1 },
+		{ first_name: 'user5', last_name: 'md', email: 'user5@devisemd.com', user_role: 20, permissionId: null },
+		{ first_name: 'user6', last_name: 'md', email: 'user6@devisemd.com', user_role: 20, permissionId: null },
+		{ first_name: 'user7', last_name: 'md', email: 'user7@devisemd.com', user_role: 20, permissionId: null },
+		{ first_name: 'user8', last_name: 'md', email: 'user8@devisemd.com', user_role: 20, permissionId: null },
+    ];
+
+    for (const user of usersForCompany2) {
+      const userValues = [
+        user.first_name,
+        user.last_name,
+        user.email,
+        20,    // added_by_user (user id)
+        1,     // added_by_operator (operator id)
+        user.user_role,
+        user.password_hash,
+        true,  // is_verified
+        companyId2,
+        '1970-01-01',  // annual_leave_start_date
+		user.permissionId
+      ];
+
+      await client.queryObject(userQuery, userValues);
+      console.log(`User ${user.first_name} inserted successfully into company 2.`);
 	}
+
+
+
+	  //
+	  //
+	  // hierarchies
+	  //
+	  //
+	  const hierarchyQuery = `
+      INSERT INTO Hierarchy (
+        manager_id, 
+        subordinate_id
+      )
+      VALUES (
+        $1, $2
+      );
+    `;
+
+	const hierarchiesCompany1 = [
+		{ manager_id: 5, subordinate_id: 7 },
+		{ manager_id: 5, subordinate_id: 8 },
+		{ manager_id: 6, subordinate_id: 9 },
+		{ manager_id: 6, subordinate_id: 12 },
+    ];
+
+	const hierarchiesCompany2 = [
+		{ manager_id: 11, subordinate_id: 13 },
+		{ manager_id: 11, subordinate_id: 14 },
+		{ manager_id: 12, subordinate_id: 15 },
+		{ manager_id: 12, subordinate_id: 16 },
+    ];
+
+    for (const hierarchy of hierarchiesCompany1) {
+      const hierarchyQueryValues = [
+        hierarchy.manager_id,
+        hierarchy.subordinate_id,
+      ];
+
+      await client.queryObject(hierarchyQuery, hierarchyQueryValues);
+    }
+	console.log(`Herarchies added for company 1.`);
+
+	for (const hierarchy of hierarchiesCompany2) {
+		const hierarchyQueryValues = [
+		  hierarchy.manager_id,
+		  hierarchy.subordinate_id,
+		];
+  
+		await client.queryObject(hierarchyQuery, hierarchyQueryValues);
+	}
+	console.log(`Herarchies added for company 2.`);
+
+	
+
+ 
+
+
+
+  } catch (error) {
+    console.error('Error inserting user:', error);
+  } finally {
+    await client.end();
+  }
 }
 
 export default async function seed() {
-	const firstName = 'Sudo';
-	const lastName = 'User';
-	const email = 'sudo@devisehr.com';
-	const plainPassword = 'password123'; // Replace with the actual plain password
+  const firstName = 'Sudo';
+  const lastName = 'User';
+  const email = 'sudo@devisehr.com';
+  const plainPassword = 'Password123'; // Replace with the actual plain password
 
-	const hashedPassword = await hashPassword(plainPassword);
+  const hashedPassword = await hashPassword(plainPassword);
 
-	const user = {
-		first_name: firstName,
-		last_name: lastName,
-		email: email,
-		password_hash: hashedPassword,
-		is_terminated: false,
-		user_role: 1,
-		profile_picture: null,
-		refresh_tokens: null,
-	};
+  const user = {
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
+    password_hash: hashedPassword,
+    is_terminated: false,
+    user_role: 1,
+    profile_picture: null,
+    refresh_tokens: null,
+  };
 
-	const { DB_USER, DB_PASSWORD, DB_NAME, DB_HOST, DB_PORT } = config();
+  const { DB_USER, DB_PASSWORD, DB_NAME, DB_HOST, DB_PORT } = config();
 
-	const connectionConfig = {
-		user: DB_USER, // Use environment variable
-		password: DB_PASSWORD, // Use environment variable
-		database: DB_NAME, // Use environment variable
-		hostname: DB_HOST, // Use environment variable
-		port: Number(DB_PORT), // Convert port to number
-	};
+  const connectionConfig = {
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    hostname: DB_HOST,
+    port: Number(DB_PORT),
+  };
 
-	const client = new Client(connectionConfig);
+  const client = new Client(connectionConfig);
 
-	await client.connect();
-	await insertUser(client, user);
+  await client.connect();
+  await insertUser(client, user);
 }

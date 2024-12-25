@@ -22,16 +22,10 @@ namespace HR.Services
 
         public async Task<AbsenceDto> AddOrRequestAbsence(AddAbsenceRequest absenceRequest, int myId, int companyId, int myRole)
         {
-            DateOnly startDate = DateOnly.FromDateTime(absenceRequest.StartDateTime);
-            DateOnly endDate = DateOnly.FromDateTime(absenceRequest.EndDateTime);
-
-            TimeOnly startTime = TimeOnly.FromDateTime(absenceRequest.StartDateTime);
-            TimeOnly endTime = TimeOnly.FromDateTime(absenceRequest.EndDateTime);
-
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
-            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, startDate, endDate);
+            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate);
 
-            if (contracts.Count == 0) throw new Exception("Employee has no contracts");
+            if (contracts.Count == 0) throw new Exception("Employee has no contracts in provided date");
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
 
             int employeeId = contracts[0].EmployeeId;
@@ -46,25 +40,12 @@ namespace HR.Services
             int? approvedBy = null;
             if(absenceState == 1) approvedBy = myId;
 
-            Absence absence = new Absence
-            {
-                AbsenceStartDate = startDate,
-                AbsenceEndDate = endDate,
-                StartTime = startTime,
-                EndTime = endTime,
-                AbsenceState = absenceState,
-                ApprovedBy = approvedBy,
-                ApprovedByAdmin = approvedBy,
-                AbsenceTypeId = absenceRequest.AbsenceType,
-                DaysDeducted = absenceRequest.TimeDeducted,
-                HoursDeducted = absenceRequest.TimeDeducted,
-                AddedBy = myId,
-                IsDays = false,
-                IsFirstHalfDay = null,
-                EmployeeId = absenceRequest.EmployeeId,
-                CompanyId = companyId,
-                ContractId = contractId
-            };
+            var absence = absenceRequest.Adapt<Absence>();
+            absence.AddedBy = myId;
+            absence.CompanyId = companyId;
+            absence.ContractId = contractId;
+            absence.ApprovedBy = approvedBy;
+            absence.AbsenceState = absenceState;
 
             await _mainUOW.AbsenceRepo.AddAbsence(absence);
 
