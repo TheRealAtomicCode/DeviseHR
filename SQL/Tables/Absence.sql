@@ -27,7 +27,10 @@ CREATE TABLE Absence (
   CONSTRAINT check_deduction_not_null CHECK (days_deducted IS NOT NULL OR hours_deducted IS NOT NULL),
   CONSTRAINT check_deducted_not_negative CHECK (days_deducted >= 0 OR hours_deducted >= 0),
 
-  CONSTRAINT half_days_for_leaves_in_days CHECK (is_days = FALSE AND is_first_half_day IS NULL),
+  CONSTRAINT half_days_for_leaves_in_days CHECK (
+    NOT (is_days = FALSE AND is_first_half_day IS NOT NULL)
+  ),
+
   CONSTRAINT check_start_date_not_after_end_date CHECK (absence_start_date <= absence_end_date),
 
   CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES Employee (id),

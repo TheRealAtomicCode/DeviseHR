@@ -43,13 +43,15 @@ namespace HR.Subroutines
 
         private static string ExtractConstraintName(string errorMessage)
         {
-            // Look for the "violates foreign key constraint" part and extract the constraint name
-            string pattern = @"violates foreign key constraint ""(.+?)""";
+            // Look for the constraint violation message and extract the constraint name
+            string pattern = @"violates (?:foreign key|check) constraint ""(.+?)""";
             var match = System.Text.RegularExpressions.Regex.Match(errorMessage, pattern);
+
             if (match.Success)
             {
-                return match.Groups[1].Value; // Returns the constraint name (e.g., "fk_absence_type")
+                return match.Groups[1].Value; // Returns the constraint name (e.g., "half_days_for_leaves_in_days")
             }
+
             return null; // No constraint found
         }
 
