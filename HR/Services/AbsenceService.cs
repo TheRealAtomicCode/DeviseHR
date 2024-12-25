@@ -22,6 +22,9 @@ namespace HR.Services
 
         public async Task<AbsenceDto> AddOrRequestAbsence(AddAbsenceRequest absenceRequest, int myId, int companyId, int myRole)
         {
+            if (absenceRequest.AbsenceEndDate < absenceRequest.AbsenceStartDate) throw new Exception("Absences end dates must be after the absence start date");
+            if (absenceRequest.AbsenceEndDate == absenceRequest.AbsenceStartDate && absenceRequest.EndTime <= absenceRequest.StartTime) throw new Exception("Absences end time must be after the absence start time");
+
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
             List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate);
 
@@ -33,12 +36,14 @@ namespace HR.Services
             int employeeId = contracts[0].EmployeeId;
             int contractId = contracts[0].Id;
 
-            if (existingContract.ContractStartDate < absenceRequest.AbsenceStartDate) throw new Exception("Can not add absence before the start of the contract");
+            if (existingContract.ContractStartDate > absenceRequest.AbsenceStartDate) throw new Exception("Can not add absence before the start of the contract");
 
             if (absenceRequest.IsDays != existingContract.IsDays) throw new Exception("The leave unit for the employee's existng contract does not match the requested leave unit");
             if (existingContract.IsDays == false && absenceRequest.IsFirstHalfDay != null) throw new Exception("You can not add half days to contracts that are in hours");
 
             // get absences that fall between the absence request dates if any exist, error
+            var existingAbsences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate, employeeId, contractId);
+            if (existingAbsences.Count > 0) throw new Exception("Can not add absences over existing absences, please edit the existing absence, or try deleting and addinng the absence again");
 
             int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, existingContract.EmployeeId);
 
@@ -58,7 +63,7 @@ namespace HR.Services
 
             await _mainUOW.AbsenceRepo.AddAbsence(absence);
 
-       //     await _mainUOW.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             var absenceDto = absence.Adapt<AbsenceDto>();
 

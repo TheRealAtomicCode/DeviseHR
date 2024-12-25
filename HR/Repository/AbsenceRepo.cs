@@ -1,5 +1,6 @@
 ﻿using HR.DTO.Inbound;
 using HR.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace HR.Repository
@@ -24,6 +25,23 @@ namespace HR.Repository
             return absence;
         }
 
-   
+
+        public async Task<List<Absence>> GetAbsencesLocatedBetweenDates(DateOnly absenceStartDate, DateOnly absenceEndDate, int employeeId, int contractId)
+        {
+            var absences = await _context.Absences
+                .Where(a => a.EmployeeId == employeeId &&
+                            a.ContractId == contractId &&
+                            (
+                                (a.AbsenceStartDate >= absenceStartDate && a.AbsenceStartDate <= absenceEndDate) ||
+                                (a.AbsenceEndDate >= absenceStartDate && a.AbsenceEndDate <= absenceEndDate) ||
+                                (a.AbsenceStartDate <= absenceStartDate && a.AbsenceEndDate >= absenceEndDate)
+                            ))
+                .ToListAsync();
+
+            return absences;
+        }
+
+
+
     }
 }
