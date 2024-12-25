@@ -175,8 +175,13 @@ namespace HR.Services
 
                 List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
 
+                var absences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(employee.AnnualLeaveStartDate, firstContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+                var absenceDtos = absences.Adapt<List<AbsenceDto>>();
+
                 ContractAndLeaveYearCount contractAndLeaveYears = new ContractAndLeaveYearCount{
                     contract = lastContractDto,
+                    absences = absenceDtos,
                     leaveYears = leaveYears
                 };
 

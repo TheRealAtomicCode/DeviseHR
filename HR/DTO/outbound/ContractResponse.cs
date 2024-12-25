@@ -16,6 +16,7 @@
     public class ContractAndLeaveYearCount
     {
         public ContractDto contract { get; set; } = new ContractDto();
+        public List<AbsenceDto> absences { get; set; } = new List<AbsenceDto>();
         public List<StartAndEndDate> leaveYears { get; set; } = new List<StartAndEndDate>();
     }
 }
