@@ -118,7 +118,8 @@ namespace HR.Repository
                     Id = e.Id,
                     FullName = $"{e.FirstName} {e.LastName}",
                     Title = e.Title,
-                    Email = e.Email
+                    Email = e.Email,
+                    UserRole = e.UserRole
                 })
                 .ToListAsync();
 
