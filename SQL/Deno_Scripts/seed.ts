@@ -8,7 +8,7 @@ async function hashPassword(password: string): Promise<string> {
   return hashedPassword;
 }
 
-async function insertUser(client: Client, user: any) {
+async function insertUser(client: Client, user: any, passHash: string) {
   try {
     // Insert into Operator table
     const operatorQuery = `
@@ -32,7 +32,7 @@ async function insertUser(client: Client, user: any) {
       user.first_name,
       user.last_name,
       user.email,
-      user.password_hash,
+      passHash,
       user.profile_picture,
       user.is_terminated,
       user.user_role,
@@ -52,7 +52,7 @@ async function insertUser(client: Client, user: any) {
 	//
 
 	    // Insert into Company table (for company 1)
-		const company1Query = `
+	const company1Query = `
 		INSERT INTO Company (
 		  company_name, 
 		  licence_number, 
@@ -114,7 +114,7 @@ async function insertUser(client: Client, user: any) {
 	   20,    // added_by_user (user id)
 	   1,     // added_by_operator (operator id)
 	   user.user_role,
-	   user.password_hash,
+	   passHash,
 	   true,  // is_verified
 	   companyId1,
 	   '1970-01-01',  // annual_leave_start_date
@@ -170,7 +170,7 @@ async function insertUser(client: Client, user: any) {
 	   20,    // added_by_user (user id)
 	   1,     // added_by_operator (operator id)
 	   user.user_role,
-	   user.password_hash,
+	   passHash,
 	   true,  // is_verified
 	   companyId2,
 	   '1970-01-01',  // annual_leave_start_date
@@ -284,7 +284,7 @@ async function insertUser(client: Client, user: any) {
         20,    // added_by_user (user id)
         1,     // added_by_operator (operator id)
         user.user_role,
-        user.password_hash,
+        passHash,
         true,  // is_verified
         companyId1,
         '1970-01-01',  // annual_leave_start_date
@@ -315,7 +315,7 @@ async function insertUser(client: Client, user: any) {
         20,    // added_by_user (user id)
         1,     // added_by_operator (operator id)
         user.user_role,
-        user.password_hash,
+        passHash,
         true,  // is_verified
         companyId2,
         '1970-01-01',  // annual_leave_start_date
@@ -333,7 +333,7 @@ async function insertUser(client: Client, user: any) {
 	  // hierarchies
 	  //
 	  //
-	  const hierarchyQuery = `
+	const hierarchyQuery = `
       INSERT INTO Hierarchy (
         manager_id, 
         subordinate_id
@@ -377,10 +377,14 @@ async function insertUser(client: Client, user: any) {
 	}
 	console.log(`Herarchies added for company 2.`);
 
-	
-
- 
-
+	//
+	//
+	//
+	// contracts
+	//
+	//
+	//
+	//
 
 
   } catch (error) {
@@ -422,5 +426,5 @@ export default async function seed() {
   const client = new Client(connectionConfig);
 
   await client.connect();
-  await insertUser(client, user);
+  await insertUser(client, user, hashedPassword);
 }
