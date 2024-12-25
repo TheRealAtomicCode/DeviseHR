@@ -154,20 +154,20 @@ namespace HR.Services
 
                 if (employee == null) throw new Exception("Employee not found");
 
-                var requestedAnnualeLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
-
+                var annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
+                var annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
                 //
                 //
                 //
                 // NOTE
                 // DELETE WHEN WORKING ON FRONT END IF NEEDED
-                if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
+                if (annualLeaveStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
 
                 Contract? firstContract = await _mainUOW.ContractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
 
                 if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
-                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
+                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, annualLeaveEndDate);
 
                 ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
@@ -175,7 +175,7 @@ namespace HR.Services
 
                 List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
 
-                var absences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(employee.AnnualLeaveStartDate, firstContract.ContractStartDate, employee.Id, employee.CompanyId);
+                var absences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(annualLeaveStartDate, annualLeaveEndDate, employee.Id, employee.CompanyId);
 
                 var absenceDtos = absences.Adapt<List<AbsenceDto>>();
 
