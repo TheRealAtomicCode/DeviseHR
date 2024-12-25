@@ -25,13 +25,22 @@ namespace HR.Services
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
             List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate);
 
-            if (contracts.Count == 0) throw new Exception("Employee has no contracts in provided date");
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
+
+            var existingContract = contracts.FirstOrDefault();
+            if (existingContract == null) throw new Exception("Employee has no contracts in provided date");
 
             int employeeId = contracts[0].EmployeeId;
             int contractId = contracts[0].Id;
 
-            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, absenceRequest.EmployeeId);
+            if (existingContract.ContractStartDate < absenceRequest.AbsenceStartDate) throw new Exception("Can not add absence before the start of the contract");
+
+            if (absenceRequest.IsDays != existingContract.IsDays) throw new Exception("The leave unit for the employee's existng contract does not match the requested leave unit");
+            if (existingContract.IsDays == false && absenceRequest.IsFirstHalfDay != null) throw new Exception("You can not add half days to contracts that are in hours");
+
+            // get absences that fall between the absence request dates if any exist, error
+
+            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, existingContract.EmployeeId);
 
             int absenceState = 0;
             if (requestAddOrError == 1) absenceState = 2;
@@ -43,13 +52,13 @@ namespace HR.Services
             var absence = absenceRequest.Adapt<Absence>();
             absence.AddedBy = myId;
             absence.CompanyId = companyId;
-            absence.ContractId = contractId;
+            absence.ContractId = existingContract.Id;
             absence.ApprovedBy = approvedBy;
             absence.AbsenceState = absenceState;
 
             await _mainUOW.AbsenceRepo.AddAbsence(absence);
 
-            await _mainUOW.SaveChangesAsync();
+       //     await _mainUOW.SaveChangesAsync();
 
             var absenceDto = absence.Adapt<AbsenceDto>();
 
