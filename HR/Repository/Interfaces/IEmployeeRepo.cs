@@ -1,5 +1,5 @@
-﻿using HR.DTO.Inbound;
-using HR.DTO.outbound;
+﻿
+using HR.DTO;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Models;
 using System.ComponentModel.Design;

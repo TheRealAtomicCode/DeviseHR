@@ -1,6 +1,5 @@
 ﻿using Common;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
+using HR.DTO;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
@@ -27,7 +26,7 @@ namespace HR.Services
         }
 
 
-        public async Task<int> CreatePermissionService(PermissionData newPermission, int myId, int companyId)
+        public async Task<int> CreatePermissionService(AddPermissionRequest newPermission, int myId, int companyId)
         {
 
             StringUtils.ValidateNonEmptyStrings([newPermission.PermissionName.Trim()]);
@@ -50,7 +49,7 @@ namespace HR.Services
         }
 
 
-        public async Task EditPermission(JsonPatchDocument<EditPermissionDto> patchDoc, int permissionId, int myId, int companyId)
+        public async Task EditPermission(JsonPatchDocument<EditPermissionRequest> patchDoc, int permissionId, int myId, int companyId)
         {
             var permission = await _mainUOW.PermissionRepo.GetPermissionById(permissionId, companyId);
 
@@ -59,7 +58,7 @@ namespace HR.Services
                 throw new Exception("Unable to locate permission");
             }
 
-            var toPatch = permission.Adapt<EditPermissionDto>();
+            var toPatch = permission.Adapt<EditPermissionRequest>();
 
             patchDoc.ApplyTo(toPatch);
             toPatch.Adapt(permission);
@@ -82,7 +81,7 @@ namespace HR.Services
 
 
 
-        public async Task EditSubordinatesService(EditSubordinatesDto editSubordinatesDtos, int myId, int companyId)
+        public async Task EditSubordinatesService(EditSubordinatesRequest editSubordinatesDtos, int myId, int companyId)
         {
             if (editSubordinatesDtos.SubordinatesToBeAdded.Count > 200 || editSubordinatesDtos.SubordinatesToBeRemoved.Count > 200) throw new Exception("Please edit at most 200 emloyees at a time");
 

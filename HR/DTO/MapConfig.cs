@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Models;
-using HR.DTO.Outbound;
 
 namespace HR.DTO.Mapper
 {

@@ -1,6 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
 using Models;
 
 namespace HR.Subroutines
@@ -109,7 +108,7 @@ namespace HR.Subroutines
         //    return newContractCalculationResult;
         //}
 
-        public static NewContractCalculationResult CalculateNewContractEntitlementMut(CreateContractDto newContract, DateOnly annualLeaveStartDate, int leaveUnit)
+        public static NewContractCalculationResult CalculateNewContractEntitlementMut(AddContractRequest newContract, DateOnly annualLeaveStartDate, int leaveUnit)
         {
             // get contract start date
             if (newContract.ContractStartDate < annualLeaveStartDate)

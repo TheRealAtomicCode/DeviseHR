@@ -1,6 +1,4 @@
 ﻿using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Subroutines;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

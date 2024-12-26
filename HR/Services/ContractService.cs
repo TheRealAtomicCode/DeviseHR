@@ -1,7 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
@@ -58,7 +56,7 @@ namespace HR.Services
         //}
 
         // calculating anual leave for days variable 2
-        public async Task<CreateContractDto> CalculateLeaveYear(CreateContractDto newContract, int companyId)
+        public async Task<AddContractRequest> CalculateLeaveYear(AddContractRequest newContract, int companyId)
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
@@ -94,7 +92,7 @@ namespace HR.Services
 
 
 
-        public async Task<ContractDto> CreateContract(CreateContractDto newContract, int myId, int companyId, int userRole)
+        public async Task<ContractDto> CreateContract(AddContractRequest newContract, int myId, int companyId, int userRole)
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
@@ -145,7 +143,7 @@ namespace HR.Services
 
 
 
-        public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
+        public async Task<LeaveYearResponse> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
         {
             int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, userType, employeeId);
 
@@ -183,7 +181,8 @@ namespace HR.Services
 
                 var absenceDtos = absences.Adapt<List<AbsenceDto>>();
 
-                ContractAndLeaveYearCount contractAndLeaveYears = new ContractAndLeaveYearCount{
+                LeaveYearResponse contractAndLeaveYears = new LeaveYearResponse
+                {
                     contract = lastContractDto,
                     absences = absenceDtos,
                     leaveYears = leaveYears

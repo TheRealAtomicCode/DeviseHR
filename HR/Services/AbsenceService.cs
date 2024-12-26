@@ -1,5 +1,4 @@
-﻿using HR.DTO.Inbound;
-using HR.DTO;
+﻿using HR.DTO;
 using HR.Services.Interfaces;
 using HR.UOW.Interfaces;
 using HR.Repository;

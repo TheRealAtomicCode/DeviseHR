@@ -1,7 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +30,7 @@ namespace HR.Controllers
         [HttpPost("createEmployee")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<IActionResult> CreateEmployee([FromBody] NewEmployeeDto newEmployee)
+        public async Task<IActionResult> CreateEmployee([FromBody] NewEmployeeRequest newEmployee)
         {
             try
             {
@@ -117,7 +115,7 @@ namespace HR.Controllers
 
         [HttpPatch("{employeeId}")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditEmployee([FromRoute] int employeeId, [FromBody] JsonPatchDocument<EditEmployeeDto>  patchDoc)
+        public async Task<ActionResult<ServiceResponse<NewEmployeeRequest>>> EditEmployee([FromRoute] int employeeId, [FromBody] JsonPatchDocument<EditEmployeeRequest>  patchDoc)
         {
             try
             {

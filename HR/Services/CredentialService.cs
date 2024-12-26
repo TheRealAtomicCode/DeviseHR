@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using HR.DTO.Inbound;
-using HR.DTO.Outbound;
 using HR.Repository.Interfaces;
 using System.Text.RegularExpressions;
 using HR.Subroutines;
@@ -12,6 +10,7 @@ using System.Net.Sockets;
 using Common;
 using System.Security.Claims;
 using HR.Services.Interfaces;
+using HR.DTO;
 
 
 

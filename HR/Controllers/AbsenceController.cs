@@ -1,6 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
