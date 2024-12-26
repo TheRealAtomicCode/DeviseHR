@@ -1,6 +1,5 @@
 ﻿using Common;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
+using HR.DTO;
 using Models;
 
 namespace HR.Subroutines
@@ -8,7 +7,7 @@ namespace HR.Subroutines
     public class ContractSubroutines
     {
 
-        public static int CheckAndGetLeaveUnit(List<Contract> existingContracts, CreateContractDto? newContract)
+        public static int CheckAndGetLeaveUnit(List<Contract> existingContracts, AddContractRequest? newContract)
         {
             // 0 no previous contracts
             // 1 days

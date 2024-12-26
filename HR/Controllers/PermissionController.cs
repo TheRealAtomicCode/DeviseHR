@@ -1,7 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Services;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -34,7 +32,7 @@ namespace HR.Controllers
 
         [HttpPost("CreatePermission")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<Permission>>> CreatePermission(PermissionData newPermission)
+        public async Task<ActionResult<ServiceResponse<Permission>>> CreatePermission(AddPermissionRequest newPermission)
         {
             try
             {
@@ -83,7 +81,7 @@ namespace HR.Controllers
 
         [HttpPatch("{permissionId}")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<NewEmployeeDto>>> EditPermission([FromRoute] int permissionId, [FromBody] JsonPatchDocument<EditPermissionDto> patchDoc)
+        public async Task<ActionResult<ServiceResponse<EmployeeDto>>> EditPermission([FromRoute] int permissionId, [FromBody] JsonPatchDocument<EditPermissionRequest> patchDoc)
         {
             try
             {
@@ -135,7 +133,7 @@ namespace HR.Controllers
 
         [HttpPatch("EditSubordinates")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<string>>> EditSubordinates([FromRoute] int permissionId, [FromBody] EditSubordinatesDto editSubordinatesDto)
+        public async Task<ActionResult<ServiceResponse<string>>> EditSubordinates([FromRoute] int permissionId, [FromBody] EditSubordinatesRequest editSubordinatesDto)
         {
             try
             {

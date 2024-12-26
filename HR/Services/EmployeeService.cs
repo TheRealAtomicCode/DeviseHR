@@ -1,6 +1,5 @@
 ﻿using Common;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
+using HR.DTO;
 using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
@@ -25,7 +24,7 @@ namespace HR.Services
         }
 
 
-        public async Task<int> CreateEmployee(NewEmployeeDto newEmployee, int myId, int companyId, int myRole)
+        public async Task<int> CreateEmployee(NewEmployeeRequest newEmployee, int myId, int companyId, int myRole)
         {
             StringUtils.ValidateNonEmptyStrings([newEmployee.FirstName, newEmployee.LastName]);
             StringUtils.ValidateEmail(newEmployee.Email);
@@ -90,7 +89,7 @@ namespace HR.Services
             return foundEmployees;
         }
 
-        public async Task EditEmployee(JsonPatchDocument<EditEmployeeDto> patchDoc, int employeeId, int myId, int companyId)
+        public async Task EditEmployee(JsonPatchDocument<EditEmployeeRequest> patchDoc, int employeeId, int myId, int companyId)
         {
             var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
 
@@ -99,7 +98,7 @@ namespace HR.Services
                 throw new Exception("Unable to locate employee");
             }
 
-            var toPatch = employee.Adapt<EditEmployeeDto>();
+            var toPatch = employee.Adapt<EditEmployeeRequest>();
 
             patchDoc.ApplyTo(toPatch);
             toPatch.Adapt(employee);

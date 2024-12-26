@@ -1,6 +1,4 @@
 ﻿using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using Models;
 
 namespace HR.Repository.Interfaces

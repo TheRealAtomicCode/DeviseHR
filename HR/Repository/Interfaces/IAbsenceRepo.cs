@@ -1,6 +1,4 @@
-﻿using HR.DTO.Inbound;
-using Models;
-using System.Diagnostics.Contracts;
+﻿using Models;
 
 namespace HR.Repository.Interfaces
 {

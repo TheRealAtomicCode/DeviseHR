@@ -3,10 +3,9 @@ using Models;
 using HR.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.Design;
-using HR.DTO.Inbound;
 using HR.Subroutines;
-using HR.DTO.outbound;
 using Mapster;
+using HR.DTO;
 
 namespace HR.Repository
 {

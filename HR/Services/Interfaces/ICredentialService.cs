@@ -1,5 +1,4 @@
-﻿using HR.DTO.Inbound;
-using HR.DTO.Outbound;
+﻿using HR.DTO;
 using Models;
 using System.ComponentModel.Design;
 

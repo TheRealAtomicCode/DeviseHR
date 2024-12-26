@@ -1,6 +1,4 @@
 ﻿using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,4 @@
 ﻿using HR.DTO;
-using HR.DTO.Inbound;
 
 namespace HR.Services.Interfaces
 {

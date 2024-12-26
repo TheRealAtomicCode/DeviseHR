@@ -1,5 +1,4 @@
-﻿using HR.DTO.Inbound;
-using HR.DTO.outbound;
+﻿using HR.DTO;
 using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +90,7 @@ namespace HR.Repository
         }
 
 
-        public async Task<Contract> AddContract(Employee employee, CreateContractDto newContract, int companyId, int myId)
+        public async Task<Contract> AddContract(Employee employee, AddContractRequest newContract, int companyId, int myId)
         {
             Contract contract = new Contract
             {

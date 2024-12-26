@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.Outbound;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

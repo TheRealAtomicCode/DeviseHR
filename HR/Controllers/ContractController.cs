@@ -1,7 +1,5 @@
 ﻿using Common;
 using HR.DTO;
-using HR.DTO.Inbound;
-using HR.DTO.outbound;
 using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +30,7 @@ namespace HR.Controllers
         [HttpPost("CreateContract")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<ActionResult<ServiceResponse<CreateContractDto>>> CreateContract([FromBody] CreateContractDto newConract)
+        public async Task<ActionResult<ServiceResponse<AddContractRequest>>> CreateContract([FromBody] AddContractRequest newConract)
         {
             try
             {
@@ -63,7 +61,7 @@ namespace HR.Controllers
         [HttpPost("CalculateLeaveYear")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<ActionResult<ServiceResponse<CreateContractDto>>> calculateLeaveYear([FromBody] CreateContractDto newConract)
+        public async Task<ActionResult<ServiceResponse<AddContractRequest>>> calculateLeaveYear([FromBody] AddContractRequest newConract)
         {
             try
             {
@@ -75,13 +73,13 @@ namespace HR.Controllers
 
                 var calculatedContract = await _contractService.CalculateLeaveYear(newConract, companyId);
 
-                var serviceResponse = new ServiceResponse<CreateContractDto>(calculatedContract, true, "", 0);
+                var serviceResponse = new ServiceResponse<AddContractRequest>(calculatedContract, true, "", 0);
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<CreateContractDto>(null!, false, ex.Message, 0);
+                var serviceResponse = new ServiceResponse<AddContractRequest>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
         }
@@ -89,7 +87,7 @@ namespace HR.Controllers
 
         [HttpPost("GetLeaveYear/{employeeId}")]
         [Authorize(Policy = "Manager")]
-        public async Task<ActionResult<ServiceResponse<ContractAndLeaveYearCount>>> GetLeaveYear([FromRoute] int employeeId, [Required] DateOnly leaveYearDate)
+        public async Task<ActionResult<ServiceResponse<LeaveYearResponse>>> GetLeaveYear([FromRoute] int employeeId, [Required] DateOnly leaveYearDate)
         {
             try
             {
@@ -107,13 +105,13 @@ namespace HR.Controllers
 
                 var calculatedContract = await _contractService.GetLeaveYear(leaveYearDate, employeeId, myId, myRole, companyId);
 
-                var serviceResponse = new ServiceResponse<ContractAndLeaveYearCount>(calculatedContract, true, "", 0);
+                var serviceResponse = new ServiceResponse<LeaveYearResponse>(calculatedContract, true, "", 0);
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<ContractAndLeaveYearCount>(null!, false, ex.Message, 0);
+                var serviceResponse = new ServiceResponse<LeaveYearResponse>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
         }

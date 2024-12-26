@@ -1,5 +1,4 @@
-﻿using HR.DTO.Inbound;
-using HR.Repository.Interfaces;
+﻿using HR.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
