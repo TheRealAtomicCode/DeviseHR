@@ -76,7 +76,7 @@ namespace HR.DTO
 
     public class LeaveYearResponse
     {
-        public ContractDto contract { get; set; } = new ContractDto();
+        public List<VirtualContract> leaveYearContracts { get; set; } = new List<VirtualContract>();
         public List<AbsenceDto> absences { get; set; } = new List<AbsenceDto>();
         public List<StartAndEndDate> leaveYears { get; set; } = new List<StartAndEndDate>();
     }

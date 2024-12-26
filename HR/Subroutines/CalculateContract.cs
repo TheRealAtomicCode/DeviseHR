@@ -19,10 +19,18 @@ namespace HR.Subroutines
 
                 for (int i = 0; i < virtualContracts.Count; i++)
                 {
-                    var newVC = new VirtualContract(virtualContracts[i]);
+                    if(i == virtualContracts.Count - 1)
+                    {
+                        if (virtualContracts[i].ContractEndDate == null)
+                        {
+                            virtualContracts[i].ContractEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
+                        }
+                    }
+
+                    var newVC = virtualContracts[i].Adapt<VirtualContract>();
 
                     // contract starts before leave year and ends before leave year
-                    if(virtualContracts[i].ContractStartDate < annualLeaveStartDate && virtualContracts[i].ContractEndDate < annualLeaveEndDate)
+                    if(virtualContracts[i].ContractStartDate <= annualLeaveStartDate && virtualContracts[i].ContractEndDate <= annualLeaveEndDate)
                     {
                         // take next allowance
                         newVC.ContractStartDate = annualLeaveStartDate;
@@ -31,7 +39,7 @@ namespace HR.Subroutines
                     }
 
                     // contract starts after leave year and ends before leave year
-                    if (virtualContracts[i].ContractStartDate > annualLeaveStartDate && virtualContracts[i].ContractEndDate < annualLeaveEndDate)
+                    if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate <= annualLeaveEndDate)
                     {
                         // take first allowance
                         newVC.ContractStartDate = virtualContracts[i].ContractStartDate;
@@ -40,7 +48,7 @@ namespace HR.Subroutines
                     }
 
                     // contract starts before leave year and ends after leave year
-                    if (virtualContracts[i].ContractStartDate < annualLeaveStartDate && virtualContracts[i].ContractEndDate > annualLeaveEndDate)
+                    if (virtualContracts[i].ContractStartDate <= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
                     {
                         // taske next allowance
                         newVC.ContractStartDate = annualLeaveStartDate;
@@ -49,7 +57,7 @@ namespace HR.Subroutines
                     }
 
                     // contract starts after leave year and ends after leave year
-                    if (virtualContracts[i].ContractStartDate > annualLeaveStartDate && virtualContracts[i].ContractEndDate > annualLeaveEndDate)
+                    if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
                     {
                         // take first allowance
                         newVC.ContractStartDate = virtualContracts[i].ContractStartDate;

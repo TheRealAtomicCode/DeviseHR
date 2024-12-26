@@ -134,7 +134,7 @@ namespace HR.Services
 
             if (lastContract != null && lastContract.ContractStartDate >= newContract.ContractStartDate) throw new Exception("Can not add contact before previous contract start date.");
 
-            var absence = _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(newContract.ContractStartDate, employee.Id, employee.CompanyId);
+            var absence = await _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(newContract.ContractStartDate, employee.Id, employee.CompanyId);
 
             if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
 
@@ -175,13 +175,19 @@ namespace HR.Services
 
                 if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
-                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, annualLeaveEndDate);
+                // Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, annualLeaveEndDate);
 
-                ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
+                // ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
-                if (lastContract == null) throw new Exception("Employee does not have any contracts");
+                if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
                 List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
+
+                List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+
+                var virtualContracts = ContractSubroutines.VirtualizeContracts(existingContracts);
+
+                var leaveYearConracts = Calculate.PlaceContractsInYear(virtualContracts, annualLeaveStartDate);
 
                 var absences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(annualLeaveStartDate, annualLeaveEndDate, employee.Id, employee.CompanyId);
 
@@ -189,7 +195,7 @@ namespace HR.Services
 
                 LeaveYearResponse contractAndLeaveYears = new LeaveYearResponse
                 {
-                    contract = lastContractDto,
+                    leaveYearContracts = leaveYearConracts,
                     absences = absenceDtos,
                     leaveYears = leaveYears
                 };
