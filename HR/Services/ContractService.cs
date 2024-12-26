@@ -72,7 +72,10 @@ namespace HR.Services
 
             List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
 
-            if (newContract.ContractStartDate <= existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
+            if (existingContracts.Count > 0)
+            {
+                if (newContract.ContractStartDate <= existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
+            }
 
             var virtualContracts = ContractSubroutines.VirtualizeContracts(existingContracts);
 

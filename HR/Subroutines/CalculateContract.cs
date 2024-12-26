@@ -75,7 +75,7 @@ namespace HR.Subroutines
         }
 
 
-        public static int CalculateLeaveYearEntitlementByDates(List<VirtualContract> virtualContracts, DateOnly leaveYearStartDate, DateOnly leaveYearEndDate, int leaveUnit)
+        public static int CalculateLeaveYearEntitlementByDates(List<VirtualContract> virtualContracts, DateOnly startDate, DateOnly endDate, int leaveUnit)
         {
             int result = 0;
 
@@ -85,7 +85,10 @@ namespace HR.Subroutines
 
                 for (int i = 0; i < virtualContracts.Count; i++)
                 {
-                    int daysBetween = DateModifier.GetDaysBetween(leaveYearStartDate, leaveYearEndDate);
+                    DateOnly contractEnddate = endDate;
+                    if (virtualContracts[0].ContractEndDate != null) contractEnddate = (DateOnly)virtualContracts[i].ContractEndDate!;
+
+                    int daysBetween = DateModifier.GetDaysBetween(virtualContracts[0].ContractStartDate, (DateOnly)virtualContracts[0].ContractEndDate!);
 
                     double contractLeaveRatio;
 
@@ -104,7 +107,7 @@ namespace HR.Subroutines
 
                     double contractleaveEntitlementPerYear = contractLeaveRatio * virtualContracts[i].CompanyLeaveEntitlement;
 
-                    int numberOfDatsInYear = DateModifier.GetNumberOfDaysInYear(leaveYearStartDate);
+                    int numberOfDatsInYear = DateModifier.GetNumberOfDaysInYear(startDate);
 
                     double thisContractEntitlement = (contractleaveEntitlementPerYear / numberOfDatsInYear) * daysBetween;
 
