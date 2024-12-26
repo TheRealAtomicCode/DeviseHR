@@ -70,13 +70,19 @@ namespace HR.Services
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
             DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
 
-            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
 
-            int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
+            if (newContract.ContractStartDate <= existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
 
-            int previousLeaveYearEntitlement = CalculateContract.CalculateLeaveYearEntitlement(existingContracts, annualLeaveStartDate, newContract.ContractStartDate, leaveUnit);
+            var virtualContracts = ContractSubroutines.VirtualizeContracts(existingContracts);
 
-            NewContractCalculationResult newContractResult = CalculateContract.CalculateNewContractEntitlementMut(newContract, annualLeaveStartDate, leaveUnit);
+            int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(virtualContracts, newContract);
+
+            var previousLeaveYearContracts = Calculate.PlaceContractsInYear(virtualContracts, annualLeaveStartDate);
+
+            int previousLeaveYearEntitlement = Calculate.CalculateLeaveYearEntitlementByDates(previousLeaveYearContracts, annualLeaveStartDate, newContract.ContractStartDate, leaveUnit);
+
+            NewContractCalculationResult newContractResult = Calculate.CalculateNewContractEntitlementMut(newContract, annualLeaveStartDate, leaveUnit);
 
             // double thisLeaveYearsAllowance = previousLeaveYearEntitlement + newContractResult.ThisContractEntitlement;
             double thisLeaveYearsAllowance = newContractResult.ThisContractEntitlement;
@@ -134,7 +140,7 @@ namespace HR.Services
 
             Contract addedContract = await _mainUOW.ContractRepo.AddContract(employee, newContract, myId, companyId);
 
-      //      await _mainUOW.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             ContractDto addedContractDto = addedContract.Adapt<ContractDto>();
 

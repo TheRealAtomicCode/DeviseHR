@@ -18,7 +18,7 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractsThatFallInDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
+        public async Task<List<Contract>> GetContractsThatFallBetweenDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
         {
 
             List<Contract> contracts = await _context.Contracts

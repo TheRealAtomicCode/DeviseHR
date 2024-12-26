@@ -25,7 +25,7 @@ namespace HR.Services
             if (absenceRequest.AbsenceEndDate == absenceRequest.AbsenceStartDate && absenceRequest.EndTime <= absenceRequest.StartTime) throw new Exception("Absences end time must be after the absence start time");
 
             //throw new Exception("Check if ContractRepo.GetContractsThatFallBetween() is in use by another method, if not then change it, else create a new method to get contracts to add the absence.");
-            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(absenceRequest.EmployeeId, companyId, absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate);
+            List<Contract> contracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(absenceRequest.EmployeeId, companyId, absenceRequest.AbsenceStartDate, absenceRequest.AbsenceEndDate);
 
             if (contracts.Count > 1) throw new Exception("Can not add absence between 2 contracts");
 
