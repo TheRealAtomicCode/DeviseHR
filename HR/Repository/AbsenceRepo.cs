@@ -41,6 +41,19 @@ namespace HR.Repository
             return absences;
         }
 
+        public async Task<Absence> GetAbsenceLocatedInDateOrDefault(DateOnly selectedDate, int employeeId, int contractId)
+        {
+            var absence = await _context.Absences
+                .Where(a => a.EmployeeId == employeeId &&
+                            a.ContractId == contractId &&
+                            (
+                                a.AbsenceStartDate <= selectedDate && a.AbsenceEndDate >= selectedDate
+                            ))
+                .FirstOrDefaultAsync();
+
+            return absence;
+        }
+
 
 
     }

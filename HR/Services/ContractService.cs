@@ -130,9 +130,13 @@ namespace HR.Services
 
             if (lastContract != null && lastContract.ContractStartDate >= newContract.ContractStartDate) throw new Exception("Can not add contact before previous contract start date.");
 
+            var absence = _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(newContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+            if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
+
             Contract addedContract = await _mainUOW.ContractRepo.AddContract(employee, newContract, myId, companyId);
 
-            await _mainUOW.SaveChangesAsync();
+      //      await _mainUOW.SaveChangesAsync();
 
             ContractDto addedContractDto = addedContract.Adapt<ContractDto>();
 
