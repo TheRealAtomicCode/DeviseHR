@@ -70,7 +70,12 @@ namespace HR.Services
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
             DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
 
-            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+            List<Contract> existingContracts = new List<Contract>();
+
+            if (newContract.ContractStartDate > annualLeaveStartDate)
+            {
+                existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+            }
 
             if (existingContracts.Count > 0)
             {
@@ -82,6 +87,12 @@ namespace HR.Services
             int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(virtualContracts, newContract);
 
             var previousLeaveYearContracts = Calculate.PlaceContractsInYear(virtualContracts, annualLeaveStartDate);
+
+            // set last contract to end at contrcat start date
+            if (previousLeaveYearContracts.Count > 0)
+            {
+                previousLeaveYearContracts[previousLeaveYearContracts.Count - 1].ContractEndDate = newContract.ContractStartDate.AddDays(-1);
+            }
 
             int previousLeaveYearEntitlement = Calculate.CalculateLeaveYearEntitlementByDates(previousLeaveYearContracts, annualLeaveStartDate, newContract.ContractStartDate, leaveUnit);
 

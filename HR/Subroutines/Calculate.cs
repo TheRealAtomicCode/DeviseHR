@@ -1,7 +1,7 @@
 ﻿using Common;
 using HR.DTO;
 using Mapster;
-using Models;
+
 
 namespace HR.Subroutines
 {
@@ -37,27 +37,24 @@ namespace HR.Subroutines
                         newVC.ContractEndDate = virtualContracts[i].ContractEndDate;
                         newVC.Allowance = virtualContracts[i].NextLeaveAllowence;
                     }
-
                     // contract starts after leave year and ends before leave year
-                    if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate <= annualLeaveEndDate)
+                    else if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate <= annualLeaveEndDate)
                     {
                         // take first allowance
                         newVC.ContractStartDate = virtualContracts[i].ContractStartDate;
                         newVC.ContractEndDate = virtualContracts[i].ContractEndDate;
                         newVC.Allowance = virtualContracts[i].FirstLeaveAllowence;
                     }
-
                     // contract starts before leave year and ends after leave year
-                    if (virtualContracts[i].ContractStartDate <= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
+                    else if (virtualContracts[i].ContractStartDate <= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
                     {
                         // taske next allowance
                         newVC.ContractStartDate = annualLeaveStartDate;
                         newVC.ContractEndDate = annualLeaveEndDate;
                         newVC.Allowance = virtualContracts[i].NextLeaveAllowence;
                     }
-
                     // contract starts after leave year and ends after leave year
-                    if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
+                    else if (virtualContracts[i].ContractStartDate >= annualLeaveStartDate && virtualContracts[i].ContractEndDate >= annualLeaveEndDate)
                     {
                         // take first allowance
                         newVC.ContractStartDate = virtualContracts[i].ContractStartDate;
@@ -75,7 +72,7 @@ namespace HR.Subroutines
         }
 
 
-        public static int CalculateLeaveYearEntitlementByDates(List<VirtualContract> virtualContracts, DateOnly startDate, DateOnly endDate, int leaveUnit)
+        public static int CalculateLeaveYearEntitlementByDates(List<VirtualContract> virtualContracts, DateOnly annualLeaveStartDate, DateOnly endDate, int leaveUnit)
         {
             int result = 0;
 
@@ -107,7 +104,7 @@ namespace HR.Subroutines
 
                     double contractleaveEntitlementPerYear = contractLeaveRatio * virtualContracts[i].CompanyLeaveEntitlement;
 
-                    int numberOfDatsInYear = DateModifier.GetNumberOfDaysInYear(startDate);
+                    int numberOfDatsInYear = DateModifier.GetNumberOfDaysInYear(annualLeaveStartDate);
 
                     double thisContractEntitlement = (contractleaveEntitlementPerYear / numberOfDatsInYear) * daysBetween;
 

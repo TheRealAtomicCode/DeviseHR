@@ -46,6 +46,13 @@ namespace HR.Repository
                 if a contract was found, it must be appended to the start of the list of contracts, then cut off later
 
             */
+
+
+            if (contracts.Count > 0)
+            {
+                if (contracts[0].ContractStartDate == startDate) return contracts;
+            }
+
             contractBeforeFirst = await _context.Contracts
                              .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId &&
                               c.ContractStartDate < startDate)

@@ -85,7 +85,7 @@ namespace HR.Subroutines
                 var virtualContract = contracts[i].Adapt<VirtualContract>();
                 if(i < contracts.Count - 1)
                 {
-                    virtualContract.ContractEndDate = contracts[i + 1].ContractStartDate;
+                    virtualContract.ContractEndDate = contracts[i + 1].ContractStartDate.AddDays(-1);
                 }
 
                 virtualContracts.Add(virtualContract);
