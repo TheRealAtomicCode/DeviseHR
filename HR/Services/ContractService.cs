@@ -70,8 +70,9 @@ namespace HR.Services
             if (employee == null) throw new Exception("Employee not found");
 
             DateOnly annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(newContract.ContractStartDate, employee.AnnualLeaveStartDate);
+            DateOnly annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
 
-            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsByLeaveYear(employee.Id, employee.CompanyId, annualLeaveStartDate);
+            List<Contract> existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallInDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
 
             int leaveUnit = ContractSubroutines.CheckAndGetLeaveUnit(existingContracts, newContract);
 
@@ -129,9 +130,13 @@ namespace HR.Services
 
             if (lastContract != null && lastContract.ContractStartDate >= newContract.ContractStartDate) throw new Exception("Can not add contact before previous contract start date.");
 
+            var absence = _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(newContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+            if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
+
             Contract addedContract = await _mainUOW.ContractRepo.AddContract(employee, newContract, myId, companyId);
 
-            await _mainUOW.SaveChangesAsync();
+      //      await _mainUOW.SaveChangesAsync();
 
             ContractDto addedContractDto = addedContract.Adapt<ContractDto>();
 
@@ -142,7 +147,7 @@ namespace HR.Services
 
         public async Task<ContractAndLeaveYearCount> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
         {
-            int requestAddOrError = await ValidateRequestOrAddAbsence(myId, userType, employeeId);
+            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, userType, employeeId);
 
             // 1 add
             // 0 request
@@ -153,20 +158,20 @@ namespace HR.Services
 
                 if (employee == null) throw new Exception("Employee not found");
 
-                var requestedAnnualeLeaveYearStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
-
+                var annualLeaveStartDate = DateModifier.GetLeaveYearStartDate(reuestedDate, employee.AnnualLeaveStartDate);
+                var annualLeaveEndDate = annualLeaveStartDate.AddYears(1).AddDays(-1);
                 //
                 //
                 //
                 // NOTE
                 // DELETE WHEN WORKING ON FRONT END IF NEEDED
-                if (requestedAnnualeLeaveYearStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
+                if (annualLeaveStartDate != reuestedDate) throw new Exception("Must provide an annual leave year start date");
 
                 Contract? firstContract = await _mainUOW.ContractRepo.GetFirstContractOrDefault(employee.Id, employee.CompanyId);
 
                 if (firstContract == null) throw new Exception("Employee does not have any contracts");
 
-                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDate(employee.Id, employee.CompanyId, requestedAnnualeLeaveYearStartDate.AddYears(1).AddDays(-1));
+                Contract? lastContract = await _mainUOW.ContractRepo.GetLastContractByDateOrDefault(employee.Id, employee.CompanyId, annualLeaveEndDate);
 
                 ContractDto lastContractDto = lastContract.Adapt<ContractDto>();
 
@@ -174,8 +179,13 @@ namespace HR.Services
 
                 List<StartAndEndDate> leaveYears = ContractSubroutines.GetLeaveYearCount(reuestedDate, employee.AnnualLeaveStartDate, firstContract.ContractStartDate);
 
+                var absences = await _mainUOW.AbsenceRepo.GetAbsencesLocatedBetweenDates(annualLeaveStartDate, annualLeaveEndDate, employee.Id, employee.CompanyId);
+
+                var absenceDtos = absences.Adapt<List<AbsenceDto>>();
+
                 ContractAndLeaveYearCount contractAndLeaveYears = new ContractAndLeaveYearCount{
                     contract = lastContractDto,
+                    absences = absenceDtos,
                     leaveYears = leaveYears
                 };
 
@@ -187,78 +197,8 @@ namespace HR.Services
         }
 
 
-        //
-        //
-        //
-        // Sub Services
-        //
-        //
 
-
-        public async Task<int> ValidateRequestOrAddAbsence(int myId, int userRole, int userId)
-        {
-
-            // -1 error
-            // 0 request
-            // 1 add
-
-            if (userId == myId)
-            {
-                if (userRole >= StaticRoles.Admin)
-                {
-                    // check if i have a manager
-                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
-
-                    if (hasManager)
-                    {
-                        // request
-                        return 0;
-                    }
-                    else
-                    {
-                        // add
-                        return 1;
-                    }
-                }
-                else
-                {
-                    // request
-                    return 0;
-                }
-
-
-            }
-            else
-            {
-                if (userRole >= StaticRoles.Admin)
-                {
-                    // add
-                    return 1;
-                }
-                else if (userRole == StaticRoles.Manager)
-                {
-                    bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, userId);
-
-                    if (isSubordinate)
-                    {
-                        // add
-                        return 1;
-                    }
-                    else
-                    {
-                        // error
-                        return -1;
-                    }
-                }
-                else
-                {
-                    // error
-                    return -1;
-                }
-
-            }
-
-        }
+        
 
     }
 }

@@ -1,0 +1,28 @@
+meta {
+  name: Add or request absence
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hr-url}}/api/Absence/AddOrRequestAbsence
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "EmployeeId": 7,
+    "AbsenceStartDate": "2024-06-27",
+    "AbsenceEndDate": "2024-06-30",
+    "IsFirstHalfDay": null,
+    "IsDays": true,
+    "StartTime": "09:00:00",
+    "EndTime": "17:00:00",
+    "DaysDeducted": 3,
+    "HoursDeducted": 24,
+    "AbsenceTypeId": 1,
+    "Comment": "Vacation for personal reasons"
+  }
+  
+}

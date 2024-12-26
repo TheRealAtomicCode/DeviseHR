@@ -41,6 +41,8 @@ namespace HR.DTO.outbound
         public string FullName { get; set; } = string.Empty;
         public string? Title { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public int UserRole { get; set; }
+        public DateOnly AnnualLeaveStartDate { get; set; }
     }
 
 

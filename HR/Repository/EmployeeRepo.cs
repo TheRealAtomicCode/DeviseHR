@@ -89,8 +89,6 @@ namespace HR.Repository
 
         public async Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId)
         {
-            
-
             IQueryable<Employee> query = _context.Employees
                 .Where(e => e.CompanyId == companyId);
 
@@ -118,7 +116,9 @@ namespace HR.Repository
                     Id = e.Id,
                     FullName = $"{e.FirstName} {e.LastName}",
                     Title = e.Title,
-                    Email = e.Email
+                    Email = e.Email,
+                    UserRole = e.UserRole,
+                    AnnualLeaveStartDate = e.AnnualLeaveStartDate                    
                 })
                 .ToListAsync();
 

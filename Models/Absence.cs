@@ -33,11 +33,9 @@ public partial class Absence
 
     public string? Comment { get; set; }
 
-    public int? ApprovedId { get; set; }
+    public int? ApprovedBy { get; set; }
 
-    public bool IsApproved { get; set; }
-
-    public bool IsPending { get; set; }
+    public int AbsenceState { get; set; }
 
     public int? ApprovedByAdmin { get; set; }
 
@@ -51,9 +49,9 @@ public partial class Absence
 
     public virtual AbsenceType AbsenceType { get; set; } = null!;
 
-    public virtual Employee? Approved { get; set; }
-
     public virtual Employee? ApprovedByAdminNavigation { get; set; }
+
+    public virtual Employee? ApprovedByNavigation { get; set; }
 
     public virtual Company Company { get; set; } = null!;
 

@@ -11,6 +11,7 @@ using System.Security.Claims;
 
 namespace HR.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class AbsenceController : ControllerBase
@@ -23,6 +24,7 @@ namespace HR.Controllers
             _absenceService = absenceService;
             _configuration = configuration;
         }
+
 
         [HttpPost("AddOrRequestAbsence")]
         [Authorize(Policy = "StaffMember")]
@@ -40,15 +42,15 @@ namespace HR.Controllers
 
                 var serviceResponse = new ServiceResponse<AbsenceDto>(addedAbsence, true, "", 0);
 
-                //return Ok(serviceResponse);
-                throw new NotImplementedException();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                //var serviceResponse = new ServiceResponse<AddAbsenceRequest>(null!, false, ex.Message);
-                //return BadRequest(serviceResponse);
-                throw new NotImplementedException();
+                var serviceResponse = new ServiceResponse<AbsenceDto>(null!, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
             }
         }
+
+
     }
 }

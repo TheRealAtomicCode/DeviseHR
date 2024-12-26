@@ -5,11 +5,11 @@ namespace HR.DTO
     public partial class AbsenceDto
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public int EmployeeId { get; set; }
         public int CompanyId { get; set; }
         public int ContractId { get; set; }
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public DateOnly AbsenceStartDate { get; set; }
+        public DateOnly AbsenceEndDate { get; set; }
         public bool? IsFirstHalfDay { get; set; }
         public bool IsDays { get; set; }
         public TimeOnly StartTime { get; set; }
