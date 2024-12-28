@@ -71,7 +71,6 @@ namespace HR.Subroutines
 
                 leaveYearDates.Add(startAndEndDate);
             }
-            //}
 
             return leaveYearDates;
         }
