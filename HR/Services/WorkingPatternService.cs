@@ -1,6 +1,8 @@
 ﻿using HR.DTO;
+using HR.Repository;
 using HR.Repository.Interfaces;
 using HR.Services.Interfaces;
+using HR.UOW;
 using HR.UOW.Interfaces;
 using Mapster;
 using Models;
@@ -30,6 +32,14 @@ namespace HR.Services
             await _workingPatternRepo.SaveChangesAsync();
 
             return pattern.Id;
+        }
+
+
+        public async Task<List<WorkingPatternDto>> GetAllWorkingPatterns(string? searchTerm, int? page, int? skip, int companyId)
+        {
+            List<WorkingPatternDto> foundWorkingPatterns = await _workingPatternRepo.GetAllWorkingPatternsByName(searchTerm, page, skip, companyId);
+
+            return foundWorkingPatterns;
         }
 
     }
