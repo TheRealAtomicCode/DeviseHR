@@ -18,7 +18,7 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractsThatFallInDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
+        public async Task<List<Contract>> GetContractsThatFallBetweenDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
         {
 
             List<Contract> contracts = await _context.Contracts
@@ -32,20 +32,26 @@ namespace HR.Repository
              * 
              * IMPORTANT CONTEXT
             
-                This code does the following:
-            
-                -- it gets the contract before the list of contracts that were selected between 2 dates (the annual leave start and end date)
+                Code above: gets the contracts that have started between 2 dates (should be 1 leave year)
 
-                -- it is important to get that contract as the contract that was selected may have started after the annual leave start date
+                Code bellow: Returns the contacts if the start date is the same as the first contract start date,
+                                otherwise get the contract before the arg start date.
 
-                -- thus not selectng an entire year, but a partial year
+                Reason: 
+                    if the contract start date is the same as the start date in the methods argument, then you would not need to get any contracts before it,
+                    however... if the contract start date is after the methods arg start date, then there might be a contract that was active before it,
+                    thus the need to get any conbtract that started before the start date.
+                    
+                    NOTE: this "first contract" that was selected from the code below needs to be cut in a later method in order to get an accurate represenation of a leave year
 
-                -- also if no contracts were found, it could be due to an existing contract that has started before the annual; leave start date,
-                -- and the employee has been on that contact ever sinse.
-
-                if a contract was found, it must be appended to the start of the list of contracts, then cut off later
-
+                    USE: the VirtualizeContracts() method and the PlaceContractsInYear() method Located in the Subroutines folder.
             */
+
+            if (contracts.Count > 0)
+            {
+                if (contracts[0].ContractStartDate == startDate) return contracts;
+            }
+
             contractBeforeFirst = await _context.Contracts
                              .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId &&
                               c.ContractStartDate < startDate)

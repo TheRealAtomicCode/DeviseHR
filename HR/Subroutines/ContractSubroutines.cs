@@ -1,5 +1,6 @@
 ﻿using Common;
 using HR.DTO;
+using Mapster;
 using Models;
 
 namespace HR.Subroutines
@@ -7,7 +8,7 @@ namespace HR.Subroutines
     public class ContractSubroutines
     {
 
-        public static int CheckAndGetLeaveUnit(List<Contract> existingContracts, AddContractRequest? newContract)
+        public static int CheckAndGetLeaveUnit(List<VirtualContract> existingContracts, AddContractRequest? newContract)
         {
             // 0 no previous contracts
             // 1 days
@@ -70,9 +71,26 @@ namespace HR.Subroutines
 
                 leaveYearDates.Add(startAndEndDate);
             }
-            //}
 
             return leaveYearDates;
+        }
+
+        public static List<VirtualContract> VirtualizeContracts(List<Contract> contracts)
+        {
+            var virtualContracts = new List<VirtualContract>();
+
+            for (int i = 0; i < contracts.Count; i++)
+            {
+                var virtualContract = contracts[i].Adapt<VirtualContract>();
+                if(i < contracts.Count - 1)
+                {
+                    virtualContract.ContractEndDate = contracts[i + 1].ContractStartDate.AddDays(-1);
+                }
+
+                virtualContracts.Add(virtualContract);
+            }
+
+            return virtualContracts;
         }
 
     }
