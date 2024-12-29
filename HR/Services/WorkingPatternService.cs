@@ -1,5 +1,8 @@
-﻿using HR.Services.Interfaces;
+﻿using HR.DTO;
+using HR.Repository.Interfaces;
+using HR.Services.Interfaces;
 using HR.UOW.Interfaces;
+using Mapster;
 using Models;
 
 namespace HR.Services
@@ -7,16 +10,27 @@ namespace HR.Services
     public class WorkingPatternService : IWorkingPatternService
     {
 
-        private readonly IMainUOW _mainUOW;
+        private readonly IWorkingPatternRepo _workingPatternRepo;
         private readonly IConfiguration _configuration;
 
-        public WorkingPatternService(IMainUOW mainUOW, IConfiguration configuration)
+        public WorkingPatternService(IWorkingPatternRepo workingPatternRepo, IConfiguration configuration)
         {
-            _mainUOW = mainUOW;
+            _workingPatternRepo = workingPatternRepo;
             _configuration = configuration;
         }
 
+        public async Task<int> AddWorkingPattern(WorkingPatternRequest workingPatternRequest, int myId, int companyId)
+        {
+            var pattern = workingPatternRequest.Adapt<WorkingPattern>();
+            pattern.CompanyId = companyId;
+            pattern.AddedBy = myId;
 
+            await _workingPatternRepo.AddAsync(pattern);
+
+            await _workingPatternRepo.SaveChangesAsync();
+
+            return pattern.Id;
+        }
 
     }
 }

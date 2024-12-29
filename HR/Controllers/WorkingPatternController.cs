@@ -37,17 +37,13 @@ namespace HR.Controllers
                 int userRole = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                throw new NotImplementedException();
+                var patternId = await _workingPatternService.AddWorkingPattern(workigPatternRequest, myId, companyId);
 
-                // var addedAbsence = await _absenceService.AddOrRequestAbsence(absenceRequest, myId, companyId, userRole);
-
-                //  var serviceResponse = new ServiceResponse<AbsenceDto>(addedAbsence, true, "", 0);
-
-                //   return Ok(serviceResponse);
+                return Created("Success", new { Id = patternId });
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<AbsenceDto>(null!, false, ex.Message, 0);
+                var serviceResponse = new ServiceResponse<int?>(null!, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
         }
