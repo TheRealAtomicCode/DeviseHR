@@ -98,12 +98,14 @@ namespace HR.Repository
 
         public async Task<Contract> AddContract(Employee employee, AddContractRequest newContract, int companyId, int myId)
         {
+            int? workingPatternId = newContract.PatternId == 0 || newContract.PatternId == null ? null : newContract.PatternId;
+
             Contract contract = new Contract
             {
                 EmployeeId = employee.Id,
                 CompanyId = companyId,
                 ContractStartDate = newContract.ContractStartDate,
-                PatternId = null,
+                PatternId = workingPatternId,
                 AddedBy = myId,
                 UpdatedBy = null,
                 ContractType = newContract.ContractType,

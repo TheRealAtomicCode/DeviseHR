@@ -63,9 +63,11 @@ namespace HR.Services
             if(newContract.ContractType == 3)
             {
                 // fixed contracts
-                if (newContract.PatternId == 0) throw new Exception("Fixed contracts must have an asigned working pattern");
+                if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
 
-                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault(newContract.PatternId, companyId);
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)newContract.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
 
                 (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
 
@@ -128,7 +130,21 @@ namespace HR.Services
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if (newContract.ContractType == 3) throw new Exception("Developer Error: Working Patterns need to be added first");
+            if (newContract.ContractType == 3)
+            {
+                // fixed contracts
+                if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)newContract.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                newContract.AverageWorkingDay = workingDays;
+                newContract.ContractedDaysPerWeek = workingDays;
+                newContract.ContractedHoursPerWeek = workingHours;
+            }
 
             if (newContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
 
