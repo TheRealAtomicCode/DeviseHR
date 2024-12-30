@@ -62,9 +62,16 @@ namespace HR.Services
 
             if(newContract.ContractType == 3)
             {
+                // fixed contracts
                 if (newContract.PatternId == 0) throw new Exception("Fixed contracts must have an asigned working pattern");
 
                 var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault(newContract.PatternId, companyId);
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                newContract.AverageWorkingDay = workingDays;
+                newContract.ContractedDaysPerWeek = workingDays; 
+                newContract.ContractedHoursPerWeek = workingHours;
             }
 
             if (newContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");

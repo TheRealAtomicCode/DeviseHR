@@ -2,7 +2,7 @@
 
 namespace HR.Subroutines
 {
-    public class WorkingPatternsubroutines
+    public class WorkingPatternSubroutines
     {
 
         public static (int workingDays, int workingHours) ExtractWorkingDaysAndHours(WorkingPatternDto pattern)
@@ -64,4 +64,4 @@ namespace HR.Subroutines
 
 
 }
-}
+
