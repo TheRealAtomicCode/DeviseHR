@@ -377,6 +377,52 @@ async function insertUser(client: Client, user: any, passHash: string) {
 	}
 	console.log(`Herarchies added for company 2.`);
 
+
+	//
+	///
+	//
+	//  Working Patterns
+	//
+	//
+	//
+
+	const workingPatternQuery = `
+      INSERT INTO working_pattern (
+	  		pattern_name, company_id, added_by, 
+			monday_start_time, monday_end_time,
+			tuesday_start_time, tuesday_end_time,
+			wednesday_start_time, wednesday_end_time,
+			thursday_start_time, thursday_end_time,
+			friday_start_time, friday_end_time,
+			saturday_start_time, saturday_end_time,
+			sunday_start_time, sunday_end_time
+		)
+		VALUES
+		(
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+		);
+    `;
+
+
+	const workingPatternValues1 = [
+		'regular employee', 1, 1, '08:00:00', '16:00:00',
+		'08:00:00', '16:00:00', '08:00:00', '16:00:00', 
+		'08:00:00', '16:00:00', '08:00:00', '16:00:00', 
+		null, null, null, null
+	  ]
+	const workingPatternValues2 = [
+		'regular employee', 2, 3, '08:00:00', '16:00:00',
+		'08:00:00', '16:00:00', '08:00:00', '16:00:00', 
+		'08:00:00', '16:00:00', '08:00:00', '16:00:00', 
+		null, null, null, null
+	  ]
+
+	await client.queryObject(workingPatternQuery, workingPatternValues1);
+	await client.queryObject(workingPatternQuery, workingPatternValues2);
+
+	console.log('added working patterns for both companies')
+
+
 	//
 	//
 	//
