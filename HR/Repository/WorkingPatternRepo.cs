@@ -44,6 +44,13 @@ namespace HR.Repository
             return await query.ProjectToType<WorkingPatternDto>().ToListAsync();
         }
 
+        public async Task<WorkingPatternDto?> GetWorkingPatternByIdOrDefault(int patternId, int companyId)
+        {
+            var workingPattern = await _context.WorkingPatterns.Where(p => p.Id == patternId && p.CompanyId == companyId).ProjectToType<WorkingPatternDto>().FirstOrDefaultAsync();
+
+            return workingPattern;
+        }
+
         public async Task SaveChangesAsync()
         {
             try
