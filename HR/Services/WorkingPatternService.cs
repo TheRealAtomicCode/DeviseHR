@@ -43,7 +43,7 @@ namespace HR.Services
         }
 
 
-        public async Task<List<EmployeeWithContractDto>> GetEmployeesByWorkingPattern(int workingPatternId, string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees)
+        public async Task<List<EmployeeWithContractDto>> GetWorkingPatternEmployees(int workingPatternId, string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees)
         {
             int? myIdWhenSearching = null;
 
