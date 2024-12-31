@@ -251,7 +251,7 @@ namespace HR.Services
         }
 
 
-        public async Task<ContractDto> DetatchContract(int contractId, int myId, int myRole, int companyId)
+        public async Task<ContractDto> DetatchWorkingPattern(int contractId, int myId, int myRole, int companyId)
         {
             var contract = await _mainUOW.ContractRepo.GetContractByIdOrDefault(contractId, companyId);
 
@@ -289,10 +289,6 @@ namespace HR.Services
             return contractDto;
         }
 
-
-
-
-
-
+      
     }
 }
