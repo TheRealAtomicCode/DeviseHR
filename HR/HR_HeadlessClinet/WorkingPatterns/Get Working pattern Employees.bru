@@ -1,0 +1,17 @@
+meta {
+  name: Get Working pattern Employees
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{hr-url}}/api/WorkingPattern/GetWorkingPatternEmployees/1?searchTerm=user&page=2&skip=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  searchTerm: user
+  page: 2
+  skip: 2
+}

@@ -64,7 +64,7 @@ namespace HR.Repository
             }
 
             contractBeforeFirst = await _context.Contracts
-                             .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId &&
+                             .Where(c => c.EmployeeId == employeeId && c.CompanyId == companyId &&
                               c.ContractStartDate < startDate)
                              .OrderByDescending(c => c.ContractStartDate)
                              .FirstOrDefaultAsync();

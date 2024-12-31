@@ -1,0 +1,31 @@
+meta {
+  name: AddWorkingPattern
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{hr-url}}/api/WorkingPattern
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "patternName": "string",
+    "mondayStartTime": "08:00:00",
+    "mondayEndTime": "16:00:00",
+    "tuesdayStartTime": "08:00:00",
+    "tuesdayEndTime": "16:00:00",
+    "wednesdayStartTime": "08:00:00",
+    "wednesdayEndTime": "16:00:00",
+    "thursdayStartTime": "08:00:00",
+    "thursdayEndTime": "16:00:00",
+    "fridayStartTime": "08:00:00",
+    "fridayEndTime": "16:00:00",
+    "saturdayStartTime": null,
+    "saturdayEndTime": null,
+    "sundayStartTime": null,
+    "sundayEndTime": null
+  }
+}
