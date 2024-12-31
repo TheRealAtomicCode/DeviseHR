@@ -61,7 +61,7 @@ namespace HR.Services
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if(newContract.ContractType == 3)
+            if (newContract.ContractType == 3)
             {
                 // fixed contracts
                 if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
@@ -73,7 +73,7 @@ namespace HR.Services
                 (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
 
                 newContract.AverageWorkingDay = workingDays;
-                newContract.ContractedDaysPerWeek = workingDays; 
+                newContract.ContractedDaysPerWeek = workingDays;
                 newContract.ContractedHoursPerWeek = workingHours;
             }
 
@@ -90,11 +90,29 @@ namespace HR.Services
             if (newContract.ContractStartDate > annualLeaveStartDate)
             {
                 existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+
+                // validate when the contracts were added in order to calculate
+                // this has been added to calculate contracts when editing a contract
+                if (existingContracts[existingContracts.Count - 1].ContractStartDate == newContract.ContractStartDate || existingContracts.Count == 1)
+                {
+                    existingContracts.RemoveAt(existingContracts.Count - 1);
+                }
+                else if(existingContracts[existingContracts.Count - 1].ContractStartDate > newContract.ContractStartDate && existingContracts.Count > 1)
+                {
+                    if (existingContracts[existingContracts.Count - 2].ContractStartDate < newContract.ContractStartDate)
+                    {
+                        existingContracts.RemoveAt(existingContracts.Count - 1);
+                    }
+                    else
+                    {
+                        throw new Exception("A contract already exists before the contract you are editing that starts after your selected date");
+                    }
+                }
             }
 
             if (existingContracts.Count > 0)
             {
-                if (newContract.ContractStartDate <= existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
+                if (newContract.ContractStartDate < existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
             }
 
             var virtualContracts = ContractSubroutines.VirtualizeContracts(existingContracts);
