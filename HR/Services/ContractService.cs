@@ -93,21 +93,26 @@ namespace HR.Services
 
                 // validate when the contracts were added in order to calculate
                 // this has been added to calculate contracts when editing a contract
-                if (existingContracts[existingContracts.Count - 1].ContractStartDate == newContract.ContractStartDate || existingContracts.Count == 1)
+                if (newContract.CalculateForEdit == true)
                 {
-                    existingContracts.RemoveAt(existingContracts.Count - 1);
-                }
-                else if(existingContracts[existingContracts.Count - 1].ContractStartDate > newContract.ContractStartDate && existingContracts.Count > 1)
-                {
-                    if (existingContracts[existingContracts.Count - 2].ContractStartDate < newContract.ContractStartDate)
+                    if (existingContracts[existingContracts.Count - 1].ContractStartDate == newContract.ContractStartDate || existingContracts.Count == 1)
                     {
                         existingContracts.RemoveAt(existingContracts.Count - 1);
                     }
-                    else
+                    else if (existingContracts[existingContracts.Count - 1].ContractStartDate > newContract.ContractStartDate && existingContracts.Count > 1)
                     {
-                        throw new Exception("A contract already exists before the contract you are editing that starts after your selected date");
+                        if (existingContracts[existingContracts.Count - 2].ContractStartDate < newContract.ContractStartDate)
+                        {
+                            existingContracts.RemoveAt(existingContracts.Count - 1);
+                        }
+                        else
+                        {
+                            throw new Exception("A contract already exists before the contract you are editing that starts after your selected date");
+                        }
                     }
                 }
+
+
             }
 
             if (existingContracts.Count > 0)
@@ -306,6 +311,8 @@ namespace HR.Services
 
             return contractDto;
         }
+
+
 
       
     }
