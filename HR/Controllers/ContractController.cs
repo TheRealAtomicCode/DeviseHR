@@ -117,9 +117,9 @@ namespace HR.Controllers
         }
 
 
-        [HttpPost("Detatch/{contractId}")]
+        [HttpPost("DetatchWorkingPattern/{contractId}")]
         [Authorize(Policy = "Manager")]
-        public async Task<ActionResult<ServiceResponse<ContractDto>>> Detatch([FromRoute] int contractId)
+        public async Task<ActionResult<ServiceResponse<ContractDto>>> DetatchWorkingPattern([FromRoute] int contractId)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace HR.Controllers
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
                 int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
 
-                var detatchedContract = await _contractService.DetatchContract(contractId, myId, myRole, companyId);
+                var detatchedContract = await _contractService.DetatchWorkingPattern(contractId, myId, myRole, companyId);
 
                 var serviceResponse = new ServiceResponse<ContractDto>(detatchedContract, true, "", 0);
 
