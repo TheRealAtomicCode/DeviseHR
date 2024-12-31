@@ -21,6 +21,7 @@ namespace HR.DTO
         public TimeOnly? SaturdayEndTime { get; set; }
         public TimeOnly? SundayStartTime { get; set; }
         public TimeOnly? SundayEndTime { get; set; }
+        public int AsignedEmployeeCount { get; set; }
     }
 
 

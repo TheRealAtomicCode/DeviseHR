@@ -13,6 +13,7 @@ namespace HR.Repository.Interfaces
         Task<Employee?> GetEmployeeByEmailOrDefault(string email);
         Task<List<FoundEmployee>> GetAllEmployeesByName(string? searchTerm, int? page, int? skip, int companyId, int? myId);
         Task AddEmployee(Employee newEmployee);
+        Task<List<EmployeeWithContractDto>> GetEmployeesByWorkingPatternId(int workingPatternId, string? searchTerm, int? page, int? skip, int companyId, int? myId);
         Task SaveChangesAsync();
 
 

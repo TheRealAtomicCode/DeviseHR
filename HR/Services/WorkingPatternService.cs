@@ -12,12 +12,12 @@ namespace HR.Services
     public class WorkingPatternService : IWorkingPatternService
     {
 
-        private readonly IWorkingPatternRepo _workingPatternRepo;
+        private readonly IMainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public WorkingPatternService(IWorkingPatternRepo workingPatternRepo, IConfiguration configuration)
+        public WorkingPatternService(IMainUOW mainUOW, IConfiguration configuration)
         {
-            _workingPatternRepo = workingPatternRepo;
+            _mainUOW = mainUOW;
             _configuration = configuration;
         }
 
@@ -27,9 +27,9 @@ namespace HR.Services
             pattern.CompanyId = companyId;
             pattern.AddedBy = myId;
 
-            await _workingPatternRepo.AddAsync(pattern);
+            await _mainUOW.WorkingPatternRepo.AddAsync(pattern);
 
-            await _workingPatternRepo.SaveChangesAsync();
+            await _mainUOW.SaveChangesAsync();
 
             return pattern.Id;
         }
@@ -37,9 +37,23 @@ namespace HR.Services
 
         public async Task<List<WorkingPatternDto>> GetAllWorkingPatterns(string? searchTerm, int? page, int? skip, int companyId)
         {
-            List<WorkingPatternDto> foundWorkingPatterns = await _workingPatternRepo.GetAllWorkingPatternsByName(searchTerm, page, skip, companyId);
+            List<WorkingPatternDto> foundWorkingPatterns = await _mainUOW.WorkingPatternRepo.GetAllWorkingPatternsByName(searchTerm, page, skip, companyId);
 
             return foundWorkingPatterns;
+        }
+
+
+        public async Task<List<EmployeeWithContractDto>> GetEmployeesByWorkingPattern(int workingPatternId, string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees)
+        {
+            int? myIdWhenSearching = null;
+
+            if (myRole <= StaticRoles.StaffMember && enableShowEmployees == false) return new List<EmployeeWithContractDto>();
+
+            if (myRole == StaticRoles.Manager && enableShowEmployees == false) myIdWhenSearching = myId;
+
+            List<EmployeeWithContractDto> employeesWithContracts = await _mainUOW.EmployeeRepo.GetEmployeesByWorkingPatternId(workingPatternId, searchTerm, page, skip, companyId, myIdWhenSearching);
+
+            return employeesWithContracts;
         }
 
     }

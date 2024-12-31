@@ -11,5 +11,6 @@ namespace HR.Services.Interfaces
         Task<EmployeeDto> GetEmployee(int employeeId, int myId, int companyId, int myRole);
         Task<List<FoundEmployee>> GetAllEmployees(string? searchTerm, int? page, int? skip, int myId, int companyId, int myRole, bool enableShowEmployees);
         Task EditEmployee(JsonPatchDocument<EditEmployeeRequest> patchDoc, int employeeId, int myId, int companyId);
+        
     }
 }

@@ -60,6 +60,17 @@ namespace HR.DTO
         public int? DiscardedId { get; set; }
     }
 
+    public class ContractDtoMini
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public int? PatternId { get; set; }
+        public int ContractType { get; set; }
+        public DateOnly ContractStartDate { get; set; }
+        public DateOnly? ContractEndDate { get; set; }
+
+    }
+
 
     public class LeaveYear
     {
