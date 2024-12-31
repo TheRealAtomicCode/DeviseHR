@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using HR.Subroutines;
 using Mapster;
 using HR.DTO;
+using System.Diagnostics.Contracts;
 
 namespace HR.Repository
 {
@@ -123,6 +124,66 @@ namespace HR.Repository
 
             return employees;
         }
+
+
+
+        public async Task<List<EmployeeWithContractDto>> GetEmployeesByWorkingPatternId(int workingPatternId, string? searchTerm, int? page, int? skip, int companyId, int? myId)
+        {
+            IQueryable<Employee> query = _context.Employees
+                .Where(e => e.CompanyId == companyId);
+
+            // Filter by searchTerm (if provided)
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(e => (e.FirstName + " " + e.LastName).Contains(searchTerm) || e.Email.Contains(searchTerm));
+            }
+
+            // Filter by myId (if provided)
+            if (myId != null)
+            {
+                query = query.Where(e => _context.Hierarchies.Any(h => h.ManagerId == myId));
+            }
+
+            // Filter employees with contracts having the provided working pattern ID
+            query = query.Where(e => e.Contracts.Any(c => c.PatternId == workingPatternId));
+
+            // Pagination
+            if (page != null && skip != null)
+            {
+                int skipCount = Math.Abs((int)((page - 1) * skip));
+                int takeCount = Math.Abs((int)skip);
+
+                query = query.Skip(skipCount).Take(takeCount);
+            }
+
+            // Get employees with contract details
+            var employees = await query
+                .Select(e => new EmployeeWithContractDto
+                {
+                    Id = e.Id,
+                    FullName = $"{e.FirstName} {e.LastName}",
+                    Title = e.Title,
+                    Email = e.Email,
+                    UserRole = e.UserRole,
+                    AnnualLeaveStartDate = e.AnnualLeaveStartDate,
+                    Contracts = e.Contracts
+                        .Where(c => c.PatternId == workingPatternId)
+                        .Select(c => new ContractDtoMini
+                        {
+                            Id = c.Id,
+                            ContractStartDate = c.ContractStartDate,
+                            EmployeeId = c.EmployeeId,
+                            ContractType = c.ContractType,
+                        })
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return employees;
+        }
+
+
+
 
 
 

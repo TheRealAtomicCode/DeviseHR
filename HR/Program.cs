@@ -88,6 +88,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("EnableAddEmployees", policy =>
     policy.RequireClaim("enableAddEmployees", "true"));
 
+
+    options.AddPolicy("EnableCreatePattern", policy =>
+    policy.RequireClaim("enableCreatePattern", "true"));
+
     options.AddPolicy("EnableTerminateEmployees", policy =>
     policy.RequireClaim("enableTerminateEmployees", "true"));
 
@@ -120,6 +124,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IAbsenceService, AbsenceService>();
+builder.Services.AddScoped<IWorkingPatternService, WorkingPatternService>();
 
 // Scoped Injection Repo
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
@@ -127,6 +132,7 @@ builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
 builder.Services.AddScoped<IContractRepo, ContractRepo>();
 builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
 builder.Services.AddScoped<IAbsenceRepo, AbsenceRepo>();
+builder.Services.AddScoped<IWorkingPatternRepo, WorkingPatternRepo>();
 
 // Scoperd Unit of work injections
 builder.Services.AddScoped<IMainUOW, MainUOW>();

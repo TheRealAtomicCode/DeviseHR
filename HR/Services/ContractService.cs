@@ -55,12 +55,27 @@ namespace HR.Services
         //    return newContract;
         //}
 
+
         // calculating anual leave for days variable 2
         public async Task<AddContractRequest> CalculateLeaveYear(AddContractRequest newContract, int companyId)
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if (newContract.ContractType == 3) throw new Exception("Developer Error: Working Patterns need to be added first");
+            if(newContract.ContractType == 3)
+            {
+                // fixed contracts
+                if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)newContract.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                newContract.AverageWorkingDay = workingDays;
+                newContract.ContractedDaysPerWeek = workingDays; 
+                newContract.ContractedHoursPerWeek = workingHours;
+            }
 
             if (newContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
 
@@ -112,16 +127,30 @@ namespace HR.Services
 
 
 
-        public async Task<ContractDto> CreateContract(AddContractRequest newContract, int myId, int companyId, int userRole)
+        public async Task<ContractDto> CreateContract(AddContractRequest newContract, int myId, int companyId, int myRole)
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if (newContract.ContractType == 3) throw new Exception("Developer Error: Working Patterns need to be added first");
+            if (newContract.ContractType == 3)
+            {
+                // fixed contracts
+                if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)newContract.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                newContract.AverageWorkingDay = workingDays;
+                newContract.ContractedDaysPerWeek = workingDays;
+                newContract.ContractedHoursPerWeek = workingHours;
+            }
 
             if (newContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
 
             //  Verifying who can add contracts to who
-            if (userRole >= StaticRoles.Admin)
+            if (myRole >= StaticRoles.Admin)
             {
                 if (newContract.EmployeeId == myId)
                 {
@@ -130,7 +159,7 @@ namespace HR.Services
                 }
             }
 
-            if (userRole == StaticRoles.Manager)
+            if (myRole == StaticRoles.Manager)
             {
                 if (newContract.EmployeeId == myId) throw new Exception("Managers can not add conracts to their own profiles, please contact your Admin.");
 
@@ -163,9 +192,9 @@ namespace HR.Services
 
 
 
-        public async Task<LeaveYearResponse> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int userType, int companyId)
+        public async Task<LeaveYearResponse> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int myRole, int companyId)
         {
-            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, userType, employeeId);
+            int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, employeeId);
 
             // 1 add
             // 0 request
@@ -222,8 +251,48 @@ namespace HR.Services
         }
 
 
+        public async Task<ContractDto> DetatchContract(int contractId, int myId, int myRole, int companyId)
+        {
+            var contract = await _mainUOW.ContractRepo.GetContractByIdOrDefault(contractId, companyId);
 
-        
+            if (contract == null) throw new Exception("Contract not found");
+
+            //  Verifying who can add contracts to who
+            if (myRole >= StaticRoles.Admin)
+            {
+                if (contract.EmployeeId == myId)
+                {
+                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
+                    if (hasManager) throw new Exception("Admins with a manager asigned to their profile can not edit their own contracts.");
+                }
+            }
+
+            if (myRole == StaticRoles.Manager)
+            {
+                if (contract.EmployeeId == myId) throw new Exception("Managers can not Edit their own contracts.");
+
+                bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, contract.EmployeeId);
+
+                if (!isSubordinate) throw new Exception("You can not edit contracts to users who are not your direct subordinates.");
+            }
+
+
+            if (contract.PatternId == 0 || contract.PatternId == null) throw new Exception("Contract has no asigned Working pattern");
+
+            contract.ContractType = 2;
+            contract.PatternId = null;
+
+            await _mainUOW.SaveChangesAsync();
+
+            var contractDto = contract.Adapt<ContractDto>();
+
+            return contractDto;
+        }
+
+
+
+
+
 
     }
 }

@@ -9,6 +9,7 @@ namespace HR.UOW.Interfaces
         IPermissionRepo PermissionRepo { get; }
         IHierarchyRepo HierarchyRepo { get; }
         IAbsenceRepo AbsenceRepo { get; }
+        IWorkingPatternRepo WorkingPatternRepo { get; }
         Task SaveChangesAsync();
         Task DisposeAsync();
     }

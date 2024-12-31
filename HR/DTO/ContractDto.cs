@@ -6,7 +6,7 @@ namespace HR.DTO
     public class AddContractRequest
     {
         public int EmployeeId { get; set; }
-        public int PatternId { get; set; }
+        public int? PatternId { get; set; } = null;
         public int ContractType { get; set; }
         public DateOnly ContractStartDate { get; set; }
         public bool IsDays { get; set; }
@@ -58,6 +58,17 @@ namespace HR.DTO
         public int NextLeaveAllowence { get; set; }
         public int? TermTimeId { get; set; }
         public int? DiscardedId { get; set; }
+    }
+
+    public class ContractDtoMini
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public int? PatternId { get; set; }
+        public int ContractType { get; set; }
+        public DateOnly ContractStartDate { get; set; }
+        public DateOnly? ContractEndDate { get; set; }
+
     }
 
 

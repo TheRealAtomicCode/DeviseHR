@@ -117,5 +117,34 @@ namespace HR.Controllers
         }
 
 
+        [HttpPost("DetatchWorkingPattern/{contractId}")]
+        [Authorize(Policy = "Manager")]
+        public async Task<ActionResult<ServiceResponse<ContractDto>>> DetatchWorkingPattern([FromRoute] int contractId)
+        {
+            try
+            {
+                string clientJWT = Token.ExtractTokenFromRequestHeaders(HttpContext);
+                Token.ExtractClaimsFromToken(clientJWT, _configuration, out ClaimsPrincipal claims, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claims.FindFirst("id")!.Value);
+                int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
+                int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
+
+                var detatchedContract = await _contractService.DetatchWorkingPattern(contractId, myId, myRole, companyId);
+
+                var serviceResponse = new ServiceResponse<ContractDto>(detatchedContract, true, "", 0);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<LeaveYearResponse>(null!, false, ex.Message, 0);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+
+
     }
 }

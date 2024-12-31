@@ -15,8 +15,9 @@ namespace HR.UOW
         public IPermissionRepo PermissionRepo { get; }
         public IHierarchyRepo HierarchyRepo { get; }
         public IAbsenceRepo AbsenceRepo { get; }
+        public IWorkingPatternRepo WorkingPatternRepo { get; }
 
-        public MainUOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo, IAbsenceRepo absenceRepo)
+        public MainUOW(DeviseHrContext context, IContractRepo contractRepo, IEmployeeRepo employeeRepo, IPermissionRepo permissionRepo, IHierarchyRepo hierarchyRepo, IAbsenceRepo absenceRepo, IWorkingPatternRepo workingPatternRepo)
         {
             _context = context;
             ContractRepo = contractRepo;
@@ -24,6 +25,7 @@ namespace HR.UOW
             PermissionRepo = permissionRepo;
             HierarchyRepo = hierarchyRepo;
             AbsenceRepo = absenceRepo;
+            WorkingPatternRepo = workingPatternRepo;
         }
 
         public async Task SaveChangesAsync()

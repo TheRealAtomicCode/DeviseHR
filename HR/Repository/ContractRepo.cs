@@ -18,11 +18,22 @@ namespace HR.Repository
         }
 
 
-        public async Task<List<Contract>> GetContractsThatFallBetweenDates(int employeeId, int compayId, DateOnly startDate, DateOnly endDate)
+        public async Task<Contract?> GetContractByIdOrDefault(int contractId, int companyId)
+        {
+
+            Contract? contract = await _context.Contracts
+                .Where(c => c.Id == contractId && c.CompanyId == companyId)
+                .FirstOrDefaultAsync();
+
+            return contract;
+        }
+
+
+        public async Task<List<Contract>> GetContractsThatFallBetweenDates(int employeeId, int companyId, DateOnly startDate, DateOnly endDate)
         {
 
             List<Contract> contracts = await _context.Contracts
-                .Where(c => c.EmployeeId == employeeId && c.CompanyId == compayId && c.ContractStartDate >= startDate && c.ContractStartDate <= endDate)
+                .Where(c => c.EmployeeId == employeeId && c.CompanyId == companyId && c.ContractStartDate >= startDate && c.ContractStartDate <= endDate)
                 .OrderBy(c => c.ContractStartDate)
                 .ToListAsync();
 
@@ -98,12 +109,14 @@ namespace HR.Repository
 
         public async Task<Contract> AddContract(Employee employee, AddContractRequest newContract, int companyId, int myId)
         {
+            int? workingPatternId = newContract.PatternId == 0 || newContract.PatternId == null ? null : newContract.PatternId;
+
             Contract contract = new Contract
             {
                 EmployeeId = employee.Id,
                 CompanyId = companyId,
                 ContractStartDate = newContract.ContractStartDate,
-                PatternId = null,
+                PatternId = workingPatternId,
                 AddedBy = myId,
                 UpdatedBy = null,
                 ContractType = newContract.ContractType,
