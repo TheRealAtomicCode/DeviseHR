@@ -6,8 +6,11 @@ using HR.Services.Interfaces;
 using HR.Subroutines;
 using HR.UOW.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Models;
-using System.ComponentModel.Design;
+using System.Diagnostics;
+
 
 
 namespace HR.Services
@@ -215,6 +218,76 @@ namespace HR.Services
 
 
 
+
+        public async Task EditLastContract(JsonPatchDocument<EditContractRequest> patchDoc, int employeeId, int myId, int myRole, int companyId)
+        {
+            var editedContract = patchDoc.Adapt<EditContractRequest>();
+
+            if (editedContract.ContractType == 3)
+            {
+                // fixed contracts
+                if (editedContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)editedContract.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                editedContract.AverageWorkingDay = workingDays;
+                editedContract.ContractedDaysPerWeek = workingDays;
+                editedContract.ContractedHoursPerWeek = workingHours;
+            }
+
+            if (editedContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
+
+            //  Verifying who can add contracts to who
+            if (myRole >= StaticRoles.Admin)
+            {
+                if (employeeId == myId)
+                {
+                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
+                    if (hasManager) throw new Exception("Admins with a manager asigned to their profile can not add contracts to their own accounts.");
+                }
+            }
+
+            if (myRole == StaticRoles.Manager)
+            {
+                if (employeeId == myId) throw new Exception("Managers can not add conracts to their own profiles, please contact your Admin.");
+
+                bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, employeeId);
+
+                if (!isSubordinate) throw new Exception("You can not add contracts to users who are not your direct subordinates.");
+            }
+
+            var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
+            if (employee == null) throw new Exception("Employee not found");
+
+            var last2Contracts = await _mainUOW.ContractRepo.GetLast2Contracts(employee.Id, employee.CompanyId);
+
+            Contract? lastContract = null;
+            Contract? contractBeforeLast = null;
+
+            if (last2Contracts.Count >= 2) contractBeforeLast = last2Contracts[1];
+            if (last2Contracts.Count >= 1) lastContract = last2Contracts[0];
+            if (lastContract == null) throw new Exception("Contract not found");
+
+            if (contractBeforeLast != null && contractBeforeLast.ContractStartDate >= editedContract.ContractStartDate) throw new Exception("Can not edit contact before previous contract start date.");
+
+            var absence = await _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(editedContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+            if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
+            
+            var toPatch = lastContract.Adapt<EditContractRequest>();
+
+            patchDoc.ApplyTo(toPatch);
+            toPatch.Adapt(lastContract);
+
+            await _mainUOW.SaveChangesAsync();
+        }
+
+
+
         public async Task<LeaveYearResponse> GetLeaveYear(DateOnly reuestedDate, int employeeId, int myId, int myRole, int companyId)
         {
             int requestAddOrError = await _mainUOW.HierarchyRepo.ValidateRequestOrAddAbsence(myId, myRole, employeeId);
@@ -312,8 +385,6 @@ namespace HR.Services
             return contractDto;
         }
 
-
-
-      
+  
     }
 }

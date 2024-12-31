@@ -106,6 +106,17 @@ namespace HR.Repository
             return contract;
         }
 
+        public async Task<List<Contract>> GetLast2Contracts(int employeeId, int companyId)
+        {
+            List<Contract> contracts = await _context.Contracts
+                .Where(c => c.EmployeeId == employeeId && c.CompanyId == companyId)
+                .OrderByDescending(c => c.ContractStartDate)
+                .Take(2)
+                .ToListAsync();
+
+            return contracts;
+        }
+
 
         public async Task<Contract> AddContract(Employee employee, AddContractRequest newContract, int companyId, int myId)
         {
