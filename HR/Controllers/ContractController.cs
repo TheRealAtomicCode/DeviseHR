@@ -143,9 +143,9 @@ namespace HR.Controllers
 
 
 
-        [HttpPatch("{contractId}")]
+        [HttpPatch("EditLastContract/{employeeId}")]
         [Authorize(Policy = "Manager")]
-        public async Task<ActionResult<ServiceResponse<bool>>> EditContract([FromRoute] int employeeId, [FromBody] JsonPatchDocument<EditContractRequest> patchDoc)
+        public async Task<ActionResult<ServiceResponse<bool>>> EditContract([FromRoute] int employeeId, [FromBody] EditContractRequest editContractRequest)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace HR.Controllers
                 int companyId = int.Parse(claims.FindFirst("companyId")!.Value);
                 int myRole = int.Parse(claims.FindFirst("userRole")!.Value);
 
-                await _contractService.EditLastContract(patchDoc, employeeId, myId, myRole, companyId);
+                await _contractService.EditLastContract(editContractRequest, employeeId, myId, myRole, companyId);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "", 0);
 

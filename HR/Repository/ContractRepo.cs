@@ -71,7 +71,7 @@ namespace HR.Repository
 
             if (contractBeforeFirst != null)
             {
-                contracts.Add(contractBeforeFirst);
+                contracts.Insert(0, contractBeforeFirst);
             }
 
             return contracts;
