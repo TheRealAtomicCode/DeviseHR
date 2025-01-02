@@ -75,6 +75,26 @@ namespace HR.Subroutines
             return leaveYearDates;
         }
 
+        //public static List<VirtualContract> VirtualizeContracts(List<Contract> contracts)
+        //{
+        //    var virtualContracts = new List<VirtualContract>();
+
+        //    for (int i = 0; i < contracts.Count; i++)
+        //    {
+        //        var virtualContract = contracts[i].Adapt<VirtualContract>();
+        //        if(i < contracts.Count - 1)
+        //        {
+        //            virtualContract.ContractEndDate = contracts[i + 1].ContractStartDate.AddDays(-1);
+
+        //            if (virtualContract.ContractEndDate < virtualContract.ContractStartDate) virtualContract.ContractEndDate = virtualContract.ContractEndDate?.AddYears(1);
+        //        }
+
+        //        virtualContracts.Add(virtualContract);
+        //    }
+
+        //    return virtualContracts;
+        //}
+
         public static List<VirtualContract> VirtualizeContracts(List<Contract> contracts)
         {
             var virtualContracts = new List<VirtualContract>();
@@ -82,9 +102,11 @@ namespace HR.Subroutines
             for (int i = 0; i < contracts.Count; i++)
             {
                 var virtualContract = contracts[i].Adapt<VirtualContract>();
-                if(i < contracts.Count - 1)
+                if (i < contracts.Count - 1)
                 {
                     virtualContract.ContractEndDate = contracts[i + 1].ContractStartDate.AddDays(-1);
+
+                   
                 }
 
                 virtualContracts.Add(virtualContract);

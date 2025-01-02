@@ -6,8 +6,11 @@ using HR.Services.Interfaces;
 using HR.Subroutines;
 using HR.UOW.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Models;
-using System.ComponentModel.Design;
+using System.Diagnostics;
+
 
 
 namespace HR.Services
@@ -61,7 +64,7 @@ namespace HR.Services
         {
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if(newContract.ContractType == 3)
+            if (newContract.ContractType == 3)
             {
                 // fixed contracts
                 if (newContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
@@ -73,7 +76,7 @@ namespace HR.Services
                 (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
 
                 newContract.AverageWorkingDay = workingDays;
-                newContract.ContractedDaysPerWeek = workingDays; 
+                newContract.ContractedDaysPerWeek = workingDays;
                 newContract.ContractedHoursPerWeek = workingHours;
             }
 
@@ -90,11 +93,37 @@ namespace HR.Services
             if (newContract.ContractStartDate > annualLeaveStartDate)
             {
                 existingContracts = await _mainUOW.ContractRepo.GetContractsThatFallBetweenDates(employee.Id, employee.CompanyId, annualLeaveStartDate, annualLeaveEndDate);
+
+                // validate when the contracts were added in order to calculate
+                // this has been added to calculate contracts when editing a contract
+                if (newContract.CalculateForEdit == true)
+                {
+                    if (existingContracts[existingContracts.Count - 1].ContractStartDate == newContract.ContractStartDate || existingContracts.Count == 1)
+                    {
+                        existingContracts.RemoveAt(existingContracts.Count - 1);
+                    }
+                    else if (existingContracts[existingContracts.Count - 1].ContractStartDate > newContract.ContractStartDate && existingContracts.Count > 1)
+                    {
+                        if (existingContracts[existingContracts.Count - 2].ContractStartDate < newContract.ContractStartDate)
+                        {
+                            existingContracts.RemoveAt(existingContracts.Count - 1);
+                        }
+                        else
+                        {
+                            throw new Exception("A contract already exists before the contract you are editing that starts after your selected date");
+                        }
+                    }
+
+             
+                }
+
+
+
             }
 
             if (existingContracts.Count > 0)
             {
-                if (newContract.ContractStartDate <= existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
+                if (newContract.ContractStartDate < existingContracts[existingContracts.Count - 1].ContractStartDate) throw new Exception("A contract already exists before the new contracts date");
             }
 
             var virtualContracts = ContractSubroutines.VirtualizeContracts(existingContracts);
@@ -189,6 +218,162 @@ namespace HR.Services
 
             return addedContractDto;
         }
+
+
+
+
+        //public async Task EditLastContract(JsonPatchDocument<EditContractRequest> patchDoc, int employeeId, int myId, int myRole, int companyId)
+        //{
+        //    var editedContract = patchDoc.Adapt<EditContractRequest>();
+
+        //    if (editedContract.ContractType == 3)
+        //    {
+        //        // fixed contracts
+        //        if (editedContract.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+        //        var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)editedContract.PatternId, companyId);
+
+        //        if (workingPattern == null) throw new Exception("Working pattern not found");
+
+        //        (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+        //        editedContract.AverageWorkingDay = workingDays;
+        //        editedContract.ContractedDaysPerWeek = workingDays;
+        //        editedContract.ContractedHoursPerWeek = workingHours;
+        //    }
+
+        //    if (editedContract.TermTimeId != 0) throw new Exception("Developer Error: Term times need to be added first");
+
+        //    //  Verifying who can add contracts to who
+        //    if (myRole >= StaticRoles.Admin)
+        //    {
+        //        if (employeeId == myId)
+        //        {
+        //            bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
+        //            if (hasManager) throw new Exception("Admins with a manager asigned to their profile can not add contracts to their own accounts.");
+        //        }
+        //    }
+
+        //    if (myRole == StaticRoles.Manager)
+        //    {
+        //        if (employeeId == myId) throw new Exception("Managers can not add conracts to their own profiles, please contact your Admin.");
+
+        //        bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, employeeId);
+
+        //        if (!isSubordinate) throw new Exception("You can not add contracts to users who are not your direct subordinates.");
+        //    }
+
+        //    var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
+        //    if (employee == null) throw new Exception("Employee not found");
+
+        //    var last2Contracts = await _mainUOW.ContractRepo.GetLast2Contracts(employee.Id, employee.CompanyId);
+
+        //    Contract? lastContract = null;
+        //    Contract? contractBeforeLast = null;
+
+        //    if (last2Contracts.Count >= 2) contractBeforeLast = last2Contracts[1];
+        //    if (last2Contracts.Count >= 1) lastContract = last2Contracts[0];
+        //    if (lastContract == null) throw new Exception("Contract not found");
+
+        //    if (contractBeforeLast != null && contractBeforeLast.ContractStartDate >= editedContract.ContractStartDate) throw new Exception("Can not edit contact before previous contract start date.");
+
+        //    var absence = await _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(editedContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+        //    if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
+
+        //    var toPatch = lastContract.Adapt<EditContractRequest>();
+
+        //    patchDoc.ApplyTo(toPatch);
+        //    toPatch.Adapt(lastContract);
+
+        //    await _mainUOW.SaveChangesAsync();
+        //}
+
+        public async Task EditLastContract(EditContractRequest editContractRequest, int employeeId, int myId, int myRole, int companyId)
+        {
+            var employee = await _mainUOW.EmployeeRepo.GetEmployeeById(employeeId, companyId);
+            if (employee == null) throw new Exception("Employee not found");
+
+            var last2Contracts = await _mainUOW.ContractRepo.GetLast2Contracts(employee.Id, employee.CompanyId);
+
+            Contract? lastContract = null;
+            Contract? contractBeforeLast = null;
+
+            if (last2Contracts.Count >= 2) contractBeforeLast = last2Contracts[1];
+            if (last2Contracts.Count >= 1) lastContract = last2Contracts[0];
+            if (lastContract == null) throw new Exception("Contract not found");
+
+            if(editContractRequest.ContractStartDate != null)
+            {
+                if (contractBeforeLast != null && contractBeforeLast.ContractStartDate >= editContractRequest.ContractStartDate) throw new Exception("Can not edit contact before previous contract start date.");
+            }
+
+            if (editContractRequest.ContractType == 3)
+            {
+                // fixed contracts
+                if (editContractRequest.PatternId == null) throw new Exception("Fixed contracts must have an asigned working pattern");
+
+                var workingPattern = await _mainUOW.WorkingPatternRepo.GetWorkingPatternByIdOrDefault((int)editContractRequest.PatternId, companyId);
+
+                if (workingPattern == null) throw new Exception("Working pattern not found");
+
+                (int workingDays, int workingHours) = WorkingPatternSubroutines.ExtractWorkingDaysAndHours(workingPattern);
+
+                editContractRequest.AverageWorkingDay = workingDays;
+                editContractRequest.ContractedDaysPerWeek = workingDays;
+                editContractRequest.ContractedHoursPerWeek = workingHours;
+            }
+
+            if (editContractRequest.TermTimeId != null) throw new Exception("Developer Error: Term times need to be added first");
+
+            //  Verifying who can add contracts to who
+            if (myRole >= StaticRoles.Admin)
+            {
+                if (employeeId == myId)
+                {
+                    bool hasManager = await _mainUOW.HierarchyRepo.HasManager(myId);
+                    if (hasManager) throw new Exception("Admins with a manager asigned to their profile can not add contracts to their own accounts.");
+                }
+            }
+
+            if (myRole == StaticRoles.Manager)
+            {
+                if (employeeId == myId) throw new Exception("Managers can not add conracts to their own profiles, please contact your Admin.");
+
+                bool isSubordinate = await _mainUOW.HierarchyRepo.IsRelated(myId, employeeId);
+
+                if (!isSubordinate) throw new Exception("You can not add contracts to users who are not your direct subordinates.");
+            }
+
+            // edit contract
+            lastContract.PatternId = editContractRequest.PatternId.HasValue ? editContractRequest.PatternId : lastContract.PatternId;
+            lastContract.ContractType = editContractRequest.ContractType.HasValue ? (int)editContractRequest.ContractType : lastContract.ContractType;
+            lastContract.ContractStartDate = editContractRequest.ContractStartDate.HasValue ? (DateOnly)editContractRequest.ContractStartDate : lastContract.ContractStartDate;
+            lastContract.ContractedHoursPerWeek = editContractRequest.ContractedHoursPerWeek.HasValue ? (int)editContractRequest.ContractedHoursPerWeek : lastContract.ContractedHoursPerWeek;
+            lastContract.ContractedDaysPerWeek = editContractRequest.ContractedDaysPerWeek.HasValue ? (int)editContractRequest.ContractedDaysPerWeek : lastContract.ContractedDaysPerWeek;
+            lastContract.CompanyHoursPerWeek = editContractRequest.CompanyHoursPerWeek.HasValue ? (int)editContractRequest.CompanyHoursPerWeek : lastContract.CompanyHoursPerWeek;
+            lastContract.CompanyDaysPerWeek = editContractRequest.CompanyDaysPerWeek.HasValue ? (int)editContractRequest.CompanyDaysPerWeek : lastContract.CompanyDaysPerWeek;
+            lastContract.AverageWorkingDay = editContractRequest.AverageWorkingDay.HasValue ? (int)editContractRequest.AverageWorkingDay : lastContract.AverageWorkingDay;
+            lastContract.CompanyLeaveEntitlement = editContractRequest.CompanyLeaveEntitlement.HasValue ? (int)editContractRequest.CompanyLeaveEntitlement : lastContract.CompanyLeaveEntitlement;
+            lastContract.ContractedLeaveEntitlement = editContractRequest.ContractedLeaveEntitlement.HasValue ? (int)editContractRequest.ContractedLeaveEntitlement : lastContract.ContractedLeaveEntitlement;
+            lastContract.FirstLeaveAllowence = editContractRequest.FirstLeaveAllowence.HasValue ? (int)editContractRequest.FirstLeaveAllowence : lastContract.FirstLeaveAllowence;
+            lastContract.NextLeaveAllowence = editContractRequest.NextLeaveAllowence.HasValue ? (int)editContractRequest.NextLeaveAllowence : lastContract.NextLeaveAllowence;
+            lastContract.TermTimeId = editContractRequest.TermTimeId.HasValue ? editContractRequest.TermTimeId : lastContract.TermTimeId;
+            lastContract.DiscardedId = editContractRequest.DiscardedId.HasValue ? editContractRequest.DiscardedId : lastContract.DiscardedId;
+
+
+            var absence = await _mainUOW.AbsenceRepo.GetAbsenceLocatedInDateOrDefault(lastContract.ContractStartDate, employee.Id, employee.CompanyId);
+
+            if (absence != null) throw new Exception("Cannot add a new contract during an active leave period; please adjust the contract start date or re-add absences accordingly.");
+
+            
+            // update absences
+
+
+
+             await _mainUOW.SaveChangesAsync();
+        }
+
 
 
 
@@ -289,6 +474,6 @@ namespace HR.Services
             return contractDto;
         }
 
-      
+  
     }
 }

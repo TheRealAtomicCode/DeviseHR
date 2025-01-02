@@ -71,7 +71,7 @@ namespace HR.Repository
 
             if (contractBeforeFirst != null)
             {
-                contracts.Add(contractBeforeFirst);
+                contracts.Insert(0, contractBeforeFirst);
             }
 
             return contracts;
@@ -104,6 +104,17 @@ namespace HR.Repository
                 .FirstOrDefaultAsync(c => c.EmployeeId == employeeId && c.CompanyId == companyId);
 
             return contract;
+        }
+
+        public async Task<List<Contract>> GetLast2Contracts(int employeeId, int companyId)
+        {
+            List<Contract> contracts = await _context.Contracts
+                .Where(c => c.EmployeeId == employeeId && c.CompanyId == companyId)
+                .OrderByDescending(c => c.ContractStartDate)
+                .Take(2)
+                .ToListAsync();
+
+            return contracts;
         }
 
 

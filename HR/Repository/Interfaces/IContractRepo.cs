@@ -13,6 +13,7 @@ namespace HR.Repository.Interfaces
         Task<Contract> AddContract(Employee employee, AddContractRequest newContract, int myId, int companyId);
         Task<Contract?> GetLastContractByDateOrDefault(int employeeId, int companyId, DateOnly endOfLaveYear);
         Task<Contract?> GetFirstContractOrDefault(int employeeId, int companyId);
+        Task<List<Contract>> GetLast2Contracts(int employeeId, int companyId);
 
         // save
         Task SaveChangesAsync();

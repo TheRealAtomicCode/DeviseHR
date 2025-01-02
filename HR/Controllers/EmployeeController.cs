@@ -109,7 +109,6 @@ namespace HR.Controllers
                 var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message, 0);
                 return BadRequest(serviceResponse);
             }
-
         }
 
 

@@ -1,22 +1,20 @@
 meta {
-  name: Add Contract
+  name: Edit last contract
   type: http
-  seq: 2
+  seq: 5
 }
 
-post {
-  url: {{hr-url}}/api/Contract/CreateContract
+patch {
+  url: {{hr-url}}/api/Contract/EditLastContract/7
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "employeeId": 7,
-    "patternId": 0,
     "contractType": 2,
-    "contractStartDate": "2024-04-01",
-    "isDays": true,
+    "contractStartDate": "2023-05-01",
+    "isDays": false,
     "contractedHoursPerWeek": 40,
     "contractedDaysPerWeek": 6,
     "companyHoursPerWeek": 40,
@@ -26,7 +24,7 @@ body:json {
     "contractedLeaveEntitlement": 80,
     "firstLeaveAllowence": 60,
     "nextLeaveAllowence": 80,
-    "termTimeId": 0,
-    "discardedId": 0
+  
+  
   }
 }
