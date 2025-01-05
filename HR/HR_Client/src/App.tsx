@@ -32,13 +32,11 @@ function App() {
 
 const SideBarIcon: FC<SideBarIconProps> = ({ icon }) => {
 	return (
-		<div className=" hover:text-pink-500 cursor-pointer ">
-			<div className="relative flex items-center justify-center h-12 w-12 mt-4 mb-1 mx-auto bg-gray-800 rounded-lg hover:rounded-3xl transition-all duration-200">
+		<div className="hover:text-pink-500 cursor-pointer group">
+			<div className="relative flex items-center justify-center h-12 w-12 mt-4 mb-1 mx-auto bg-gray-800 rounded-lg group-hover:rounded-3xl transition-all duration-200">
 				{icon}
 			</div>
-			<p className="mx-auto white w-min text-xs mt-0 pt-0 transition-all duration-200">
-				hello
-			</p>
+			<p className="mx-auto white w-min text-xs mt-0 pt-0">hello</p>
 		</div>
 	);
 };
