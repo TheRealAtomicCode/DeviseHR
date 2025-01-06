@@ -20,19 +20,22 @@ function SideNav() {
 				<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
 			</i>
 			<i className="mt-12">
-				<SideBarIcon icon={<IoHomeOutline size="28" />} />
+				<SideBarIcon icon={<IoHomeOutline size="28" />} title={'Home'} />
 			</i>
 			<i>
-				<SideBarIcon icon={<PiUsersThreeLight size="28" />} />
+				<SideBarIcon icon={<PiUsersThreeLight size="28" />} title={'Users'} />
 			</i>
 			<i>
-				<SideBarIcon icon={<CiUser size="28" />} />
+				<SideBarIcon icon={<CiUser size="28" />} title={'Profile'} />
 			</i>
 			<i>
-				<SideBarIcon icon={<IoCalendarOutline size="28" />} />
+				<SideBarIcon
+					icon={<IoCalendarOutline size="28" />}
+					title={'Calendar'}
+				/>
 			</i>
 			<i>
-				<SideBarIcon icon={<TiFolderOpen size="28" />} />
+				<SideBarIcon icon={<TiFolderOpen size="28" />} title={'Files'} />
 			</i>
 			<i className="mt-auto mb-6">
 				<SideBarIcon icon={<GoGear size="28" />} />
@@ -43,11 +46,15 @@ function SideNav() {
 
 const SideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => {
 	return (
-		<div className="hover:text-green-500 cursor-pointer group">
+		<div className="hover:text-green-400 cursor-pointer group">
 			<div className="relative flex items-center justify-center h-12 w-12 mt-2 mb-[2px] mx-auto bg-gray-800 rounded-lg group-hover:rounded-3xl transition-all duration-200">
 				{icon}
 			</div>
-			{title && <p className="mx-auto text-white text-xs mt-1">{title}</p>}
+			{title && (
+				<p className="mx-auto text-white text-xs mt-1 group-hover:text-green-400 text-center">
+					{title}
+				</p>
+			)}
 		</div>
 	);
 };
