@@ -5,7 +5,7 @@ import { PiUsersThreeLight } from 'react-icons/pi';
 import { IoCalendarOutline } from 'react-icons/io5';
 import { TiFolderOpen } from 'react-icons/ti';
 import { GoGear } from 'react-icons/go';
-import { FiPlus } from 'react-icons/fi'; // For the plus icon
+import { BiJoystickAlt } from 'react-icons/bi'; // For the plus icon
 import { GiHamburgerMenu } from 'react-icons/gi'; // For the burger menu
 
 // Define the type for the SideBarIcon props
@@ -22,13 +22,19 @@ function SideNav() {
 				<i>
 					<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
 				</i>
-				<i className="mt-12">
+				<i className="mt-8">
 					<MdSideBarIcon icon={<IoHomeOutline size="28" />} title={'Home'} />
 				</i>
 				<i>
 					<MdSideBarIcon
+						icon={<BiJoystickAlt size="28" />}
+						title={'Activity'}
+					/>
+				</i>
+				<i>
+					<MdSideBarIcon
 						icon={<PiUsersThreeLight size="28" />}
-						title={'Employees'}
+						title={'Users'}
 					/>
 				</i>
 				<i>
@@ -52,7 +58,7 @@ function SideNav() {
 			<div className="sm:hidden fixed bottom-0 left-0 w-full bg-gray-900 text-white flex justify-between items-center p-2">
 				<SmSideBarIcon icon={<IoHomeOutline size="28" />} />
 				<SmSideBarIcon icon={<FaRegClock size="28" />} />
-				<SmSideBarIcon icon={<FiPlus size="28" />} />
+				<SmSideBarIcon icon={<BiJoystickAlt size="28" />} />
 				<SmSideBarIcon icon={<IoCalendarOutline size="28" />} />
 				<SmSideBarIcon icon={<GiHamburgerMenu size="28" />} />
 			</div>
@@ -68,7 +74,7 @@ const MdSideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => {
 			</div>
 			{/* Hide text on small screens */}
 			{title && (
-				<p className="mx-auto text-white text-xs mt-1 group-hover:text-green-400 text-center hidden sm:block">
+				<p className="mx-auto text-white text-[10px] mt-1 group-hover:text-green-400 text-center hidden sm:block">
 					{title}
 				</p>
 			)}
