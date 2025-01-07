@@ -22,15 +22,15 @@ function SideNav() {
 				<i>
 					<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
 				</i>
-				<i className="mt-8">
+				<i className="mt-16">
 					<MdSideBarIcon icon={<IoHomeOutline size="28" />} title={'Home'} />
 				</i>
-				<i>
+				{/* <i>
 					<MdSideBarIcon
 						icon={<BiJoystickAlt size="28" />}
 						title={'Activity'}
 					/>
-				</i>
+				</i> */}
 				<i>
 					<MdSideBarIcon
 						icon={<PiUsersThreeLight size="28" />}
