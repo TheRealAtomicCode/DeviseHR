@@ -1,16 +1,38 @@
-import FloatingLabelInput from '../Components/Forms/FloatingInput'
+import { useState } from 'react';
+import FloatingLabelInput from '../Components/Forms/FloatingInput';
 
 function LoginView() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Email:', email);
+    console.log('Password:', password);
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Left side - Login form */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8">
         <div className="max-w-md w-full space-y-6">
-          <h1 className="text-4xl font-bold text-center text-blue-600">DeviseHR</h1>
-          <form className="space-y-4">
-  
-            <FloatingLabelInput label='Email' type='email' incorrectLabel='Not a valid email' />
-            <FloatingLabelInput label='Password' type='password' incorrectLabel='Please provide a strong password' />
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <FloatingLabelInput
+              label="Email"
+              incorrectLabel="Not a valid email"
+              type="email"
+              regex={/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <FloatingLabelInput
+              label="Password"
+              incorrectLabel="Please provide a strong password"
+              type="password"
+              regex={/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{10,}$/}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <div>
               <button
                 type="submit"
@@ -30,9 +52,5 @@ function LoginView() {
     </div>
   );
 }
-
-
-
-
 
 export default LoginView;
