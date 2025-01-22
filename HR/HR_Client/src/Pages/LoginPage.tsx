@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FloatingLabelInput from '../Components/Forms/FloatingInput';
 import { useMutation } from '@tanstack/react-query';
-import { ILoginData, ILoginRequestDto, login } from '../APIs/Login'
+import { ILoginData, ILoginRequestDto, login } from '../APIs/Auth/Login'
 import { IServiceResponse } from '../Interfaces/IServiceResponse';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,6 +19,7 @@ function LoginView() {
     onSuccess: (data: IServiceResponse<ILoginData>) => {
       if (data.success) {
         setErrorMessage('');
+        
         navigate('/');
       } else {
         setErrorMessage(data.message);
