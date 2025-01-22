@@ -163,4 +163,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Serve static files from the myclient folder
+app.UseStaticFiles();
+
+// Serve the client application from the myclient folder
+app.MapFallbackToFile("Client/index.html");
+
 app.Run();

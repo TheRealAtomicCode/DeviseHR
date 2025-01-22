@@ -32,18 +32,18 @@ namespace HR.Services
         {
             Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(loginRequest.Email);
 
-            if (emp == null || emp.PasswordHash == null) throw new Exception("Incorrect Email or Password");
+            if (emp == null || emp.PasswordHash == null) throw new UnauthorizedAccessException("Incorrect Email or Password");
 
             bool isMatch = PasswordUtils.IsMatch(loginRequest.Password, emp.PasswordHash);
+
+            Verify.EmployeeAccess(emp, _configuration);
 
             if (!isMatch)
             {
                 emp.LoginAttempt++;
                 await _employeeRepo.SaveChangesAsync();
-                throw new Exception("Incorrect email or password");
+                throw new UnauthorizedAccessException("Incorrect email or password");
             }
-
-            Verify.EmployeeAccess(emp, _configuration);
 
             var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
             var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
@@ -73,9 +73,9 @@ namespace HR.Services
         {
             Employee? emp = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
-            if (emp == null) throw new Exception("Unable to locate Employee");
+            if (emp == null) throw new KeyNotFoundException("Unable to locate Employee");
 
-            if (!emp.RefreshTokens.Contains(oldRefreshToken)) throw new Exception("Please authenticate");
+            if (!emp.RefreshTokens.Contains(oldRefreshToken)) throw new UnauthorizedAccessException("Please authenticate");
 
             Verify.UnregisteredEmployeeAccess(emp, _configuration);
 
@@ -104,7 +104,7 @@ namespace HR.Services
         {
             Employee? emp = await _employeeRepo.GetEmployeeById(employeeId, companyId);
 
-            if (emp == null) throw new Exception("User not found");
+            if (emp == null) throw new KeyNotFoundException("User not found");
 
             if (refreshToken == string.Empty)
             {
@@ -126,7 +126,7 @@ namespace HR.Services
 
             Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(email);
 
-            if (emp == null) throw new Exception("Incorrect email");
+            if (emp == null) throw new KeyNotFoundException("Incorrect email");
 
             Verify.EmployeeAccess(emp, _configuration);
 
@@ -147,13 +147,13 @@ namespace HR.Services
 
             Employee? emp = await _employeeRepo.GetEmployeeByEmailOrDefault(email);
 
-            if (emp == null) throw new Exception("Invalid user credencials");
+            if (emp == null) throw new UnauthorizedAccessException("Invalid user credencials");
 
             if (emp.VerificationCode != verificationCode)
             {
                 emp.VerificationCode = null;
                 await _employeeRepo.SaveChangesAsync();
-                throw new Exception("Invalid verification code");
+                throw new UnauthorizedAccessException("Invalid verification code");
             }
 
             // generate password hash
@@ -165,7 +165,7 @@ namespace HR.Services
 
             DateTime currentTime = DateTime.Now; // Current time
             DateTime expiresAt = currentTime.AddMinutes(int.Parse(logintimeExpiration));
-            if (emp.LastLoginTime > expiresAt) throw new Exception("Verifivation code has expired");
+            if (emp.LastLoginTime > expiresAt) throw new UnauthorizedAccessException("Verifivation code has expired");
 
             var tokenClaims = GenerateClaims.GetEmployeeJwtClaims(emp);
             var refreshTokenClaims = GenerateClaims.GetEmployeeRefreshTokenClaims(emp);
