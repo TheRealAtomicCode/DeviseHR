@@ -1,14 +1,38 @@
 import { useState } from 'react';
 import FloatingLabelInput from '../Components/Forms/FloatingInput';
+import { useMutation } from '@tanstack/react-query';
+import { ILoginData, ILoginRequestDto, login } from '../APIs/Login'
+import { IServiceResponse } from '../Interfaces/IServiceResponse';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function LoginView() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const loginMutation = useMutation<IServiceResponse<ILoginData>, Error, { email: string, password: string }>({
+    mutationFn: ({ email, password }) => login({ email, password }),
+    onSuccess: (data: IServiceResponse<ILoginData>) => {
+      if (data.success) {
+        setErrorMessage('');
+        navigate('/');
+      } else {
+        setErrorMessage(data.message);
+      }
+    },
+    onError: (error: Error) => {
+      setErrorMessage(error.message);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
+
+    loginMutation.mutate({ email, password})
   };
 
   return (
@@ -16,6 +40,7 @@ function LoginView() {
       {/* Left side - Login form */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8">
         <div className="max-w-md w-full space-y-6">
+          <h2 className='text-red-500'>{errorMessage}</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <FloatingLabelInput
               label="Email"
@@ -38,7 +63,7 @@ function LoginView() {
                 type="submit"
                 className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               >
-                Login
+                {loginMutation.isPending ? 'Loading...' : 'Login'}
               </button>
             </div>
           </form>

@@ -14,24 +14,26 @@ export interface ILoginData {
     refreshToken: string;
 }
 
-export async function login(email: string, password: string): Promise<IServiceResponse<ILoginData>> {
-  const response = await fetch('/api/login', {
+export interface ILoginRequestDto {
+    email: string;
+    password: string
+}
+
+export async function login(loginRequest: ILoginRequestDto): Promise<IServiceResponse<ILoginData>> {
+  const response = await fetch('https://localhost:7017/api/Auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email,
-      password,
+        email: loginRequest.email,
+        password: loginRequest.password,
     }),
   });
 
-  if (!response.ok) {
-    // Throw an error if the request fails
-    throw new Error('Login failed');
-  }
-
   const data = await response.json();
+
+  if(!data && !data?.message) throw new Error('Login failed'); 
   
   return data;
 }
