@@ -5,12 +5,12 @@ import { ILoginData, ILoginRequestDto, login } from '../APIs/Auth/Login';
 import { IServiceResponse } from '../Interfaces/IServiceResponse';
 import { useNavigate } from 'react-router-dom';
 import { setCookie } from '../utils/cookies';
-import { AppContext } from '../context/AppContext';
+import { UserContext } from '../context/AppContext';
 
 function LoginView() {
 	const navigate = useNavigate();
 
-	const context = useContext(AppContext);
+	const context = useContext(UserContext);
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -29,8 +29,14 @@ function LoginView() {
 				setCookie('jwt', res.data.jwt, 900);
 				setCookie('refreshToken', res.data.refreshToken, 900);
 
-				context.jwt = res.data.jwt;
-				context.refreshToken = res.data.refreshToken;
+				context.id = res.data.id;
+				context.firstName = res.data.firstName;
+				context.lastName = res.data.lastName;
+				context.email = res.data.email;
+				context.isTerminated = res.data.isTerminated;
+				context.isVerified = res.data.isVerified;
+				context.profilePicture = res.data.profilePicture;
+				context.userRole = res.data.userRole;
 
 				navigate('/');
 			} else {

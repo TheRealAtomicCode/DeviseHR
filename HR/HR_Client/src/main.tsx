@@ -4,17 +4,17 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './index.css';
 import App from './App.tsx';
-import { AppContext, appContext } from './context/AppContext.ts';
+import { UserContext, defaultUserContext } from './context/AppContext.ts';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<AppContext.Provider value={appContext}>
+		<UserContext.Provider value={defaultUserContext}>
 			<QueryClientProvider client={queryClient}>
 				<App />
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
-		</AppContext.Provider>
+		</UserContext.Provider>
 	</StrictMode>
 );

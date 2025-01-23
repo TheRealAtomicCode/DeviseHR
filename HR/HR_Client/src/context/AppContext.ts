@@ -1,13 +1,27 @@
 import { createContext } from 'react';
 
-interface AppContextType {
-	jwt: string;
-	refreshToken: string;
-}
-
-export const appContext: AppContextType = {
-	jwt: '',
-	refreshToken: '',
+// Define the TUserContext type
+type TUserContext = {
+	email: string;
+	firstName: string;
+	id: number;
+	isTerminated: boolean;
+	isVerified: boolean;
+	lastName: string;
+	profilePicture: string | null;
+	userRole: number;
 };
 
-export const AppContext = createContext<AppContextType>(appContext);
+// Define the default value for the context
+export const defaultUserContext: TUserContext = {
+	email: '',
+	firstName: '',
+	id: 0,
+	isTerminated: false,
+	isVerified: false,
+	lastName: '',
+	profilePicture: null,
+	userRole: 0,
+};
+
+export const UserContext = createContext<TUserContext>(defaultUserContext);
