@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AppRoutes from './router/AppRouter';
 import { useMutation } from '@tanstack/react-query';
 import { IServiceResponse } from './Interfaces/IServiceResponse';
@@ -8,7 +8,8 @@ import { getCookie, setCookie } from './utils/cookies';
 import { UserContext } from './context/AppContext';
 
 const App = () => {
-	const navigate = useNavigate(); // useNavigate should work now
+	const navigate = useNavigate();
+	const { pathname } = useLocation();
 
 	const [loading, setLoading] = useState(true);
 
@@ -34,7 +35,7 @@ const App = () => {
 				context.profilePicture = res.data.profilePicture;
 				context.userRole = res.data.userRole;
 
-				navigate('/');
+				navigate(pathname);
 				setLoading(false);
 			} else {
 				navigate('/login');
