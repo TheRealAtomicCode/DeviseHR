@@ -47,9 +47,11 @@ namespace HR.Controllers
             }
         }
 
+
+
         [HttpPost("refresh")]
         [Authorize(Policy = "StaffMember")]
-        public async Task<ActionResult<ServiceResponse<LoginResponse>>> Refresh([FromBody] string refreshToken)
+        public async Task<ActionResult<ServiceResponse<LoginResponse>>> Refresh([FromBody] RefreshRequestDto requestBody)
         {
             try
             {
@@ -59,7 +61,7 @@ namespace HR.Controllers
                 int userRole = int.Parse(claimsPrincipal.FindFirst("userRole")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                var empDto = await _credentialService.RefreshUserToken(myId, companyId, refreshToken);
+                var empDto = await _credentialService.RefreshUserToken(myId, companyId, requestBody.RefreshToken);
 
                 var sr = new ServiceResponse<LoginResponse>(empDto, true, "", 0);
 

@@ -1,4 +1,4 @@
-import { IServiceResponse } from '../Interfaces/IServiceResponse';
+import { IServiceResponse } from '../../Interfaces/IServiceResponse';
 
 export interface ILoginData {
     id: number;
