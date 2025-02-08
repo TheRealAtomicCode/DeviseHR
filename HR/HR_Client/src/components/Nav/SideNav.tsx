@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { FaRegClock } from 'react-icons/fa';
 import { IoHomeOutline } from 'react-icons/io5';
 import { PiUsersThreeLight } from 'react-icons/pi';
@@ -7,60 +7,83 @@ import { TiFolderOpen } from 'react-icons/ti';
 import { GoGear } from 'react-icons/go';
 import { BiJoystickAlt } from 'react-icons/bi'; // For the plus icon
 import { GiHamburgerMenu } from 'react-icons/gi'; // For the burger menu
+import { Link } from 'react-router-dom';
+import { UserContext } from '../../context/AppContext';
 
-// Define the type for the SideBarIcon props
 interface SideBarIconProps {
 	icon: JSX.Element;
 	title?: string;
 }
 
 function SideNav() {
+	const { id } = useContext(UserContext);
+
 	return (
 		<div>
 			{/* Sidebar for larger screens */}
 			<div className="side-nav hidden sm:flex fixed top-0 left-0 h-screen w-16 m-0 flex-col bg-gray-900 text-white shadow-lg overflow-y-auto overflow-x-hidden scrollbar-hidden">
 				<i>
-					<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
+					<Link to={'/users/' + id}>
+						<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
+					</Link>
 				</i>
 				<i className="mt-16">
-					<MdSideBarIcon icon={<IoHomeOutline size="28" />} title={'Home'} />
+					<Link to="/home">
+						<MdSideBarIcon icon={<IoHomeOutline size="28" />} title={'Home'} />
+					</Link>
 				</i>
-				{/* <i>
-					<MdSideBarIcon
-						icon={<BiJoystickAlt size="28" />}
-						title={'Activity'}
-					/>
-				</i> */}
+
 				<i>
-					<MdSideBarIcon
-						icon={<PiUsersThreeLight size="28" />}
-						title={'Users'}
-					/>
-				</i>
-				<i>
-					<MdSideBarIcon
-						icon={<IoCalendarOutline size="28" />}
-						title={'Calendar'}
-					/>
+					<Link to="/users">
+						<MdSideBarIcon
+							icon={<PiUsersThreeLight size="28" />}
+							title={'Users'}
+						/>
+					</Link>
 				</i>
 				<i>
-					<MdSideBarIcon icon={<FaRegClock size="28" />} title={'Rotas'} />
+					<Link to="/calendar">
+						<MdSideBarIcon
+							icon={<IoCalendarOutline size="28" />}
+							title={'Calendar'}
+						/>
+					</Link>
 				</i>
 				<i>
-					<MdSideBarIcon icon={<TiFolderOpen size="28" />} title={'Files'} />
+					<Link to="/rotas">
+						<MdSideBarIcon icon={<FaRegClock size="28" />} title={'Rotas'} />
+					</Link>
+				</i>
+
+				<i>
+					<Link to="/files">
+						<MdSideBarIcon icon={<TiFolderOpen size="28" />} title={'Files'} />
+					</Link>
 				</i>
 				<i className="mt-auto mb-6">
-					<MdSideBarIcon icon={<GoGear size="28" />} />
+					<Link to="/settings">
+						<MdSideBarIcon icon={<GoGear size="28" />} />
+					</Link>
 				</i>
 			</div>
 
 			{/* Bottom bar for mobile screens */}
 			<div className="sm:hidden fixed bottom-0 left-0 w-full bg-gray-900 text-white flex justify-between items-center p-2">
-				<SmSideBarIcon icon={<IoHomeOutline size="28" />} />
-				<SmSideBarIcon icon={<FaRegClock size="28" />} />
-				<SmSideBarIcon icon={<BiJoystickAlt size="28" />} />
-				<SmSideBarIcon icon={<IoCalendarOutline size="28" />} />
-				<SmSideBarIcon icon={<GiHamburgerMenu size="28" />} />
+				<Link to="/home">
+					<SmSideBarIcon icon={<IoHomeOutline size="28" />} />
+				</Link>
+				<Link to="/rotas">
+					<SmSideBarIcon icon={<FaRegClock size="28" />} />
+				</Link>
+				<Link to="/home">
+					<SmSideBarIcon icon={<BiJoystickAlt size="28" />} />
+				</Link>
+				<Link to="/calendar">
+					<SmSideBarIcon icon={<IoCalendarOutline size="28" />} />
+				</Link>
+				<Link to="/home">
+					<SmSideBarIcon icon={<GiHamburgerMenu size="28" />} />
+				</Link>
 			</div>
 		</div>
 	);

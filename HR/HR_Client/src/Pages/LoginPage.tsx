@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import FloatingLabelInput from '../components/Forms/FloatingInput';
 import { useMutation } from '@tanstack/react-query';
-import { ILoginData, ILoginRequestDto, login } from '../APIs/Auth/Login';
+import { ILoginData, login } from '../APIs/Auth/Login';
 import { IServiceResponse } from '../Interfaces/IServiceResponse';
 import { useNavigate } from 'react-router-dom';
 import { setCookie } from '../utils/cookies';
