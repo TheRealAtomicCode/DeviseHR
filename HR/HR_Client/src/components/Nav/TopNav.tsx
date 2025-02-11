@@ -6,13 +6,10 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '../../components/ui/navigation-menu';
-import { useState } from 'react';
-import { FaBell, FaCaretDown } from 'react-icons/fa'; // Notifications icon and dropdown caret
 import { HiSearch } from 'react-icons/hi'; // Search icon
 import { IoIosNotifications } from 'react-icons/io';
 
 function TopNav() {
-	const [notificationsOpen, setNotificationsOpen] = useState(false);
 
 	return (
 		<div className="bg-gray-800 text-white shadow-md">

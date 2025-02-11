@@ -10,10 +10,10 @@ import { GiHamburgerMenu } from 'react-icons/gi'; // For the burger menu
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../context/AppContext';
 
-interface SideBarIconProps {
+type TSideBarIconProps = {
 	icon: JSX.Element;
 	title?: string;
-}
+};
 
 function SideNav() {
 	const { id } = useContext(UserContext);
@@ -89,7 +89,7 @@ function SideNav() {
 	);
 }
 
-const MdSideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => {
+const MdSideBarIcon: FC<TSideBarIconProps> = ({ icon, title }) => {
 	return (
 		<div className="hover:text-green-400 cursor-pointer group">
 			<div className="relative flex items-center justify-center h-12 w-12 mt-2 mb-[2px] mx-auto bg-gray-800 rounded-lg group-hover:rounded-3xl transition-all duration-200">
@@ -105,7 +105,7 @@ const MdSideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => {
 	);
 };
 
-const SmSideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => {
+const SmSideBarIcon: FC<TSideBarIconProps> = ({ icon, title }) => {
 	return (
 		<div className="hover:text-green-400 cursor-pointer group">
 			<div className="relative flex items-center justify-center h-8 w-12  mb-[2px] mx-auto  rounded-lg group-hover:rounded-3xl transition-all duration-200">

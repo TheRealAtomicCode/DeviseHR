@@ -1,4 +1,4 @@
-import { IServiceResponse } from '../../Interfaces/IServiceResponse';
+import { TServiceResponse } from '../../types/TServiceResponse';
 
 export interface IRefreshData {
 	id: number;
@@ -14,14 +14,14 @@ export interface IRefreshData {
 	refreshToken: string;
 }
 
-export interface IRefreshRequest {
+export type TRefreshRequest = {
 	jwt: string | null;
 	refreshToken: string | null;
-}
+  };
 
 export async function refresh(
-	tokens: IRefreshRequest
-): Promise<IServiceResponse<IRefreshData>> {
+	tokens: TRefreshRequest
+): Promise<TServiceResponse<IRefreshData>> {
 	const response = await fetch('https://localhost:7017/api/Auth/refresh', {
 		method: 'POST',
 		headers: {

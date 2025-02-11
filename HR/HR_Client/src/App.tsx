@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AppRoutes from './router/AppRouter';
+import AppRoutes from './router/appRouter';
 import { useMutation } from '@tanstack/react-query';
-import { IServiceResponse } from './Interfaces/IServiceResponse';
-import { refresh, IRefreshData, IRefreshRequest } from './APIs/Auth/refresh';
+import { TServiceResponse } from './types/TServiceResponse';
+import { refresh, IRefreshData, TRefreshRequest } from './APIs/auth/refresh';
 import { getCookie, setCookie } from './utils/cookies';
 import { UserContext } from './context/AppContext';
 
@@ -16,12 +16,12 @@ const App = () => {
 	const context = useContext(UserContext);
 
 	const refreshMutation = useMutation<
-		IServiceResponse<IRefreshData>,
+		TServiceResponse<IRefreshData>,
 		Error,
-		IRefreshRequest
+		TRefreshRequest
 	>({
 		mutationFn: (refreshToken) => refresh(refreshToken),
-		onSuccess: (res: IServiceResponse<IRefreshData>) => {
+		onSuccess: (res: TServiceResponse<IRefreshData>) => {
 			if (res.success) {
 				setCookie('jwt', res.data.jwt, 900);
 				setCookie('refreshToken', res.data.refreshToken, 900);

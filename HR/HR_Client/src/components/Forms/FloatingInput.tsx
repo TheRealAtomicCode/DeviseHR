@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface InputProps {
+type TInputProps = {
   label: string;
   incorrectLabel: string;
   type: string;
@@ -9,9 +9,9 @@ interface InputProps {
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   autoComplete?: string;  // Added autoComplete prop
-}
+};
 
-const FloatingLabelInput: React.FC<InputProps> = ({
+const FloatingLabelInput: React.FC<TInputProps> = ({
   label,
   incorrectLabel,
   type,
