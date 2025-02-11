@@ -1,6 +1,6 @@
 ﻿using Common;
 using HR.DTO;
-using HR.Services.Interfaces;
+using HR.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +15,9 @@ namespace HR.Controllers
     public class ContractController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly IContractService _contractService;
+        private readonly ContractService _contractService;
 
-        public ContractController(IConfiguration configuration, IContractService contractService)
+        public ContractController(IConfiguration configuration, ContractService contractService)
         {
             _configuration = configuration;
             _contractService = contractService;

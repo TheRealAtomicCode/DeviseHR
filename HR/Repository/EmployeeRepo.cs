@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
-using HR.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.Design;
 using HR.Subroutines;
@@ -10,7 +9,7 @@ using System.Diagnostics.Contracts;
 
 namespace HR.Repository
 {
-    public class EmployeeRepo : IEmployeeRepo
+    public class EmployeeRepo
     {
 
 

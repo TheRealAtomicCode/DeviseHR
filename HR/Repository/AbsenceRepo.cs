@@ -1,10 +1,9 @@
-﻿using HR.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace HR.Repository
 {
-    public class AbsenceRepo : IAbsenceRepo
+    public class AbsenceRepo
     {
 
         private readonly DeviseHrContext _context;

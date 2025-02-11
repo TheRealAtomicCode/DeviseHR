@@ -2,13 +2,12 @@
 using Models;
 using System.Linq.Expressions;
 using System.Linq;
-using HR.Repository.Interfaces;
 
 
 
 namespace HR.Repository
 {
-    public class GenericRepo<T> : IGenericRepo<T> where T : class
+    public class GenericRepo<T> where T : class
     {
         private readonly DeviseHrContext _context;
         internal DbSet<T> dbSet;

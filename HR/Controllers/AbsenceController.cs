@@ -1,6 +1,6 @@
 ﻿using Common;
 using HR.DTO;
-using HR.Services.Interfaces;
+using HR.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +15,10 @@ namespace HR.Controllers
     [ApiController]
     public class AbsenceController : ControllerBase
     {
-        private readonly IAbsenceService _absenceService;
+        private readonly AbsenceService _absenceService;
         private readonly IConfiguration _configuration;
 
-        public AbsenceController(IAbsenceService absenceService, IConfiguration configuration)
+        public AbsenceController(AbsenceService absenceService, IConfiguration configuration)
         {
             _absenceService = absenceService;
             _configuration = configuration;

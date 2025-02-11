@@ -1,7 +1,6 @@
 ﻿using Common;
 using HR.DTO;
 using HR.Services;
-using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -20,9 +19,9 @@ namespace HR.Controllers
     {
 
         private readonly IConfiguration _configuration;
-        private readonly IPermissionService _permissionService;
+        private readonly PermissionService _permissionService;
 
-        public PermissionController(IConfiguration configuration, IPermissionService permissionService)
+        public PermissionController(IConfiguration configuration, PermissionService permissionService)
         {
             _configuration = configuration;
             _permissionService = permissionService;

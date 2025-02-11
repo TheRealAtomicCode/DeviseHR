@@ -1,11 +1,10 @@
 ﻿using HR.DTO;
-using HR.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace HR.Repository
 {
-    public class HierarchyRepo : IHierarchyRepo
+    public class HierarchyRepo
     {
         private readonly DeviseHrContext _context;
         private readonly IConfiguration _configuration;

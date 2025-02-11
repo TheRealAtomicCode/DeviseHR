@@ -1,6 +1,6 @@
 ﻿using Common;
 using HR.DTO;
-using HR.Services.Interfaces;
+using HR.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -18,9 +18,9 @@ namespace HR.Controllers
     {
 
         private readonly IConfiguration _configuration;
-        private readonly IEmployeeService _employeeService;
+        private readonly EmployeeService _employeeService;
 
-        public EmployeeController(IConfiguration configuration, IEmployeeService employeeService)
+        public EmployeeController(IConfiguration configuration, EmployeeService employeeService)
         {
             _configuration = configuration;
             _employeeService = employeeService;

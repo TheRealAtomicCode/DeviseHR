@@ -2,27 +2,25 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using HR.Repository.Interfaces;
 using System.Text.RegularExpressions;
 using HR.Subroutines;
 using HR.Repository;
 using System.Net.Sockets;
 using Common;
 using System.Security.Claims;
-using HR.Services.Interfaces;
 using HR.DTO;
 
 
 
 namespace HR.Services
 {
-    public class CredentialService : ICredentialService
+    public class CredentialService 
     {
 
-        private readonly IEmployeeRepo _employeeRepo;
+        private readonly EmployeeRepo _employeeRepo;
         private readonly IConfiguration _configuration;
 
-        public CredentialService(IEmployeeRepo employeeRepo, IConfiguration configuration)
+        public CredentialService(EmployeeRepo employeeRepo, IConfiguration configuration)
         {
             _employeeRepo = employeeRepo;
             _configuration = configuration;

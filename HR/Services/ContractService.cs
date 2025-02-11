@@ -1,10 +1,8 @@
 ﻿using Common;
 using HR.DTO;
 using HR.Repository;
-using HR.Repository.Interfaces;
-using HR.Services.Interfaces;
 using HR.Subroutines;
-using HR.UOW.Interfaces;
+using HR.UOW;
 using Mapster;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +13,13 @@ using System.Diagnostics;
 
 namespace HR.Services
 {
-    public class ContractService : IContractService
+    public class ContractService 
     {
 
-        private readonly IMainUOW _mainUOW;
+        private readonly MainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public ContractService(IMainUOW mainUOW, IConfiguration configuration)
+        public ContractService(MainUOW mainUOW, IConfiguration configuration)
         {
             _mainUOW = mainUOW;
             _configuration = configuration;

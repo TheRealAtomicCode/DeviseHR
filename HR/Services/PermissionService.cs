@@ -1,10 +1,8 @@
 ﻿using Common;
 using HR.DTO;
 using HR.Repository;
-using HR.Repository.Interfaces;
-using HR.Services.Interfaces;
 using HR.Subroutines;
-using HR.UOW.Interfaces;
+using HR.UOW;
 using Mapster;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
@@ -13,13 +11,13 @@ using System.Data;
 
 namespace HR.Services
 {
-    public class PermissionService : IPermissionService
+    public class PermissionService 
     {
 
-        private readonly IMainUOW _mainUOW;
+        private readonly MainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public PermissionService(IMainUOW mainUOW, IConfiguration configuration)
+        public PermissionService(MainUOW mainUOW, IConfiguration configuration)
         {
             _mainUOW = mainUOW;
             _configuration = configuration;

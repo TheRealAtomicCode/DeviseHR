@@ -1,7 +1,6 @@
 ﻿using Common;
 using HR.DTO;
 using HR.Services;
-using HR.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +14,10 @@ namespace HR.Controllers
     [ApiController]
     public class WorkingPatternController : ControllerBase
     {
-        private readonly IWorkingPatternService _workingPatternService;
+        private readonly WorkingPatternService _workingPatternService;
         private readonly IConfiguration _configuration;
 
-        public WorkingPatternController(IWorkingPatternService workingPatternService, IConfiguration configuration)
+        public WorkingPatternController(WorkingPatternService workingPatternService, IConfiguration configuration)
         {
             _workingPatternService = workingPatternService;
             _configuration = configuration;

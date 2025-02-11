@@ -1,5 +1,4 @@
 ﻿using HR.DTO;
-using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,7 @@ using Models;
 
 namespace HR.Repository
 {
-    public class WorkingPatternRepo : IWorkingPatternRepo
+    public class WorkingPatternRepo
     {
 
         private readonly DeviseHrContext _context;

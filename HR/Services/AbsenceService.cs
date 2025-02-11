@@ -1,19 +1,18 @@
 ﻿using HR.DTO;
-using HR.Services.Interfaces;
-using HR.UOW.Interfaces;
 using HR.Repository;
 using Models;
 using System;
 using Mapster;
+using HR.UOW;
 
 namespace HR.Services
 {
-    public class AbsenceService : IAbsenceService
+    public class AbsenceService
     {
-        private readonly IMainUOW _mainUOW;
+        private readonly MainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public AbsenceService(IMainUOW mainUOW, IConfiguration configuration)
+        public AbsenceService(MainUOW mainUOW, IConfiguration configuration)
         {
             _mainUOW = mainUOW;
             _configuration = configuration;

@@ -1,12 +1,11 @@
 ﻿using HR.DTO;
-using HR.Repository.Interfaces;
 using HR.Subroutines;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace HR.Repository
 {
-    public class ContractRepo : IContractRepo
+    public class ContractRepo
     {
         private readonly DeviseHrContext _context;
         private readonly IConfiguration _configuration;

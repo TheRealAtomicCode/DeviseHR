@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common;
-using HR.Services.Interfaces;
+using HR.Services;
+
 
 namespace HR.Controllers
 {
@@ -18,10 +19,10 @@ namespace HR.Controllers
     public class AuthController : ControllerBase
     {
 
-        private readonly ICredentialService _credentialService;
+        private readonly CredentialService _credentialService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(ICredentialService credentialService, IConfiguration configuration)
+        public AuthController(CredentialService credentialService, IConfiguration configuration)
         {
             _credentialService = credentialService;
             _configuration = configuration;

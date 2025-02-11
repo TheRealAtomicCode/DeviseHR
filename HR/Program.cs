@@ -1,10 +1,7 @@
 using HR.DTO.Mapper;
 using HR.Repository;
-using HR.Repository.Interfaces;
 using HR.Services;
-using HR.Services.Interfaces;
 using HR.UOW;
-using HR.UOW.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -119,23 +116,23 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 // Scoped Injection Services
-builder.Services.AddScoped<ICredentialService, CredentialService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
-builder.Services.AddScoped<IContractService, ContractService>();
-builder.Services.AddScoped<IAbsenceService, AbsenceService>();
-builder.Services.AddScoped<IWorkingPatternService, WorkingPatternService>();
+builder.Services.AddScoped<CredentialService>();
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<ContractService>();
+builder.Services.AddScoped<AbsenceService>();
+builder.Services.AddScoped<WorkingPatternService>();
 
 // Scoped Injection Repo
-builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();
-builder.Services.AddScoped<IContractRepo, ContractRepo>();
-builder.Services.AddScoped<IHierarchyRepo, HierarchyRepo>();
-builder.Services.AddScoped<IAbsenceRepo, AbsenceRepo>();
-builder.Services.AddScoped<IWorkingPatternRepo, WorkingPatternRepo>();
+builder.Services.AddScoped<EmployeeRepo>();
+builder.Services.AddScoped<PermissionRepo>();
+builder.Services.AddScoped<ContractRepo>();
+builder.Services.AddScoped<HierarchyRepo>();
+builder.Services.AddScoped<AbsenceRepo>();
+builder.Services.AddScoped<WorkingPatternRepo>();
 
 // Scoperd Unit of work injections
-builder.Services.AddScoped<IMainUOW, MainUOW>();
+builder.Services.AddScoped<MainUOW>();
 
 
 // Register mappings

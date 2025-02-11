@@ -1,10 +1,7 @@
 ﻿using Common;
 using HR.DTO;
 using HR.Repository;
-using HR.Repository.Interfaces;
-using HR.Services.Interfaces;
 using HR.UOW;
-using HR.UOW.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.JsonPatch;
 using Models;
@@ -12,12 +9,12 @@ using Models;
 
 namespace HR.Services
 {
-    public class EmployeeService : IEmployeeService
+    public class EmployeeService 
     {
-        private readonly IMainUOW _mainUOW;
+        private readonly MainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public EmployeeService(IMainUOW mainUOW, IConfiguration configuration)
+        public EmployeeService(MainUOW mainUOW, IConfiguration configuration)
         {
             _mainUOW = mainUOW;
             _configuration = configuration;

@@ -1,21 +1,18 @@
 ﻿using HR.DTO;
 using HR.Repository;
-using HR.Repository.Interfaces;
-using HR.Services.Interfaces;
 using HR.UOW;
-using HR.UOW.Interfaces;
 using Mapster;
 using Models;
 
 namespace HR.Services
 {
-    public class WorkingPatternService : IWorkingPatternService
+    public class WorkingPatternService
     {
 
-        private readonly IMainUOW _mainUOW;
+        private readonly MainUOW _mainUOW;
         private readonly IConfiguration _configuration;
 
-        public WorkingPatternService(IMainUOW mainUOW, IConfiguration configuration)
+        public WorkingPatternService(MainUOW mainUOW, IConfiguration configuration)
         {
             _mainUOW = mainUOW;
             _configuration = configuration;
