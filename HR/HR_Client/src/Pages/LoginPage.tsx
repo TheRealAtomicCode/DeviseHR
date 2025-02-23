@@ -57,7 +57,7 @@ function LoginView() {
 	return (
 		<div className="flex min-h-screen">
 			{/* Left side - Login form */}
-			<div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8">
+			<div className="w-full md:w-1/2 flex items-center justify-center text-gray-900 bg-white p-8">
 				<div className="max-w-md w-full space-y-6">
 					<h2 className="text-red-500">{errorMessage}</h2>
 					<form className="space-y-4" onSubmit={handleSubmit}>
