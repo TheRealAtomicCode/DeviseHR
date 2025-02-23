@@ -10,8 +10,31 @@ import { UserContext } from './context/AppContext';
 const App = () => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
-
 	const [loading, setLoading] = useState(true);
+
+	// Read dark mode state from localStorage
+	const [isDarkMode, setIsDarkMode] = useState(() => {
+		if (typeof window !== 'undefined') {
+			return localStorage.getItem('theme') === 'dark';
+		}
+		return false;
+	});
+
+	// Apply the dark mode class to <html> when the state changes
+	useEffect(() => {
+		if (isDarkMode) {
+			document.documentElement.classList.add('dark');
+			localStorage.setItem('theme', 'dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+			localStorage.setItem('theme', 'light');
+		}
+	}, [isDarkMode]);
+
+	// Function to toggle dark mode
+	const toggleDarkMode = () => {
+		setIsDarkMode((prev) => !prev);
+	};
 
 	const context = useContext(UserContext);
 
@@ -71,7 +94,12 @@ const App = () => {
 		);
 	}
 
-	return <AppRoutes />; // Render routes after loading
+	return (
+		<div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+			{/* Pass the toggle function as a prop to children */}
+			<AppRoutes toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+		</div>
+	);
 };
 
 export default App;
