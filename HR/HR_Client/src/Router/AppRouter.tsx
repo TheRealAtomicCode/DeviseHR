@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import HomePage from '../pages/HomePage'; // Home page component
 import LoginPage from '../pages/LoginPage'; // Login page component
 import NotFoundPage from '../pages/NotFoundPage'; // Not Found page component
-import AuthenticatedLayout from '../Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 import UsersPage from '../pages/UsersPage';
 import UserPage from '../pages/UserPage';
 import CalendarPage from '../pages/CalendarPage';

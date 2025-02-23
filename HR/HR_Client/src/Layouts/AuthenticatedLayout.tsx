@@ -7,7 +7,7 @@ function AuthenticatedLayout() {
 		<div className="sm:ml-16">
 			<SideNav /> {/* This is the navigation bar */}
 			<TopNav />
-			<main>
+			<main className="pt-14 bg-slate-100">
 				<Outlet /> {/* Nested route content will be rendered here */}
 			</main>
 		</div>
