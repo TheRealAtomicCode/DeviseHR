@@ -1,27 +1,50 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AppRoutes from './router/AppRouter';
+import AppRoutes from './router/appRouter';
 import { useMutation } from '@tanstack/react-query';
-import { IServiceResponse } from './Interfaces/IServiceResponse';
-import { refresh, IRefreshData, IRefreshRequest } from './APIs/Auth/refresh';
+import { TServiceResponse } from './types/TServiceResponse';
+import { refresh, IRefreshData, TRefreshRequest } from './APIs/auth/refresh';
 import { getCookie, setCookie } from './utils/cookies';
 import { UserContext } from './context/AppContext';
 
 const App = () => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
-
 	const [loading, setLoading] = useState(true);
+
+	// Read dark mode state from localStorage
+	const [isDarkMode, setIsDarkMode] = useState(() => {
+		if (typeof window !== 'undefined') {
+			return localStorage.getItem('theme') === 'dark';
+		}
+		return false;
+	});
+
+	// Apply the dark mode class to <html> when the state changes
+	useEffect(() => {
+		if (isDarkMode) {
+			document.documentElement.classList.add('dark');
+			localStorage.setItem('theme', 'dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+			localStorage.setItem('theme', 'light');
+		}
+	}, [isDarkMode]);
+
+	// Function to toggle dark mode
+	const toggleDarkMode = () => {
+		setIsDarkMode((prev) => !prev);
+	};
 
 	const context = useContext(UserContext);
 
 	const refreshMutation = useMutation<
-		IServiceResponse<IRefreshData>,
+		TServiceResponse<IRefreshData>,
 		Error,
-		IRefreshRequest
+		TRefreshRequest
 	>({
 		mutationFn: (refreshToken) => refresh(refreshToken),
-		onSuccess: (res: IServiceResponse<IRefreshData>) => {
+		onSuccess: (res: TServiceResponse<IRefreshData>) => {
 			if (res.success) {
 				setCookie('jwt', res.data.jwt, 900);
 				setCookie('refreshToken', res.data.refreshToken, 900);
@@ -71,7 +94,12 @@ const App = () => {
 		);
 	}
 
-	return <AppRoutes />; // Render routes after loading
+	return (
+		<div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+			{/* Pass the toggle function as a prop to children */}
+			<AppRoutes toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+		</div>
+	);
 };
 
 export default App;

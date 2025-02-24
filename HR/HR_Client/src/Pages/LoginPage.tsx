@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import FloatingLabelInput from '../components/Forms/FloatingInput';
 import { useMutation } from '@tanstack/react-query';
-import { ILoginData, login } from '../APIs/Auth/Login';
-import { IServiceResponse } from '../Interfaces/IServiceResponse';
+import { TLoginData, login } from '../APIs/auth/login';
+import { TServiceResponse } from '../types/TServiceResponse';
 import { useNavigate } from 'react-router-dom';
 import { setCookie } from '../utils/cookies';
 import { UserContext } from '../context/AppContext';
@@ -17,12 +17,12 @@ function LoginView() {
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const loginMutation = useMutation<
-		IServiceResponse<ILoginData>,
+		TServiceResponse<TLoginData>,
 		Error,
 		{ email: string; password: string }
 	>({
 		mutationFn: ({ email, password }) => login({ email, password }),
-		onSuccess: (res: IServiceResponse<ILoginData>) => {
+		onSuccess: (res: TServiceResponse<TLoginData>) => {
 			if (res.success) {
 				setErrorMessage('');
 
@@ -57,7 +57,7 @@ function LoginView() {
 	return (
 		<div className="flex min-h-screen">
 			{/* Left side - Login form */}
-			<div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8">
+			<div className="w-full md:w-1/2 flex items-center justify-center text-gray-900 bg-white p-8">
 				<div className="max-w-md w-full space-y-6">
 					<h2 className="text-red-500">{errorMessage}</h2>
 					<form className="space-y-4" onSubmit={handleSubmit}>

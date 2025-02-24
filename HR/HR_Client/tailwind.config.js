@@ -13,6 +13,11 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+			bg: 'var(--color-bg)',
+			text: 'var(--color-text)',
+			primary: 'var(--color-primary)',
+			secondary: 'var(--color-secondary)',
+
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -54,7 +59,8 @@ module.exports = {
   				'5': 'hsl(var(--chart-5))'
   			}
   		}
-  	}
+  	},
+	darkMode: 'class',
   },
   plugins: [require("tailwindcss-animate")],
 };

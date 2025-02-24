@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import HomePage from '../pages/HomePage'; // Home page component
-import LoginPage from '../pages/LoginPage'; // Login page component
-import NotFoundPage from '../pages/NotFoundPage'; // Not Found page component
-import AuthenticatedLayout from '../Layouts/AuthenticatedLayout';
+import HomePage from '../pages/HomePage';
+import LoginPage from '../pages/LoginPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 import UsersPage from '../pages/UsersPage';
 import UserPage from '../pages/UserPage';
 import CalendarPage from '../pages/CalendarPage';
@@ -11,12 +11,18 @@ import RotaPage from '../pages/RotaPage';
 import FilesPage from '../pages/FilesPage';
 import SettingsPage from '../pages/SettingsPage';
 
-const AppRoutes = () => {
+// Define the props
+interface AppRoutesProps {
+	toggleDarkMode: () => void;
+	isDarkMode: boolean;
+}
+
+const AppRoutes = ({ toggleDarkMode, isDarkMode }: AppRoutesProps) => {
 	return (
 		<Routes>
 			{/* Routes with Layout (Nav shown) */}
-			<Route element={<AuthenticatedLayout />}>
-				<Route path="/" element={<HomePage />} /> {/* Home route */}
+			<Route element={<AuthenticatedLayout toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />}>
+				<Route path="/" element={<HomePage />} />
 				<Route path="/home" element={<HomePage />} />
 				<Route path="/users" element={<UsersPage />} />
 				<Route path="/users/:userId" element={<UserPage />} />

@@ -12,8 +12,15 @@
 	scrollbar-width: none; /* For Firefox */
 }
 
+  
+
 @layer base {
   :root {
+		--color-bg: #ffffff;
+		--color-text: #1f2937; /* Gray 800 */
+		--color-primary: #3b82f6; /* Blue 500 */
+		--color-secondary: #f3f4f6; /* Gray 100 */
+
 		--background: 0 0% 100%;
 		--foreground: 0 0% 3.9%;
 		--card: 0 0% 100%;
@@ -41,6 +48,12 @@
 		--radius: 0.5rem;
 	}
   .dark {
+		--color-bg: #1f2937; /* Gray 800 */
+		--color-text: #f3f4f6; /* Gray 100 */
+		--color-primary: #3b82f6; /* Blue 500 */
+		--color-secondary: #374151; /* Gray 700 */
+
+
 		--background: 0 0% 3.9%;
 		--foreground: 0 0% 98%;
 		--card: 0 0% 3.9%;
