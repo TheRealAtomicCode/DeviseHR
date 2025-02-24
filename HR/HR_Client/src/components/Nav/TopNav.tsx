@@ -18,21 +18,19 @@ import {
   const TopNav = ({ toggleDarkMode, isDarkMode }: TopNavProps) => {
 	return (
 	  <div
-		className={`fixed w-full md:w-[calc(100%-3rem)] transition-all duration-300 ${
-		  window.scrollY > 0 ? 'shadow' : ''
-		} bg-bg backdrop-blur-3xl`}
+		className={`fixed w-full md:w-[calc(100%-4.1rem)] transition-all duration-300 bg-gray-100 dark:bg-slate-900`}
 	  >
 		<div className="flex items-center justify-between px-4">
 		  {/* Logo */}
-		  <h1 className="text-2xl font-bold text-text">D</h1>
+		  <h1 className="text-2xl font-bold">D</h1>
   
 		  {/* Search Bar */}
-		  <div className="relative flex items-center p-1 rounded-lg w-1/3 my-1 bg-secondary">
-			<HiSearch className="absolute left-2 text-text" size={20} />
+		  <div className="relative flex items-center my-2 rounded-2xl w-1/3 bg-secondary">
+			<HiSearch className="absolute left-2" size={20} />
 			<input
 			  type="text"
 			  placeholder="Search..."
-			  className="h-10 bg-transparent placeholder-text pl-8 pr-4 rounded-3xl w-full focus:outline-none text-text"
+			  className="h-10 bg-white dark:bg-gray-800 placeholder-text pl-8 pr-4 rounded-3xl w-full focus:outline-none"
 			/>
 		  </div>
   
@@ -40,21 +38,21 @@ import {
 			{/* Dark Mode Toggle */}
 			<button
 			  onClick={toggleDarkMode}
-			  className="p-2 rounded-full focus:outline-none text-primary"
+			  className="p-2 rounded-full focus:outline-none text-primary "
 			>
 			  {isDarkMode ? <FaSun /> : <FaMoon />}
 			</button>
   
 			{/* Navigation Menu */}
 			<NavigationMenu>
-			  <NavigationMenuList className="flex items-center space-x-4">
+			  <NavigationMenuList className="flex items-center space-x-4 ">
 				{/* Notifications Button */}
 				<NavigationMenuItem>
-				  <div className="relative">
-					<NavigationMenuTrigger className="flex items-center space-x-2 px-3 py-2 rounded-lg text-text">
+				  <div className="relative ">
+					<NavigationMenuTrigger className="flex items-center space-x-2 px-3 bg-transparent py-2 rounded-lg ">
 					  <IoIosNotifications size={20} />
 					</NavigationMenuTrigger>
-					<NavigationMenuContent className="rounded-lg shadow-lg bg-secondary text-text">
+					<NavigationMenuContent className="rounded-lg shadow-lg bg-secondary">
 					  <div>
 						<NavigationMenuLink href="#">Notification</NavigationMenuLink>
 					  </div>
@@ -71,10 +69,10 @@ import {
 				{/* Features Menu */}
 				<NavigationMenuItem>
 				  <div className="relative">
-					<NavigationMenuTrigger className="flex items-center space-x-2 px-3 py-2 text-text">
+					<NavigationMenuTrigger className="flex items-center space-x-2 bg-transparent px-3 py-2">
 					  <span>Features</span>
 					</NavigationMenuTrigger>
-					<NavigationMenuContent className="rounded-lg shadow-lg bg-secondary text-text">
+					<NavigationMenuContent className="rounded-lg shadow-lg bg-secondary">
 					  <div>
 						<NavigationMenuLink href="#">What's new</NavigationMenuLink>
 					  </div>
