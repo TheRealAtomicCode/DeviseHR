@@ -18,7 +18,7 @@ import {
   const TopNav = ({ toggleDarkMode, isDarkMode }: TopNavProps) => {
 	return (
 	  <div
-		className={`fixed w-full md:w-[calc(100%-4.1rem)] transition-all duration-300 bg-gray-100 dark:bg-slate-900`}
+		className={`fixed w-full sm:w-[calc(100%-4rem)] transition-all duration-300 bg-gray-100 dark:bg-slate-900`}
 	  >
 		<div className="flex items-center justify-between px-4">
 		  {/* Logo */}
@@ -68,7 +68,7 @@ import {
   
 				{/* Features Menu */}
 				<NavigationMenuItem>
-				  <div className="relative">
+				  <div className="hidden sm:block">
 					<NavigationMenuTrigger className="flex items-center space-x-2 bg-transparent px-3 py-2">
 					  <span>Features</span>
 					</NavigationMenuTrigger>

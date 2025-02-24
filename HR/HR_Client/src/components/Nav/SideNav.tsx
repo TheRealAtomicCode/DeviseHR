@@ -21,7 +21,7 @@ function SideNav() {
 	return (
 		<div>
 			{/* Sidebar for larger screens */}
-			<div className="side-nav hidden sm:flex fixed top-0 left-0 h-screen w-16 m-0 flex-col bg-slate-950 text-white shadow-lg overflow-y-auto overflow-x-hidden scrollbar-hidden">
+			<div className="side-nav hidden sm:flex fixed top-0 left-0 h-screen w-16 m-0 flex-col bg-gray-950 text-white shadow-lg overflow-y-auto overflow-x-hidden scrollbar-hidden">
 				<i>
 					<Link to={'/users/' + id}>
 						<div className="cursor-pointer w-14 h-14 mt-4 rounded-full border border-white items-center justify-center mx-auto"></div>
@@ -68,7 +68,7 @@ function SideNav() {
 			</div>
 
 			{/* Bottom bar for mobile screens */}
-			<div className="sm:hidden fixed bottom-0 left-0 w-full bg-gray-900 text-white flex justify-between items-center p-2">
+			<div className="sm:hidden fixed bottom-0 left-0 w-full bg-gray-950 text-white flex justify-between items-center p-2">
 				<Link to="/home">
 					<SmSideBarIcon icon={<IoHomeOutline size="28" />} />
 				</Link>
