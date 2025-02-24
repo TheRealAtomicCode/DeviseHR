@@ -10,17 +10,17 @@ import { BrowserRouter as Router } from 'react-router-dom'; // Ensure the Router
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<UserContext.Provider value={defaultUserContext}>
-			<QueryClientProvider client={queryClient}>
-				{/* Wrap App with Router */}
-				<Router>
-					<div className='bg-gray-100 dark:bg-gray-900'>
-						<App />
-					</div>
-				</Router>
-				<ReactQueryDevtools initialIsOpen={false} />
-			</QueryClientProvider>
-		</UserContext.Provider>
-	</StrictMode>
+  <StrictMode>
+    <UserContext.Provider value={defaultUserContext}>
+      <QueryClientProvider client={queryClient}>
+        {/* Wrap App with Router */}
+        <Router>
+          <div className="bg-white-100 dark:bg-gray-900">
+            <App />
+          </div>
+        </Router>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </UserContext.Provider>
+  </StrictMode>
 );
