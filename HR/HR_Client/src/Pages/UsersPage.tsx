@@ -79,10 +79,10 @@ const UsersPage = () => {
               <option>Design</option>
             </select>
             <div className="flex space-x-2">
-              <button className="p-2 bg-blue-500 text-white rounded flex-1">
+              <button className="p-2 bg-pink-500 text-white rounded flex-1">
                 Sort A-Z
               </button>
-              <button className="p-2 bg-blue-500 text-white rounded flex-1">
+              <button className="p-2 bg-pink-500 text-white rounded flex-1">
                 Sort Z-A
               </button>
             </div>
@@ -102,7 +102,7 @@ const UsersPage = () => {
 
 function UserCard({ user }: { user: TUser }) {
   return (
-    <div className="w-full max-w-sm bg-white border border-pink-100 rounded-lg shadow-[0px_0px_13px_-9px_rgba(213,0,109,1)] dark:bg-gray-800 dark:border-gray-700">
+    <div className="w-full max-w-sm bg-white border  border-pink-200 rounded-lg shadow-[0px_0px_13px_-9px_rgba(213,0,109,1)] dark:bg-gray-800 dark:border-gray-700">
       <div className="flex flex-col items-center mt-4 pb-6">
         <img
           className="w-24 h-24 mb-3 rounded-full shadow-lg"
