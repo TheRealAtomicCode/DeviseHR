@@ -15,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
 			<QueryClientProvider client={queryClient}>
 				{/* Wrap App with Router */}
 				<Router>
-					<App />
+					<div className='bg-gray-100 dark:bg-gray-900'>
+						<App />
+					</div>
 				</Router>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
