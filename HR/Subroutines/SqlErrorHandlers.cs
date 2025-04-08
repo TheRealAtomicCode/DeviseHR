@@ -10,7 +10,7 @@ namespace HR.Subroutines
             if (ex.InnerException == null || ex.InnerException.Message == null) throw new Exception("An unexpected error occurred");
 
             string errorMessage = ex.InnerException.Message;
-            string constraintName = ExtractConstraintName(errorMessage);
+            string? constraintName = ExtractConstraintName(errorMessage);
 
             switch (constraintName)
             {
@@ -41,18 +41,21 @@ namespace HR.Subroutines
         }
 
 
-        private static string ExtractConstraintName(string errorMessage)
+
+        public static string? ExtractConstraintName(string errorMessage)
         {
-            // Look for the constraint violation message and extract the constraint name
-            string pattern = @"violates (?:foreign key|check) constraint ""(.+?)""";
-            var match = System.Text.RegularExpressions.Regex.Match(errorMessage, pattern);
+            if (string.IsNullOrEmpty(errorMessage))
+                return null;
 
-            if (match.Success)
-            {
-                return match.Groups[1].Value; // Returns the constraint name (e.g., "half_days_for_leaves_in_days")
-            }
+            int startIndex = errorMessage.IndexOf('\"');
+            if (startIndex == -1)
+                return null;
+            
+            int endIndex = errorMessage.IndexOf('\"', startIndex + 1);
+            if (endIndex == -1)
+                return null;
 
-            return null; // No constraint found
+            return errorMessage.Substring(startIndex + 1, endIndex - startIndex - 1);
         }
 
     }
