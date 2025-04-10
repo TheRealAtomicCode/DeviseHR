@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AppRoutes from './router/AppRouter';
+import AppRoutes from './Router/AppRouter';
 import { useMutation } from '@tanstack/react-query';
 import { TServiceResponse } from './types/TServiceResponse';
 import { refresh, IRefreshData, TRefreshRequest } from './APIs/auth/refresh';
